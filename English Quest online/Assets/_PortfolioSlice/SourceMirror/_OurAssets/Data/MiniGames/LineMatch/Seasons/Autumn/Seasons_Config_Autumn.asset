@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34f9f7adc4efb3c46a2473e7631572e3, type: 3}
+  m_Name: Seasons_Config_Autumn
+  m_EditorClassIdentifier: _Project::Puzzle.Gameplay.MiniGames.LetterConnection.LetterConnectionLevelConfigSO
+  letters:
+  - id: 3
+    value: s
+  - id: 1
+    value: u
+  - id: 2
+    value: f
+  wordTasks:
+  - id: 1
+    image: {fileID: 21300000, guid: 0b76baac3f85764429deb9ea4b836366, type: 3}
+    fullWord: Autumn
+    missingIndices: 03000000
+  - id: 2
+    image: {fileID: 21300000, guid: 4d53f962bcd56b54c86d8914fac02502, type: 3}
+    fullWord: Falling Leaves
+    missingIndices: 00000000
+  - id: 3
+    image: {fileID: 21300000, guid: da5686f96ce42954e8975025ae272b04, type: 3}
+    fullWord: Mushroom
+    missingIndices: 02000000

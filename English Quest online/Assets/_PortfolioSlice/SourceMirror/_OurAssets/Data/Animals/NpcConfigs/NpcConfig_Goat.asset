@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a853feb59b1f9244392749ca11fe1feb, type: 3}
+  m_Name: NpcConfig_Goat
+  m_EditorClassIdentifier: _Project::AnimalNpcBehaviorConfigSO
+  animatorStateName: animation
+  idleState: 0
+  walkState: 1
+  eatState: 4
+  sleepState: 5
+  runState: 2
+  runChance: 0.2
+  runSpeed: 4.5
+  walkDuration: 8
+  eatDuration: 5
+  wanderRadius: 12
+  moveSpeed: 2.2

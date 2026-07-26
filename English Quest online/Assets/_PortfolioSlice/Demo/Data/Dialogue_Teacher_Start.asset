@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81989726be4eb8f4da7531bae57b6ebb, type: 3}
+  m_Name: Dialogue_Teacher_Start
+  m_EditorClassIdentifier: _Project::DialogueNode
+  dialogueText: Welcome to the Teacher Adventure portfolio lab. What would you like
+    to verify?
+  speakerName: Teacher Ada
+  voiceClip: {fileID: 0}
+  choices:
+  - choiceText: Explain the architecture
+    nextNode: {fileID: 11400000, guid: 2c4b37ddd481c764da6f493b7b8a571e, type: 2}
+  - choiceText: Everything works. Goodbye!
+    nextNode: {fileID: 0}
+  actionType: 0
+  actionParameter: 

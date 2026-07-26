@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34f9f7adc4efb3c46a2473e7631572e3, type: 3}
+  m_Name: Letters C - D
+  m_EditorClassIdentifier: _Project::Puzzle.Gameplay.MiniGames.LetterConnection.LetterConnectionLevelConfigSO
+  letters:
+  - id: 2
+    value: C
+  - id: 4
+    value: D
+  - id: 1
+    value: C
+  - id: 5
+    value: D
+  - id: 3
+    value: C
+  - id: 6
+    value: D
+  wordTasks:
+  - id: 1
+    image: {fileID: 21300000, guid: 99746ecafae4a934688e18c8369a843b, type: 3}
+    fullWord: CAR
+    missingIndices: 00000000
+  - id: 6
+    image: {fileID: 21300000, guid: a8bc2cc07afa7444992e8597b2f68edd, type: 3}
+    fullWord: DOLPHIN
+    missingIndices: 00000000
+  - id: 2
+    image: {fileID: 21300000, guid: 41d80512b72e08348b736777f7c09cf7, type: 3}
+    fullWord: CARROT
+    missingIndices: 00000000
+  - id: 3
+    image: {fileID: 21300000, guid: 89370b43a05cc4c4191594123b7de4a4, type: 3}
+    fullWord: CAT
+    missingIndices: 00000000
+  - id: 4
+    image: {fileID: 21300000, guid: 8e4686764f4b0384bb1320bffb23e378, type: 3}
+    fullWord: DOG
+    missingIndices: 00000000
+  - id: 5
+    image: {fileID: 21300000, guid: dc4896836cd658e4ca96f4ca07a8c98e, type: 3}
+    fullWord: DOLL
+    missingIndices: 00000000

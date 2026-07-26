@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d789b3e1778cded40accc4f257b8accf, type: 3}
+  m_Name: Animal_Notebook_SO
+  m_EditorClassIdentifier: _Project::NotebookContentSO
+  notebookTopics:
+  - topicName: Animals-1 - Pets
+    thumnail: {fileID: -243369289, guid: c7df0579ff7a8324a824a93ab97cbdd9, type: 3}
+    pages:
+    - {fileID: -801861640, guid: c7df0579ff7a8324a824a93ab97cbdd9, type: 3}
+    - {fileID: -866777374, guid: c7df0579ff7a8324a824a93ab97cbdd9, type: 3}
+    - {fileID: -25896589, guid: c7df0579ff7a8324a824a93ab97cbdd9, type: 3}
+  - topicName: Animals-2 - Pets
+    thumnail: {fileID: -1853810234, guid: 47db0184fb64db840ac919f8fd4b24f0, type: 3}
+    pages:
+    - {fileID: 1828915199, guid: 47db0184fb64db840ac919f8fd4b24f0, type: 3}
+    - {fileID: -1346887787, guid: 47db0184fb64db840ac919f8fd4b24f0, type: 3}
+    - {fileID: 1509410629, guid: 47db0184fb64db840ac919f8fd4b24f0, type: 3}
+  - topicName: Animals-3 - Farm Animals
+    thumnail: {fileID: 1934056944, guid: 2ed6e2b4016e9774c87e1c75b0f889af, type: 3}
+    pages:
+    - {fileID: 1318460091, guid: 2ed6e2b4016e9774c87e1c75b0f889af, type: 3}
+    - {fileID: -308233728, guid: 2ed6e2b4016e9774c87e1c75b0f889af, type: 3}
+    - {fileID: 820757763, guid: 2ed6e2b4016e9774c87e1c75b0f889af, type: 3}
+  - topicName: Animals-4 - Farm Amimals
+    thumnail: {fileID: -2084191995, guid: 8460f56114b5a3f43a0aaf44f31b1e00, type: 3}
+    pages:
+    - {fileID: 1665684929, guid: 8460f56114b5a3f43a0aaf44f31b1e00, type: 3}
+    - {fileID: 2056230724, guid: 8460f56114b5a3f43a0aaf44f31b1e00, type: 3}
+    - {fileID: -824519617, guid: 8460f56114b5a3f43a0aaf44f31b1e00, type: 3}
+  - topicName: Animals-5 - Wild Animals
+    thumnail: {fileID: 1379411043, guid: 5d0f6c5eb5985684a8c1f4ccb97a470b, type: 3}
+    pages:
+    - {fileID: -935498991, guid: 5d0f6c5eb5985684a8c1f4ccb97a470b, type: 3}
+    - {fileID: 1862205570, guid: 5d0f6c5eb5985684a8c1f4ccb97a470b, type: 3}
+    - {fileID: 1768948447, guid: 5d0f6c5eb5985684a8c1f4ccb97a470b, type: 3}
+  - topicName: Animals-6 - Sea Animals
+    thumnail: {fileID: 393283317, guid: 88160d0bb96577749965fa2dd0c30744, type: 3}
+    pages:
+    - {fileID: -834324793, guid: 88160d0bb96577749965fa2dd0c30744, type: 3}
+    - {fileID: -1376928932, guid: 88160d0bb96577749965fa2dd0c30744, type: 3}
+    - {fileID: 152044499, guid: 88160d0bb96577749965fa2dd0c30744, type: 3}
+  - topicName: Animals-7 - Birds
+    thumnail: {fileID: 545004636, guid: ba4ac623911cf5a4497322745b81ffb6, type: 3}
+    pages:
+    - {fileID: -441171287, guid: ba4ac623911cf5a4497322745b81ffb6, type: 3}
+    - {fileID: -1353016994, guid: ba4ac623911cf5a4497322745b81ffb6, type: 3}
+    - {fileID: -2093775023, guid: ba4ac623911cf5a4497322745b81ffb6, type: 3}
+  - topicName: Animals-8 - Insects
+    thumnail: {fileID: 1044946601, guid: e47b30d0697d9d54a9d26bf6b12e35a9, type: 3}
+    pages:
+    - {fileID: 1722883967, guid: e47b30d0697d9d54a9d26bf6b12e35a9, type: 3}
+    - {fileID: 1246330126, guid: e47b30d0697d9d54a9d26bf6b12e35a9, type: 3}
+    - {fileID: -1058332054, guid: e47b30d0697d9d54a9d26bf6b12e35a9, type: 3}

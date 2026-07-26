@@ -1,0 +1,86 @@
+{
+    "entries": [
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/NPCs/Old_Man/Old_Man_Mesh.asset"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/NPCs/Old_Man/Old_Man_Mesh.asset.meta"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/NPCs/Old_Woman/Old_Woman_Mesh.asset"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/NPCs/Old_Woman/Old_Woman_Mesh.asset.meta"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/GamePlay/Common/MegicalMusaum.prefab"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/GamePlay/Common/MegicalMusaum.prefab.meta"
+        },
+        {
+            "repoPath": "English Kingdom/ProjectSettings/ProjectSettings.asset"
+        },
+        {
+            "repoPath": "English Kingdom/ProjectSettings/QualitySettings.asset"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Fonts/TMP/Cinzel-700 SDF.asset"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Fonts/TMP/Cinzel-700 SDF.asset.meta"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Fonts/TMP/Noto Sans Hebrew-500 SDF.asset"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Fonts/TMP/Noto Sans Hebrew-500 SDF.asset.meta"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Scenes/Menu.unity.meta"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Fonts/TMP/Noto Sans Hebrew-700 SDF.asset"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Fonts/TMP/Noto Sans Hebrew-700 SDF.asset.meta"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/Characters/NPCs/Old_Man/Old_Man_Mesh.asset"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/Characters/NPCs/Old_Man/Old_Man_Mesh.asset.meta"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/Characters/NPCs/Old_Woman/Old_Woman_Mesh.asset"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/Characters/NPCs/Old_Woman/Old_Woman_Mesh.asset.meta"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/Characters/NPCs/Professor Crazy/Professor Crazy_Mesh.asset"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/Characters/NPCs/Professor Crazy/Professor Crazy_Mesh.asset.meta"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_ThirdParty/BoZo_StylizedModularCharacters/Fonts/Roboto_Condensed-Medium SDF.asset"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_ThirdParty/BoZo_StylizedModularCharacters/Fonts/Roboto_Condensed-Medium SDF.asset.meta"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/Characters/NPCs/Museum Clerk/Museum Clerk_Mesh.asset"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/Characters/NPCs/Museum Clerk/Museum Clerk_Mesh.asset.meta"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/Characters/NPCs/Riding Guide/Riding Guide_Mesh.asset"
+        },
+        {
+            "repoPath": "English Kingdom/Assets/_OurAssets/Art/Prefabs/Characters/NPCs/Riding Guide/Riding Guide_Mesh.asset.meta"
+        }
+    ],
+    "autoIncludeMeta": true
+}

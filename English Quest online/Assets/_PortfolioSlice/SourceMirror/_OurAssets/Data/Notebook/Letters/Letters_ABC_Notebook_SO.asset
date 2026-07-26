@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d789b3e1778cded40accc4f257b8accf, type: 3}
+  m_Name: Letters_ABC_Notebook_SO
+  m_EditorClassIdentifier: _Project::NotebookContentSO
+  notebookTopics:
+  - topicName: A
+    thumnail: {fileID: -692774258, guid: 9554783649d7c5444ad6d0a1128b9917, type: 3}
+    pages:
+    - {fileID: 1781897176, guid: 9554783649d7c5444ad6d0a1128b9917, type: 3}
+    - {fileID: -464675884, guid: 9554783649d7c5444ad6d0a1128b9917, type: 3}
+    - {fileID: 1835880863, guid: 9554783649d7c5444ad6d0a1128b9917, type: 3}
+  - topicName: B
+    thumnail: {fileID: -1563175585, guid: 65c2b8d7279b8f047a17ddd2a6488658, type: 3}
+    pages:
+    - {fileID: 496995667, guid: 65c2b8d7279b8f047a17ddd2a6488658, type: 3}
+    - {fileID: -434452287, guid: 65c2b8d7279b8f047a17ddd2a6488658, type: 3}
+    - {fileID: 1700965466, guid: 65c2b8d7279b8f047a17ddd2a6488658, type: 3}
+  - topicName: C
+    thumnail: {fileID: 874175741, guid: f687a54bee311c247bbba9d4744a5c41, type: 3}
+    pages:
+    - {fileID: 1828389631, guid: f687a54bee311c247bbba9d4744a5c41, type: 3}
+    - {fileID: 736233540, guid: f687a54bee311c247bbba9d4744a5c41, type: 3}
+    - {fileID: 1396877788, guid: f687a54bee311c247bbba9d4744a5c41, type: 3}

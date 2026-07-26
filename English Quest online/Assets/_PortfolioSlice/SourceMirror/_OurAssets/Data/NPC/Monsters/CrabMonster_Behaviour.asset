@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f8a9b0c1d2e3f40516273849506172, type: 3}
+  m_Name: CrabMonster_Behaviour
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterBehaviorConfigSO
+  animatorStateName: State
+  attackAnimStateName: Attack
+  idleState: 0
+  walkState: 1
+  runState: 2
+  attackState: 3
+  hitState: 4
+  deathState: 5
+  hitAnimDuration: 0.73333335
+  deathAnimDuration: 0.73333335
+  aggroPlayersOnly: 1
+  aggroRange: 25
+  attackRange: 2
+  leashRange: 30
+  chaseSpeed: 4
+  attackDamage: 8
+  attackCooldown: 2
+  attackWindup: 0.25
+  attackSounds:
+  - {fileID: 8300000, guid: 1f3ddd93a29900d4ab0f9b69bf02d29e, type: 3}
+  - {fileID: 8300000, guid: 81aa19699455c0c4f9dd8d95ec0de826, type: 3}
+  - {fileID: 8300000, guid: 68ac7c55765933d40835defbccf9f137, type: 3}
+  attackSoundVolume: 1
+  lodFullDistance: 25
+  lodReducedDistance: 60
+  lodMinimalDistance: 100
+  lodReducedTickInterval: 3
+  lodMinimalTickInterval: 10
+  lodRecalcIntervalFrames: 20
+  visualFullDistance: 40
+  visualHiddenDistance: 80
+  visualRecalcIntervalFrames: 20

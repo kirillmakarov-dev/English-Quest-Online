@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d789b3e1778cded40accc4f257b8accf, type: 3}
+  m_Name: Food_Notebook_SO
+  m_EditorClassIdentifier: _Project::NotebookContentSO
+  notebookTopics:
+  - topicName: Foods - 1- Fruits
+    thumnail: {fileID: 600312220, guid: b580945962f58c3438742e3085981d7b, type: 3}
+    pages:
+    - {fileID: -1185465871, guid: b580945962f58c3438742e3085981d7b, type: 3}
+    - {fileID: 1573145616, guid: b580945962f58c3438742e3085981d7b, type: 3}
+    - {fileID: -1455312187, guid: b580945962f58c3438742e3085981d7b, type: 3}
+  - topicName: Foods - 2 - Vegetables
+    thumnail: {fileID: 84146117, guid: 202deceb256afbc4ab0f1182cb5c2929, type: 3}
+    pages:
+    - {fileID: -1808585931, guid: 202deceb256afbc4ab0f1182cb5c2929, type: 3}
+    - {fileID: 931376037, guid: 202deceb256afbc4ab0f1182cb5c2929, type: 3}
+    - {fileID: 1897668620, guid: 202deceb256afbc4ab0f1182cb5c2929, type: 3}
+  - topicName: 'Foods - 3 - Dairy and Meats '
+    thumnail: {fileID: 852608084, guid: 5766fb1f047b7f14ca45451cf43c76bd, type: 3}
+    pages:
+    - {fileID: 550988105, guid: 5766fb1f047b7f14ca45451cf43c76bd, type: 3}
+    - {fileID: 36614537, guid: 5766fb1f047b7f14ca45451cf43c76bd, type: 3}
+    - {fileID: -1346371959, guid: 5766fb1f047b7f14ca45451cf43c76bd, type: 3}
+  - topicName: Foods - 4 - Sweets
+    thumnail: {fileID: 2008062480, guid: efa24f018be26a440adb1768c3b5d515, type: 3}
+    pages:
+    - {fileID: -2091558670, guid: efa24f018be26a440adb1768c3b5d515, type: 3}
+    - {fileID: -1331139469, guid: efa24f018be26a440adb1768c3b5d515, type: 3}
+    - {fileID: -1400027701, guid: efa24f018be26a440adb1768c3b5d515, type: 3}
+  - topicName: Foods - 5 - Breads and Pastries
+    thumnail: {fileID: 1149608260, guid: df4bec3b463fb464ab10a8dc6c91796c, type: 3}
+    pages:
+    - {fileID: 1915590871, guid: df4bec3b463fb464ab10a8dc6c91796c, type: 3}
+    - {fileID: 9380099, guid: df4bec3b463fb464ab10a8dc6c91796c, type: 3}
+    - {fileID: 716975742, guid: df4bec3b463fb464ab10a8dc6c91796c, type: 3}
+  - topicName: Foods - 6 - Spices and Condiments
+    thumnail: {fileID: -109292504, guid: 29b383ff1b7c1a340a75fc1aaa90a111, type: 3}
+    pages:
+    - {fileID: -232828216, guid: 29b383ff1b7c1a340a75fc1aaa90a111, type: 3}
+    - {fileID: -1506421660, guid: 29b383ff1b7c1a340a75fc1aaa90a111, type: 3}
+    - {fileID: -382630295, guid: 29b383ff1b7c1a340a75fc1aaa90a111, type: 3}
+  - topicName: Foods - 7 - Practice
+    thumnail: {fileID: 422998298, guid: eaff1e11a981d124fb484f352e749ec7, type: 3}
+    pages:
+    - {fileID: 1674540726, guid: eaff1e11a981d124fb484f352e749ec7, type: 3}
+    - {fileID: 1307639604, guid: eaff1e11a981d124fb484f352e749ec7, type: 3}
+    - {fileID: -1262676235, guid: eaff1e11a981d124fb484f352e749ec7, type: 3}

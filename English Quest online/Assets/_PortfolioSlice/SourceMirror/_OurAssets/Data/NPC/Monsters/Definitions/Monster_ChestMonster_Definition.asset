@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a26522189b4e29b4b90d32b5961544a0, type: 3}
+  m_Name: Monster_ChestMonster_Definition
+  m_EditorClassIdentifier: _Project::MonsterDefinitionSO
+  _monsterId: chest_monster
+  _displayName: Chest Monster
+  _behaviour: {fileID: 11400000, guid: eff85b1e40aaa714ba0f655e0b11c613, type: 2}
+  _health: {fileID: 11400000, guid: faa5dbcb2a58f704da7905701d73a892, type: 2}
+  _networkedPrefab: {fileID: 300140763916926997, guid: 324370796d5a7c4479c4463c6ed546ed, type: 3}
+  _localPrefab: {fileID: 2091367847615991781, guid: a6f76be964e65204f8deb147727ab871, type: 3}

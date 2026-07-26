@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d789b3e1778cded40accc4f257b8accf, type: 3}
+  m_Name: Seasons_Notebook_SO
+  m_EditorClassIdentifier: _Project::NotebookContentSO
+  notebookTopics:
+  - topicName: Seasons - 1 - Summer
+    thumnail: {fileID: -459167651, guid: a915377d00914e74ea7f111ece5dacaf, type: 3}
+    pages:
+    - {fileID: 1367539225, guid: a915377d00914e74ea7f111ece5dacaf, type: 3}
+    - {fileID: -1361471498, guid: a915377d00914e74ea7f111ece5dacaf, type: 3}
+    - {fileID: 1685351966, guid: a915377d00914e74ea7f111ece5dacaf, type: 3}
+  - topicName: Seasons - 2 - Winter
+    thumnail: {fileID: 1051758234, guid: 1e47703cc4a884c4a91247b3b7bd0f08, type: 3}
+    pages:
+    - {fileID: 1208783535, guid: 1e47703cc4a884c4a91247b3b7bd0f08, type: 3}
+    - {fileID: 1211253105, guid: 1e47703cc4a884c4a91247b3b7bd0f08, type: 3}
+    - {fileID: 1097376820, guid: 1e47703cc4a884c4a91247b3b7bd0f08, type: 3}
+  - topicName: Seasons - 3 - Autumn
+    thumnail: {fileID: -155611659, guid: db2944055eb46f24e847f04b5595d3cb, type: 3}
+    pages:
+    - {fileID: -796372693, guid: db2944055eb46f24e847f04b5595d3cb, type: 3}
+    - {fileID: -595062644, guid: db2944055eb46f24e847f04b5595d3cb, type: 3}
+    - {fileID: 1795985094, guid: db2944055eb46f24e847f04b5595d3cb, type: 3}
+  - topicName: Seasons - 4 - Spring
+    thumnail: {fileID: -854731746, guid: 9c3c4f47b11c0cb4a96f06821c43cefb, type: 3}
+    pages:
+    - {fileID: 1585061958, guid: 9c3c4f47b11c0cb4a96f06821c43cefb, type: 3}
+    - {fileID: 183166298, guid: 9c3c4f47b11c0cb4a96f06821c43cefb, type: 3}
+    - {fileID: -1412776251, guid: 9c3c4f47b11c0cb4a96f06821c43cefb, type: 3}
+  - topicName: Seasons - 5 - Practice
+    thumnail: {fileID: -246295833, guid: ad9846ceb6ff5454db0d14fb83f99dc7, type: 3}
+    pages:
+    - {fileID: -1328941555, guid: ad9846ceb6ff5454db0d14fb83f99dc7, type: 3}
+    - {fileID: -1762309501, guid: ad9846ceb6ff5454db0d14fb83f99dc7, type: 3}
+    - {fileID: 246670068, guid: ad9846ceb6ff5454db0d14fb83f99dc7, type: 3}

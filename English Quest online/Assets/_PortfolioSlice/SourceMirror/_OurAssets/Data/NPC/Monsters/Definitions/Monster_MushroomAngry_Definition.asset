@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a26522189b4e29b4b90d32b5961544a0, type: 3}
+  m_Name: Monster_MushroomAngry_Definition
+  m_EditorClassIdentifier: _Project::MonsterDefinitionSO
+  _monsterId: mushroom_angry
+  _displayName: Mushroom Angry
+  _behaviour: {fileID: 11400000, guid: 2b0d79cdf1e2d5c46bd68c9412dd772d, type: 2}
+  _health: {fileID: 11400000, guid: e108deb053e3e9844822b12596e5840d, type: 2}
+  _networkedPrefab: {fileID: 490502133108178965, guid: 3bec5f59c45e6ca4c94e439e8bd5c7b4, type: 3}
+  _localPrefab: {fileID: 923729148696961095, guid: bcce7f5cb53c3c64a9c93f4a30c1a31c, type: 3}

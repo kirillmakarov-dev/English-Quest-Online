@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 255a508bea5a28147872489e910673f8, type: 3}
+  m_Name: Cat_Form
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalFormDefinitionSO
+  formId: 2
+  displayName: Cat
+  rigPrefab: {fileID: 3593204774139381679, guid: 104a106642db77644a60155896ffcdd6, type: 3}
+  movementStrategy: {fileID: 11400000, guid: d4b4d886cfe4839499c3bd9c25f6a70b, type: 2}
+  moveSpeed: 9
+  jumpImpulse: 11
+  nameTagHeightOffset: 1
+  switchSound: {fileID: 8300000, guid: f4f37bc48bb59aa42a47084704f72db8, type: 3}

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d789b3e1778cded40accc4f257b8accf, type: 3}
+  m_Name: Letters_PQR_Notebook_SO
+  m_EditorClassIdentifier: _Project::NotebookContentSO
+  notebookTopics:
+  - topicName: P
+    thumnail: {fileID: -1151126703, guid: 8d1dd62f77e00b34bbbd6988bb8f99ac, type: 3}
+    pages:
+    - {fileID: 976197506, guid: 8d1dd62f77e00b34bbbd6988bb8f99ac, type: 3}
+    - {fileID: -837527266, guid: 8d1dd62f77e00b34bbbd6988bb8f99ac, type: 3}
+    - {fileID: -611208251, guid: 8d1dd62f77e00b34bbbd6988bb8f99ac, type: 3}
+  - topicName: Q
+    thumnail: {fileID: 16027450, guid: 80d13b5cd1edac4488ff5f3130814355, type: 3}
+    pages:
+    - {fileID: -1719205725, guid: 80d13b5cd1edac4488ff5f3130814355, type: 3}
+    - {fileID: -227923226, guid: 80d13b5cd1edac4488ff5f3130814355, type: 3}
+    - {fileID: -126409747, guid: 80d13b5cd1edac4488ff5f3130814355, type: 3}
+  - topicName: R
+    thumnail: {fileID: -1880642679, guid: 4d01ab0c45d07974897c5796e9022bc8, type: 3}
+    pages:
+    - {fileID: 794544276, guid: 4d01ab0c45d07974897c5796e9022bc8, type: 3}
+    - {fileID: -1050608764, guid: 4d01ab0c45d07974897c5796e9022bc8, type: 3}
+    - {fileID: -1538477627, guid: 4d01ab0c45d07974897c5796e9022bc8, type: 3}

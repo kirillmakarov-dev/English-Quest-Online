@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a2b3c4d5e6478990abcdef12345678, type: 3}
+  m_Name: MagicNova
+  m_EditorClassIdentifier: _Project::MagicAttackAbilityDefinitionSO
+  abilityId: magic_nova
+  softKittySkillItemUid: ability_magic_nova
+  hotkey: 114
+  cooldownDuration: 5
+  activeDuration: 0
+  shape: {fileID: 11400000, guid: 8a1b2c3d4e5f60718293a4b5c6d7e8f1, type: 2}
+  damage: 30
+  damageType: 1
+  vfxPrefab: {fileID: 2715471840370901047, guid: df9374346b76e444dbbb2b019de4da25, type: 3}
+  originOffset: {x: 0, y: 1, z: 0}
+  vfxSpawnDelay: 0.8
+  castSound: {fileID: 8300000, guid: a48c1075e34bd754487395477aaf4d47, type: 3}
+  castSoundDelay: 0
+  castSoundVolume: 1
+  targetLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  hitDelay: 2
+  castLockDuration: 2
+  attackAnimationIndex: 2
+  attackMovementSuppressDuration: 0

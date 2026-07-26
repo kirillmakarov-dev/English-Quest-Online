@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34f9f7adc4efb3c46a2473e7631572e3, type: 3}
+  m_Name: Letters G - H
+  m_EditorClassIdentifier: _Project::Puzzle.Gameplay.MiniGames.LetterConnection.LetterConnectionLevelConfigSO
+  letters:
+  - id: 1
+    value: G
+  - id: 2
+    value: H
+  - id: 3
+    value: G
+  - id: 4
+    value: H
+  - id: 5
+    value: G
+  - id: 6
+    value: H
+  wordTasks:
+  - id: 6
+    image: {fileID: 21300000, guid: 6ecce0a4445b59b40add11401a504518, type: 3}
+    fullWord: HORSE
+    missingIndices: 00000000
+  - id: 1
+    image: {fileID: 21300000, guid: be7d33dbc085cc34688d269787502ce7, type: 3}
+    fullWord: GEL
+    missingIndices: 00000000
+  - id: 3
+    image: {fileID: 21300000, guid: 601726e2ac8c2554bbd9a2550dbcb6ab, type: 3}
+    fullWord: GEM
+    missingIndices: 00000000
+  - id: 4
+    image: {fileID: 21300000, guid: 12a33eb48dce00141829d8038ab4ce5e, type: 3}
+    fullWord: HAT
+    missingIndices: 00000000
+  - id: 5
+    image: {fileID: 21300000, guid: 8a44ec7059569b549bdab31ee29330f7, type: 3}
+    fullWord: HONEY
+    missingIndices: 00000000
+  - id: 2
+    image: {fileID: 21300000, guid: 67091bc1d535cf74da722cbe01fed07e, type: 3}
+    fullWord: Giraffe
+    missingIndices: 00000000

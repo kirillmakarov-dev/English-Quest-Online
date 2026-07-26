@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a26522189b4e29b4b90d32b5961544a0, type: 3}
+  m_Name: Monster_RatAssassin_Definition
+  m_EditorClassIdentifier: _Project::MonsterDefinitionSO
+  _monsterId: rat_assassin
+  _displayName: Rat Assassin
+  _behaviour: {fileID: 11400000, guid: 97831828c336c1e4e98372062ace256e, type: 2}
+  _health: {fileID: 11400000, guid: 105d35800e277234e89c3129e0b44fb2, type: 2}
+  _networkedPrefab: {fileID: 535302290672058389, guid: 3075b528918e0b840a3eafea12ae43d7, type: 3}
+  _localPrefab: {fileID: 5040098181424190232, guid: 7cbc5a0ca33d80d438f94eac6b13e4c8, type: 3}

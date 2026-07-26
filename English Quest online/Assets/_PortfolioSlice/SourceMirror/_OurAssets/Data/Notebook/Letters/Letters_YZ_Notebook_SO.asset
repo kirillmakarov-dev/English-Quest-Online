@@ -1,0 +1,171 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d789b3e1778cded40accc4f257b8accf, type: 3}
+  m_Name: Letters_YZ_Notebook_SO
+  m_EditorClassIdentifier: _Project::NotebookContentSO
+  notebookTopics:
+  - topicName: A
+    thumnail: {fileID: -692774258, guid: 9554783649d7c5444ad6d0a1128b9917, type: 3}
+    pages:
+    - {fileID: 1781897176, guid: 9554783649d7c5444ad6d0a1128b9917, type: 3}
+    - {fileID: -464675884, guid: 9554783649d7c5444ad6d0a1128b9917, type: 3}
+    - {fileID: 1835880863, guid: 9554783649d7c5444ad6d0a1128b9917, type: 3}
+  - topicName: B
+    thumnail: {fileID: -1563175585, guid: 65c2b8d7279b8f047a17ddd2a6488658, type: 3}
+    pages:
+    - {fileID: 496995667, guid: 65c2b8d7279b8f047a17ddd2a6488658, type: 3}
+    - {fileID: -434452287, guid: 65c2b8d7279b8f047a17ddd2a6488658, type: 3}
+    - {fileID: 1700965466, guid: 65c2b8d7279b8f047a17ddd2a6488658, type: 3}
+  - topicName: C
+    thumnail: {fileID: 874175741, guid: f687a54bee311c247bbba9d4744a5c41, type: 3}
+    pages:
+    - {fileID: 1828389631, guid: f687a54bee311c247bbba9d4744a5c41, type: 3}
+    - {fileID: 736233540, guid: f687a54bee311c247bbba9d4744a5c41, type: 3}
+    - {fileID: 1396877788, guid: f687a54bee311c247bbba9d4744a5c41, type: 3}
+  - topicName: D
+    thumnail: {fileID: 1958919348, guid: a864e8e598b8b184daa20eac523dd96a, type: 3}
+    pages:
+    - {fileID: 1029391325, guid: a864e8e598b8b184daa20eac523dd96a, type: 3}
+    - {fileID: -1598885064, guid: a864e8e598b8b184daa20eac523dd96a, type: 3}
+    - {fileID: 1316631711, guid: a864e8e598b8b184daa20eac523dd96a, type: 3}
+  - topicName: E
+    thumnail: {fileID: -1055010495, guid: 1850c5e9a7986754c99421ad5e9137a6, type: 3}
+    pages:
+    - {fileID: -570369811, guid: 1850c5e9a7986754c99421ad5e9137a6, type: 3}
+    - {fileID: -506399130, guid: 1850c5e9a7986754c99421ad5e9137a6, type: 3}
+    - {fileID: 750712824, guid: 1850c5e9a7986754c99421ad5e9137a6, type: 3}
+  - topicName: F
+    thumnail: {fileID: 162415085, guid: 5fad7d2cb990625419d3be8873cc13b5, type: 3}
+    pages:
+    - {fileID: -331607964, guid: 5fad7d2cb990625419d3be8873cc13b5, type: 3}
+    - {fileID: 827896414, guid: 5fad7d2cb990625419d3be8873cc13b5, type: 3}
+    - {fileID: 1129295841, guid: 5fad7d2cb990625419d3be8873cc13b5, type: 3}
+  - topicName: G
+    thumnail: {fileID: 1133387167, guid: 0158c2e9066703a469d035dd0f419684, type: 3}
+    pages:
+    - {fileID: -1892482858, guid: 0158c2e9066703a469d035dd0f419684, type: 3}
+    - {fileID: -1834545900, guid: 0158c2e9066703a469d035dd0f419684, type: 3}
+    - {fileID: -1663676623, guid: 0158c2e9066703a469d035dd0f419684, type: 3}
+  - topicName: H
+    thumnail: {fileID: -324844564, guid: 949249fb7c51ebb40b5291673d801a6e, type: 3}
+    pages:
+    - {fileID: 1449384970, guid: 949249fb7c51ebb40b5291673d801a6e, type: 3}
+    - {fileID: 790484424, guid: 949249fb7c51ebb40b5291673d801a6e, type: 3}
+    - {fileID: 959386043, guid: 949249fb7c51ebb40b5291673d801a6e, type: 3}
+  - topicName: I
+    thumnail: {fileID: 795626713, guid: a8129a0ae6d041145aa423d6dd0158b9, type: 3}
+    pages:
+    - {fileID: -612530641, guid: a8129a0ae6d041145aa423d6dd0158b9, type: 3}
+    - {fileID: 567997423, guid: a8129a0ae6d041145aa423d6dd0158b9, type: 3}
+    - {fileID: 1994266414, guid: a8129a0ae6d041145aa423d6dd0158b9, type: 3}
+  - topicName: J
+    thumnail: {fileID: 1089616924, guid: 1c6ea6c14bad9fe4194b8c67fc3c0de2, type: 3}
+    pages:
+    - {fileID: 423845180, guid: 1c6ea6c14bad9fe4194b8c67fc3c0de2, type: 3}
+    - {fileID: -1037759134, guid: 1c6ea6c14bad9fe4194b8c67fc3c0de2, type: 3}
+    - {fileID: 2053249635, guid: 1c6ea6c14bad9fe4194b8c67fc3c0de2, type: 3}
+  - topicName: K
+    thumnail: {fileID: -1132408941, guid: 82f2af5bef8224742a945e82e7ba231c, type: 3}
+    pages:
+    - {fileID: -1491623752, guid: 82f2af5bef8224742a945e82e7ba231c, type: 3}
+    - {fileID: 1589728758, guid: 82f2af5bef8224742a945e82e7ba231c, type: 3}
+    - {fileID: -1500194039, guid: 82f2af5bef8224742a945e82e7ba231c, type: 3}
+  - topicName: L
+    thumnail: {fileID: -1520133633, guid: a90ce58f184737848924fadf0e7ecaf3, type: 3}
+    pages:
+    - {fileID: -1119799352, guid: a90ce58f184737848924fadf0e7ecaf3, type: 3}
+    - {fileID: -1429283840, guid: a90ce58f184737848924fadf0e7ecaf3, type: 3}
+    - {fileID: 205192032, guid: a90ce58f184737848924fadf0e7ecaf3, type: 3}
+  - topicName: M
+    thumnail: {fileID: 977753523, guid: 39056618f35f49140864a292369a8499, type: 3}
+    pages:
+    - {fileID: 165009935, guid: 39056618f35f49140864a292369a8499, type: 3}
+    - {fileID: -1975781420, guid: 39056618f35f49140864a292369a8499, type: 3}
+    - {fileID: 2005768632, guid: 39056618f35f49140864a292369a8499, type: 3}
+  - topicName: N
+    thumnail: {fileID: -90098991, guid: 03ee5d70d144c3347b08ec46d5551775, type: 3}
+    pages:
+    - {fileID: 1503913830, guid: 03ee5d70d144c3347b08ec46d5551775, type: 3}
+    - {fileID: 897606338, guid: 03ee5d70d144c3347b08ec46d5551775, type: 3}
+    - {fileID: -2007373987, guid: 03ee5d70d144c3347b08ec46d5551775, type: 3}
+  - topicName: O
+    thumnail: {fileID: 1658250216, guid: e0cf4e18669fb04488a762fbac6b4233, type: 3}
+    pages:
+    - {fileID: 298986669, guid: e0cf4e18669fb04488a762fbac6b4233, type: 3}
+    - {fileID: 1514792936, guid: e0cf4e18669fb04488a762fbac6b4233, type: 3}
+    - {fileID: -310067564, guid: e0cf4e18669fb04488a762fbac6b4233, type: 3}
+  - topicName: P
+    thumnail: {fileID: -1151126703, guid: 8d1dd62f77e00b34bbbd6988bb8f99ac, type: 3}
+    pages:
+    - {fileID: 976197506, guid: 8d1dd62f77e00b34bbbd6988bb8f99ac, type: 3}
+    - {fileID: -837527266, guid: 8d1dd62f77e00b34bbbd6988bb8f99ac, type: 3}
+    - {fileID: -611208251, guid: 8d1dd62f77e00b34bbbd6988bb8f99ac, type: 3}
+  - topicName: Q
+    thumnail: {fileID: 16027450, guid: 80d13b5cd1edac4488ff5f3130814355, type: 3}
+    pages:
+    - {fileID: -1719205725, guid: 80d13b5cd1edac4488ff5f3130814355, type: 3}
+    - {fileID: -227923226, guid: 80d13b5cd1edac4488ff5f3130814355, type: 3}
+    - {fileID: -126409747, guid: 80d13b5cd1edac4488ff5f3130814355, type: 3}
+  - topicName: R
+    thumnail: {fileID: -1880642679, guid: 4d01ab0c45d07974897c5796e9022bc8, type: 3}
+    pages:
+    - {fileID: 794544276, guid: 4d01ab0c45d07974897c5796e9022bc8, type: 3}
+    - {fileID: -1050608764, guid: 4d01ab0c45d07974897c5796e9022bc8, type: 3}
+    - {fileID: -1538477627, guid: 4d01ab0c45d07974897c5796e9022bc8, type: 3}
+  - topicName: S
+    thumnail: {fileID: 1833433587, guid: 8635ad87095708a4f9300fd9fab92e45, type: 3}
+    pages:
+    - {fileID: -252900103, guid: 8635ad87095708a4f9300fd9fab92e45, type: 3}
+    - {fileID: -19968985, guid: 8635ad87095708a4f9300fd9fab92e45, type: 3}
+    - {fileID: -1236543721, guid: 8635ad87095708a4f9300fd9fab92e45, type: 3}
+  - topicName: T
+    thumnail: {fileID: -782748842, guid: afa8a4043eac7e14fb782705a893fd40, type: 3}
+    pages:
+    - {fileID: -585157834, guid: afa8a4043eac7e14fb782705a893fd40, type: 3}
+    - {fileID: 198252867, guid: afa8a4043eac7e14fb782705a893fd40, type: 3}
+    - {fileID: 2080861180, guid: afa8a4043eac7e14fb782705a893fd40, type: 3}
+  - topicName: U
+    thumnail: {fileID: 28249825, guid: 50a195e133845594e8a1d60838b6a409, type: 3}
+    pages:
+    - {fileID: 1028697936, guid: 50a195e133845594e8a1d60838b6a409, type: 3}
+    - {fileID: -2123528393, guid: 50a195e133845594e8a1d60838b6a409, type: 3}
+    - {fileID: -1839346983, guid: 50a195e133845594e8a1d60838b6a409, type: 3}
+  - topicName: V
+    thumnail: {fileID: 227027136, guid: 44bba01b84a856e4cbc2298ccaec1acf, type: 3}
+    pages:
+    - {fileID: -711084929, guid: 44bba01b84a856e4cbc2298ccaec1acf, type: 3}
+    - {fileID: -150002600, guid: 44bba01b84a856e4cbc2298ccaec1acf, type: 3}
+    - {fileID: -1024891741, guid: 44bba01b84a856e4cbc2298ccaec1acf, type: 3}
+  - topicName: W
+    thumnail: {fileID: 904678105, guid: acef2469265a98a4792b80dbddf5dba7, type: 3}
+    pages:
+    - {fileID: 1100843207, guid: acef2469265a98a4792b80dbddf5dba7, type: 3}
+    - {fileID: 863303463, guid: acef2469265a98a4792b80dbddf5dba7, type: 3}
+    - {fileID: -790254863, guid: acef2469265a98a4792b80dbddf5dba7, type: 3}
+  - topicName: X
+    thumnail: {fileID: -300210254, guid: 4e9dc43582dda9940a2da9b682cf6638, type: 3}
+    pages:
+    - {fileID: 1058372361, guid: 4e9dc43582dda9940a2da9b682cf6638, type: 3}
+    - {fileID: -1663894256, guid: 4e9dc43582dda9940a2da9b682cf6638, type: 3}
+    - {fileID: 292813149, guid: 4e9dc43582dda9940a2da9b682cf6638, type: 3}
+  - topicName: Y
+    thumnail: {fileID: 1432574465, guid: a3601ce133000824e89d94247e018b18, type: 3}
+    pages:
+    - {fileID: -1242867498, guid: a3601ce133000824e89d94247e018b18, type: 3}
+    - {fileID: -2014656160, guid: a3601ce133000824e89d94247e018b18, type: 3}
+    - {fileID: -375975391, guid: a3601ce133000824e89d94247e018b18, type: 3}
+  - topicName: Z
+    thumnail: {fileID: -193948991, guid: e0f757d7e7f8815458754d9b29d44d89, type: 3}
+    pages:
+    - {fileID: -991421471, guid: e0f757d7e7f8815458754d9b29d44d89, type: 3}
+    - {fileID: -617416567, guid: e0f757d7e7f8815458754d9b29d44d89, type: 3}
+    - {fileID: 2084855934, guid: e0f757d7e7f8815458754d9b29d44d89, type: 3}

@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34f9f7adc4efb3c46a2473e7631572e3, type: 3}
+  m_Name: MissingLetterMatchingData_q06_adjective_challenge_s1
+  m_EditorClassIdentifier: _Project::Puzzle.Gameplay.MiniGames.LetterConnection.LetterConnectionLevelConfigSO
+  letters:
+  - id: short
+    value: s
+  - id: long
+    value: l
+  - id: cold
+    value: c
+  - id: hot
+    value: h
+  - id: big
+    value: b
+  - id: small
+    value: s
+  - id: fast
+    value: f
+  - id: slow
+    value: s
+  - id: low
+    value: l
+  - id: high
+    value: h
+  - id: heavy
+    value: h
+  - id: light
+    value: l
+  wordTasks:
+  - id: short
+    image: {fileID: 0}
+    fullWord: short
+    missingIndices: 00000000
+  - id: long
+    image: {fileID: 0}
+    fullWord: long
+    missingIndices: 00000000
+  - id: cold
+    image: {fileID: 0}
+    fullWord: cold
+    missingIndices: 00000000
+  - id: hot
+    image: {fileID: 0}
+    fullWord: hot
+    missingIndices: 00000000
+  - id: big
+    image: {fileID: 0}
+    fullWord: big
+    missingIndices: 00000000
+  - id: small
+    image: {fileID: 0}
+    fullWord: small
+    missingIndices: 00000000
+  - id: fast
+    image: {fileID: 0}
+    fullWord: fast
+    missingIndices: 00000000
+  - id: slow
+    image: {fileID: 0}
+    fullWord: slow
+    missingIndices: 00000000
+  - id: low
+    image: {fileID: 0}
+    fullWord: low
+    missingIndices: 00000000
+  - id: high
+    image: {fileID: 0}
+    fullWord: high
+    missingIndices: 00000000
+  - id: heavy
+    image: {fileID: 0}
+    fullWord: heavy
+    missingIndices: 00000000
+  - id: light
+    image: {fileID: 0}
+    fullWord: light
+    missingIndices: 00000000

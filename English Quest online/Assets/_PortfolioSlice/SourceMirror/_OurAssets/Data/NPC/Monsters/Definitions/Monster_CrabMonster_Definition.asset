@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a26522189b4e29b4b90d32b5961544a0, type: 3}
+  m_Name: Monster_CrabMonster_Definition
+  m_EditorClassIdentifier: _Project::MonsterDefinitionSO
+  _monsterId: crab_monster
+  _displayName: Crab Monster
+  _behaviour: {fileID: 11400000, guid: 65c312f4afb70c94b95615195f88beaf, type: 2}
+  _health: {fileID: 11400000, guid: b20162a84e528f74584cd8220e98e3e0, type: 2}
+  _networkedPrefab: {fileID: 191206762770726933, guid: 9d7fd6e46fe83954f8261d2da14d5464, type: 3}
+  _localPrefab: {fileID: 6655482563567809296, guid: c8a21d01591fa53438fadc0955c05747, type: 3}

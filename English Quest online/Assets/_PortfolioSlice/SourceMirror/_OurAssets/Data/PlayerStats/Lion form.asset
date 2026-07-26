@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 255a508bea5a28147872489e910673f8, type: 3}
+  m_Name: Lion form
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalFormDefinitionSO
+  formId: 4
+  displayName: lion
+  rigPrefab: {fileID: 7537682735195469613, guid: a7880b78dfa711940ac139a57fedf9fc, type: 3}
+  movementStrategy: {fileID: 11400000, guid: d4b4d886cfe4839499c3bd9c25f6a70b, type: 2}
+  moveSpeed: 5
+  jumpImpulse: 6
+  nameTagHeightOffset: 1

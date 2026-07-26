@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34f9f7adc4efb3c46a2473e7631572e3, type: 3}
+  m_Name: Seasons_Config_Spring
+  m_EditorClassIdentifier: _Project::Puzzle.Gameplay.MiniGames.LetterConnection.LetterConnectionLevelConfigSO
+  letters:
+  - id: 2
+    value: s
+  - id: 3
+    value: n
+  - id: 1
+    value: c
+  wordTasks:
+  - id: 1
+    image: {fileID: 21300000, guid: 2b991cd7db5fc284da7b0efb5f66df50, type: 3}
+    fullWord: caterpillar
+    missingIndices: 00000000
+  - id: 2
+    image: {fileID: 21300000, guid: a08aee41fe4fe12498c7a314804ce010, type: 3}
+    fullWord: grasshoper
+    missingIndices: 03000000
+  - id: 3
+    image: {fileID: 21300000, guid: cf77737673fa0c541a2831a0ccc07044, type: 3}
+    fullWord: dragonfly
+    missingIndices: 05000000
