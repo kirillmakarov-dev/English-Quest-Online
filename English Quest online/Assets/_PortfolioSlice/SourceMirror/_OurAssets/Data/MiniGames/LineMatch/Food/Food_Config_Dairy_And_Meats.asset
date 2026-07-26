@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34f9f7adc4efb3c46a2473e7631572e3, type: 3}
+  m_Name: Food_Config_Dairy_And_Meats
+  m_EditorClassIdentifier: _Project::Puzzle.Gameplay.MiniGames.LetterConnection.LetterConnectionLevelConfigSO
+  letters:
+  - id: 3
+    value: U
+  - id: 5
+    value: H
+  - id: 1
+    value: O
+  - id: 6
+    value: R
+  - id: 2
+    value: M
+  - id: 4
+    value: E
+  wordTasks:
+  - id: 1
+    image: {fileID: 21300000, guid: 1c5ef2225fd9f1244a8be46401bb0c05, type: 3}
+    fullWord: HOT DOG
+    missingIndices: 01000000
+  - id: 2
+    image: {fileID: 21300000, guid: 96de72100ac47cf40b9544ddba4df3b1, type: 3}
+    fullWord: MILK
+    missingIndices: 00000000
+  - id: 3
+    image: {fileID: 21300000, guid: b3240f59a0d070c438d62a36bd8ede54, type: 3}
+    fullWord: YOGURT
+    missingIndices: 03000000
+  - id: 4
+    image: {fileID: 21300000, guid: ee6867b9a03241e40825d38d724a9985, type: 3}
+    fullWord: CHEESE
+    missingIndices: 02000000
+  - id: 5
+    image: {fileID: 21300000, guid: 2b4f7ce0ea7c47e49bf8ef9e9c69ca28, type: 3}
+    fullWord: FISH
+    missingIndices: 03000000
+  - id: 6
+    image: {fileID: 21300000, guid: 5b5b70b5500214b43ab724cfa38b2e40, type: 3}
+    fullWord: BUTTER
+    missingIndices: 05000000

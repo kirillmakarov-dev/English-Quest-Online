@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34f9f7adc4efb3c46a2473e7631572e3, type: 3}
+  m_Name: Food_Config_RandomFoods
+  m_EditorClassIdentifier: _Project::Puzzle.Gameplay.MiniGames.LetterConnection.LetterConnectionLevelConfigSO
+  letters:
+  - id: 2
+    value: A
+  - id: 6
+    value: T
+  - id: 3
+    value: Y
+  - id: 1
+    value: T
+  - id: 5
+    value: I
+  - id: 4
+    value: S
+  wordTasks:
+  - id: 1
+    image: {fileID: 21300000, guid: 3d73bca8fa5ddf8419350988dc53ac9d, type: 3}
+    fullWord: PRETZEL
+    missingIndices: 03000000
+  - id: 2
+    image: {fileID: 21300000, guid: 8932f504329838941a028ac6e8204c81, type: 3}
+    fullWord: COTTAGE
+    missingIndices: 04000000
+  - id: 3
+    image: {fileID: 21300000, guid: fbfc66eb9fa24eb4eb68c5d93b2d47c6, type: 3}
+    fullWord: CHERRY
+    missingIndices: 05000000
+  - id: 4
+    image: {fileID: 21300000, guid: 74bad89d5da9db24d838ec85ac23b2fc, type: 3}
+    fullWord: SOY SAUCE
+    missingIndices: 00000000
+  - id: 5
+    image: {fileID: 21300000, guid: 798cab68f3fd467468b842eb9a80d1e8, type: 3}
+    fullWord: BISCUIT
+    missingIndices: 05000000
+  - id: 6
+    image: {fileID: 21300000, guid: acd5645e2010cb640835fb2939c4acf8, type: 3}
+    fullWord: LETTUCE
+    missingIndices: 02000000

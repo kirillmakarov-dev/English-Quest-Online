@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d47344e3bc939854785dcf1fcb970552, type: 3}
+  m_Name: TravelHarnessMap
+  m_EditorClassIdentifier: Assembly-CSharp::WorldMapDefinitionSO
+  _mapId: travel_harness_v1
+  _mapImage: {fileID: 21300000, guid: 3269e2ffa3f4e8941b65c147b1259f5b, type: 3}
+  _vehicleIcon: {fileID: 21300000, guid: 8e0aa3988ffdff74daaa18c103df83b9, type: 3}
+  _nodes:
+  - id: combat_origin
+    displayName: Combat Harness
+    normalizedX: 0.5
+    normalizedY: 0.48
+    locationIcon: {fileID: 21300000, guid: ea976c734132ede4faffe17833869bba, type: 3}
+    destinationType: 1
+    scene:
+      _sceneAsset: {fileID: 102900000, guid: b9df2694bfd10424c8ac3604eb9ae556, type: 3}
+      _scenePath: Assets/_OurAssets/Scenes/TestScenes/CombatTest.unity
+    spawnPointId: combat_origin
+    worldPosition: {x: 0, y: 0, z: 0}
+    worldRotationEuler: {x: 0, y: 0, z: 0}
+    unlockedByDefault: 1
+    sessionMode: 0
+    sharedSessionName: 
+    sharedSessionMaxPlayers: 0
+  - id: gameplay_dest
+    displayName: Gameplay Harness
+    normalizedX: 0.42
+    normalizedY: 0.88
+    locationIcon: {fileID: 21300000, guid: ea976c734132ede4faffe17833869bba, type: 3}
+    destinationType: 1
+    scene:
+      _sceneAsset: {fileID: 102900000, guid: 53ec2cf3a47b40248a000e53ff6b87b7, type: 3}
+      _scenePath: Assets/_OurAssets/Scenes/TestScenes/GameplayTestScene.unity
+    spawnPointId: gameplay_dest
+    worldPosition: {x: 0, y: 0, z: 0}
+    worldRotationEuler: {x: 0, y: 0, z: 0}
+    unlockedByDefault: 1
+    sessionMode: 0
+    sharedSessionName: 
+    sharedSessionMaxPlayers: 0
+  - id: shared_dest
+    displayName: Shared Harness
+    normalizedX: 0.58
+    normalizedY: 0.88
+    locationIcon: {fileID: 21300000, guid: ea976c734132ede4faffe17833869bba, type: 3}
+    destinationType: 1
+    scene:
+      _sceneAsset: {fileID: 102900000, guid: 53ec2cf3a47b40248a000e53ff6b87b7, type: 3}
+      _scenePath: Assets/_OurAssets/Scenes/TestScenes/GameplayTestScene.unity
+    spawnPointId: gameplay_dest
+    worldPosition: {x: 0, y: 0, z: 0}
+    worldRotationEuler: {x: 0, y: 0, z: 0}
+    unlockedByDefault: 1
+    sessionMode: 1
+    sharedSessionName: HarnessSharedDest
+    sharedSessionMaxPlayers: 50
+  _routes:
+  - fromNodeId: combat_origin
+    toNodeId: gameplay_dest
+    waypoints:
+    - {x: 0.48, y: 0.68}
+    travelDuration: 1
+  - fromNodeId: gameplay_dest
+    toNodeId: combat_origin
+    waypoints:
+    - {x: 0.44, y: 0.68}
+    travelDuration: 1
+  - fromNodeId: combat_origin
+    toNodeId: shared_dest
+    waypoints:
+    - {x: 0.52, y: 0.68}
+    travelDuration: 1
+  - fromNodeId: shared_dest
+    toNodeId: combat_origin
+    waypoints:
+    - {x: 0.56, y: 0.68}
+    travelDuration: 1

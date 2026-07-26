@@ -1,0 +1,29 @@
+{
+    "name": "RunTime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6abefe1f6bf42e54aa202bd0957c3955",
+        "GUID:1baf1ffff1031e948b3b228ab3453251",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:51fcbc2c4c7c2dd44835e4f67c6105d9",
+        "Tests.Common"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Fusion.Common.dll",
+        "Fusion.Runtime.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

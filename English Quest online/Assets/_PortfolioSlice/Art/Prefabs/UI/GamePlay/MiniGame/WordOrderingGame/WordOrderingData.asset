@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 722d8346ffdb65e49b24535217518e87, type: 3}
+  m_Name: WordOrderingData
+  m_EditorClassIdentifier: _Project::Puzzle.Gameplay.MiniGames.DuolingoWordGame.WordOrderingDataSO
+  prompt: 
+  englishWordsInOrder:
+  - how
+  - are
+  - you
+  preFilledIndices: 
+  distractorWords:
+  - on
+  wordRevealDatabase: {fileID: 11400000, guid: 8032ea2b315a1f94381db2e5585c4880, type: 2}

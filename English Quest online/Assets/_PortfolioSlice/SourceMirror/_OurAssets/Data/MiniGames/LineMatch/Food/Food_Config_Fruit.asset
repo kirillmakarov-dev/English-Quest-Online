@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34f9f7adc4efb3c46a2473e7631572e3, type: 3}
+  m_Name: Food_Config_Fruit
+  m_EditorClassIdentifier: _Project::Puzzle.Gameplay.MiniGames.LetterConnection.LetterConnectionLevelConfigSO
+  letters:
+  - id: 2
+    value: O
+  - id: 1
+    value: A
+  - id: 4
+    value: P
+  - id: 3
+    value: R
+  - id: 6
+    value: K
+  - id: 5
+    value: N
+  wordTasks:
+  - id: 1
+    image: {fileID: 21300000, guid: 9c42b30f84357e842bc678a760b967dd, type: 3}
+    fullWord: BANANA
+    missingIndices: 01000000
+  - id: 2
+    image: {fileID: 21300000, guid: 979b8a0005d00bb48b0dfdf9e7e5dfc0, type: 3}
+    fullWord: LEMON
+    missingIndices: 03000000
+  - id: 3
+    image: {fileID: 21300000, guid: 0ab9742da10fed24aa7b79e596fd0de3, type: 3}
+    fullWord: PEAR
+    missingIndices: 03000000
+  - id: 4
+    image: {fileID: 21300000, guid: 71217f852f9400f4dbd9e981853628bf, type: 3}
+    fullWord: APPLE
+    missingIndices: 02000000
+  - id: 5
+    image: {fileID: 21300000, guid: 1f105d1445d35b144bdcb75946069eaf, type: 3}
+    fullWord: MANGO
+    missingIndices: 02000000
+  - id: 6
+    image: {fileID: 21300000, guid: 38106e583213bb84e825d933b62c7d81, type: 3}
+    fullWord: KIWI
+    missingIndices: 00000000
