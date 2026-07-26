@@ -1,3 +1,4 @@
+using EnglishKingdom.PortfolioDemo;
 using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,6 +10,7 @@ public class PlayerInteractionController : MonoBehaviour
     
     [Header("UI")]
     [SerializeField] private InteractionUI _interactionUI;
+    [SerializeField] private PortfolioDemoHud _portfolioHud;
     private IInteractionUI _ui;
 
     private IInteractable _lastHoveredInteractable;
@@ -18,12 +20,14 @@ public class PlayerInteractionController : MonoBehaviour
     public void SetInteractionUIForTest(IInteractionUI ui) => _ui = ui;
 
     private bool CanProcessLocalInput =>
-        _playerInteraction != null && _playerInteraction.CanProcessLocalInput;
+        _playerInteraction != null &&
+        (_playerInteraction.CanProcessLocalInput || _playerInteraction.GetComponent<NetworkObject>() == null);
 
     private void OnEnable()
     {
         if (_playerInteraction == null) _playerInteraction = GetComponentInParent<PlayerInteraction>();
         ResolveInteractionUI();
+        ResolvePortfolioHud();
         _ui ??= _interactionUI;  // use injected stub in tests, otherwise the serialized component
         _wasProcessingLocalInput = CanProcessLocalInput;
 
@@ -81,31 +85,39 @@ public class PlayerInteractionController : MonoBehaviour
 
     private void UpdateUI()
     {
-        if (_ui == null || _playerInteraction == null)
+        if (_playerInteraction == null)
             return;
 
         if (!CanProcessLocalInput)
         {
-            _ui.Hide();
+            _ui?.Hide();
+            _portfolioHud?.SetInteractionPrompt(string.Empty);
             return;
         }
 
         var active = _playerInteraction.ActiveInteraction;
         var current = _playerInteraction.CurrentInteractable;
+        string prompt = null;
 
         // Show UI for Active Interaction (Lock) first, then falling back to current hovered
         if (active != null && active.CanInteract)
         {
-            _ui.Show(active.InteractionPrompt);
+            prompt = active.InteractionPrompt;
         }
         else if (current != null && current.CanInteract)
         {
-            _ui.Show(current.InteractionPrompt);
+            prompt = current.InteractionPrompt;
         }
-        else
+
+        if (string.IsNullOrEmpty(prompt))
         {
-            _ui.Hide();
+            _ui?.Hide();
+            _portfolioHud?.SetInteractionPrompt(string.Empty);
+            return;
         }
+
+        _ui?.Show(prompt);
+        _portfolioHud?.SetInteractionPrompt($"{_playerInteraction.InteractionKeyLabel}  {prompt}");
     }
 
     private void ResolveInteractionUI()
@@ -119,6 +131,17 @@ public class PlayerInteractionController : MonoBehaviour
         _interactionUI = FindInteractionUIInScene(gameObject.scene);
     }
 
+    private void ResolvePortfolioHud()
+    {
+        if (_portfolioHud != null
+            && _portfolioHud.gameObject.scene == gameObject.scene)
+        {
+            return;
+        }
+
+        _portfolioHud = FindPortfolioHudInScene(gameObject.scene);
+    }
+
     private static InteractionUI FindInteractionUIInScene(Scene scene)
     {
         if (!scene.IsValid())
@@ -130,6 +153,22 @@ public class PlayerInteractionController : MonoBehaviour
             InteractionUI ui = roots[i].GetComponentInChildren<InteractionUI>(true);
             if (ui != null)
                 return ui;
+        }
+
+        return null;
+    }
+
+    private static PortfolioDemoHud FindPortfolioHudInScene(Scene scene)
+    {
+        if (!scene.IsValid())
+            return null;
+
+        GameObject[] roots = scene.GetRootGameObjects();
+        for (int i = 0; i < roots.Length; i++)
+        {
+            PortfolioDemoHud hud = roots[i].GetComponentInChildren<PortfolioDemoHud>(true);
+            if (hud != null)
+                return hud;
         }
 
         return null;

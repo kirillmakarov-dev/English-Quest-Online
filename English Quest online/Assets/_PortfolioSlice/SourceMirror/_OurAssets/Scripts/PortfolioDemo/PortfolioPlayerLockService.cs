@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityServiceLocator;
 
@@ -7,6 +9,9 @@ namespace EnglishKingdom.PortfolioDemo
     public sealed class PortfolioPlayerLockService : MonoBehaviour, IPlayerLockSystem
     {
         [SerializeField] private PortfolioDemoPlayerController playerController;
+        [SerializeField] private MonoBehaviour starterController;
+        [SerializeField] private MonoBehaviour starterInputs;
+        [SerializeField] private PlayerInteraction playerInteraction;
 
         private readonly Dictionary<PlayerLockSystem.LockType, HashSet<object>> locks = new();
 
@@ -17,6 +22,15 @@ namespace EnglishKingdom.PortfolioDemo
 
             if (playerController == null)
                 playerController = GetComponent<PortfolioDemoPlayerController>();
+
+            if (starterController == null)
+                starterController = FindBehaviourByTypeName("ThirdPersonController");
+
+            if (starterInputs == null)
+                starterInputs = FindBehaviourByTypeName("StarterAssetsInputs");
+
+            if (playerInteraction == null)
+                playerInteraction = GetComponent<PlayerInteraction>();
 
             ServiceLocator.For(this).Register<IPlayerLockSystem>(this);
         }
@@ -65,17 +79,71 @@ namespace EnglishKingdom.PortfolioDemo
             switch (type)
             {
                 case PlayerLockSystem.LockType.Movement:
-                    playerController?.SetMovementLocked(isLocked);
+                    if (starterController != null)
+                        starterController.enabled = !isLocked;
+                    else
+                        playerController?.SetMovementLocked(isLocked);
                     break;
                 case PlayerLockSystem.LockType.Interaction:
+                    if (playerInteraction != null)
+                        playerInteraction.enabled = !isLocked;
+                    else
+                        playerController?.SetInteractionLocked(isLocked);
+                    break;
                 case PlayerLockSystem.LockType.GameplayInput:
-                    playerController?.SetInteractionLocked(isLocked);
+                    if (playerInteraction != null)
+                        playerInteraction.enabled = !isLocked;
+                    else
+                        playerController?.SetInteractionLocked(isLocked);
                     break;
                 case PlayerLockSystem.LockType.Cursor:
+                    if (starterInputs != null)
+                    {
+                        SetBoolMember(starterInputs, "cursorLocked", !isLocked);
+                        SetBoolMember(starterInputs, "cursorInputForLook", !isLocked);
+                    }
+
                     Cursor.lockState = isLocked ? CursorLockMode.None : CursorLockMode.Locked;
                     Cursor.visible = isLocked;
                     break;
+                case PlayerLockSystem.LockType.Camera:
+                    if (starterController != null)
+                        SetBoolMember(starterController, "LockCameraPosition", isLocked);
+                    break;
             }
+        }
+
+        private MonoBehaviour FindBehaviourByTypeName(string typeName)
+        {
+            MonoBehaviour[] behaviours = GetComponentsInChildren<MonoBehaviour>(true);
+            for (int i = 0; i < behaviours.Length; i++)
+            {
+                MonoBehaviour behaviour = behaviours[i];
+                if (behaviour != null && behaviour.GetType().Name == typeName)
+                    return behaviour;
+            }
+
+            return null;
+        }
+
+        private static void SetBoolMember(MonoBehaviour target, string memberName, bool value)
+        {
+            if (target == null)
+                return;
+
+            Type targetType = target.GetType();
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+            PropertyInfo property = targetType.GetProperty(memberName, flags);
+            if (property != null && property.PropertyType == typeof(bool) && property.CanWrite)
+            {
+                property.SetValue(target, value);
+                return;
+            }
+
+            FieldInfo field = targetType.GetField(memberName, flags);
+            if (field != null && field.FieldType == typeof(bool))
+                field.SetValue(target, value);
         }
     }
 }

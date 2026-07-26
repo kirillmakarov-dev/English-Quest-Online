@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using EnglishKingdom.PortfolioDemo;
 using EnglishKingdom.QuestSystem;
@@ -29,6 +30,11 @@ namespace EnglishKingdom.Editor.PortfolioDemo
             "Assets/_PortfolioSlice/Art/Prefabs/UI/GamePlay/MiniGame/WordOrderingGame/LetterOrderGame.prefab";
         private const string WordOrderPrefabPath =
             "Assets/_PortfolioSlice/Art/Prefabs/UI/GamePlay/MiniGame/WordOrderingGame/WordOrderGame.prefab";
+        private const string StarterPlayerPrefabPath =
+            "Assets/StarterAssets/ThirdPersonController/Prefabs/PlayerArmature.prefab";
+        private const string StarterFollowCameraPrefabPath =
+            "Assets/StarterAssets/ThirdPersonController/Prefabs/PlayerFollowCamera.prefab";
+        private const string InteractionZoneName = "Interaction Zone";
         private const string LineMatchDataPath =
             "Assets/_PortfolioSlice/Data/MiniGames/LineMatch/Letters_A_B.asset";
         private const string LetterOrderDataPath =
@@ -93,7 +99,7 @@ namespace EnglishKingdom.Editor.PortfolioDemo
 
             DialogueManager dialogueManager = CreateDialogueUi();
             PortfolioDemoHud hud = CreateHud(eventBus, dialogueManager);
-            CreatePlayer(camera, hud);
+            CreatePlayer(hud);
             CreateQuestSystems(questRegistry);
             CreateNpc(
                 "NPC - Teacher Ada",
@@ -202,6 +208,7 @@ namespace EnglishKingdom.Editor.PortfolioDemo
             cameraObject.tag = "MainCamera";
             Camera camera = cameraObject.AddComponent<Camera>();
             cameraObject.AddComponent<AudioListener>();
+            AddComponentByTypeName(cameraObject, "Unity.Cinemachine.CinemachineBrain, Unity.Cinemachine");
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.05f, 0.09f, 0.12f);
             camera.fieldOfView = 55f;
@@ -215,33 +222,35 @@ namespace EnglishKingdom.Editor.PortfolioDemo
             eventSystem.AddComponent<InputSystemUIInputModule>();
         }
 
-        private static void CreatePlayer(Camera camera, PortfolioDemoHud hud)
+        private static void CreatePlayer(PortfolioDemoHud hud)
         {
-            GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            player.name = "Player Capsule";
-            player.transform.position = new Vector3(0f, 1f, -5f);
-            Object.DestroyImmediate(player.GetComponent<CapsuleCollider>());
-            ApplyColor(player, new Color(0.2f, 0.76f, 0.58f));
+            GameObject player = InstantiatePrefabRoot(StarterPlayerPrefabPath, "PlayerArmature");
+            if (player == null)
+                return;
 
-            CharacterController characterController = player.AddComponent<CharacterController>();
-            characterController.height = 2f;
-            characterController.radius = 0.5f;
-            characterController.center = Vector3.zero;
+            player.transform.position = new Vector3(0f, 0f, -5f);
 
-            PlayerInteraction interaction = player.AddComponent<PlayerInteraction>();
-            Transform holdPoint = new GameObject("Hold Point").transform;
-            holdPoint.SetParent(player.transform);
-            holdPoint.localPosition = new Vector3(0f, 0.6f, 0.8f);
+            PlayerInteraction interaction = player.GetComponent<PlayerInteraction>();
+            if (interaction == null)
+                interaction = player.AddComponent<PlayerInteraction>();
+
+            if (player.GetComponent<PlayerInteractionController>() == null)
+                player.AddComponent<PlayerInteractionController>();
+
+            Transform holdPoint = player.transform.Find("Hold Point");
+            if (holdPoint == null)
+            {
+                holdPoint = new GameObject("Hold Point").transform;
+                holdPoint.SetParent(player.transform);
+                holdPoint.localPosition = new Vector3(0f, 0.6f, 0.8f);
+            }
             interaction.itemHolderPos = holdPoint;
 
-            PortfolioDemoPlayerController controller =
-                player.AddComponent<PortfolioDemoPlayerController>();
-            player.AddComponent<PortfolioPlayerLockService>();
+            EnsureInteractionZone(player);
+            if (player.GetComponent<PortfolioPlayerLockService>() == null)
+                player.AddComponent<PortfolioPlayerLockService>();
 
-            SerializedObject serializedController = new(controller);
-            serializedController.FindProperty("followCamera").objectReferenceValue = camera;
-            serializedController.FindProperty("hud").objectReferenceValue = hud;
-            serializedController.ApplyModifiedPropertiesWithoutUndo();
+            SetupStarterAssetsCamera(player.transform);
         }
 
         private static PortfolioDemoHud CreateHud(
@@ -402,7 +411,7 @@ namespace EnglishKingdom.Editor.PortfolioDemo
             label.rectTransform.offsetMax = Vector2.zero;
 
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, path);
-            Object.DestroyImmediate(root);
+            UnityEngine.Object.DestroyImmediate(root);
             return prefab;
         }
 
@@ -493,6 +502,57 @@ namespace EnglishKingdom.Editor.PortfolioDemo
                 Debug.LogError($"[PortfolioDemo] Prefab '{path}' has no {typeof(T).Name}.");
 
             return component;
+        }
+
+        private static GameObject InstantiatePrefabRoot(string path, string objectName)
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (prefab == null)
+            {
+                Debug.LogError($"[PortfolioDemo] Missing prefab: {path}");
+                return null;
+            }
+
+            GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+            instance.name = objectName;
+            return instance;
+        }
+
+        private static void SetupStarterAssetsCamera(Transform playerRoot)
+        {
+            if (playerRoot == null)
+                return;
+
+            Transform target = playerRoot.Find("CinemachineCameraTarget");
+            if (target == null)
+            {
+                Debug.LogWarning("[PortfolioDemo] Starter Assets player is missing CinemachineCameraTarget.");
+                return;
+            }
+
+            GameObject followCameraObject = GameObject.Find("PlayerFollowCamera");
+            if (followCameraObject == null)
+            {
+                followCameraObject = InstantiatePrefabRoot(StarterFollowCameraPrefabPath, "PlayerFollowCamera");
+                if (followCameraObject == null)
+                    return;
+            }
+
+            Component followCamera = FindComponentByTypeName(followCameraObject, "CinemachineCamera");
+            if (followCamera == null)
+            {
+                followCamera = FindComponentByTypeNameInChildren(followCameraObject.transform, "CinemachineCamera");
+            }
+
+            if (followCamera == null)
+            {
+                Debug.LogWarning("[PortfolioDemo] Starter Assets follow camera prefab has no CinemachineCamera.");
+                return;
+            }
+
+            SetIntMember(followCamera, "Priority", 10);
+            SetObjectMember(followCamera, "Follow", target);
+            SetObjectMember(followCamera, "LookAt", target);
         }
 
         private static void RepairMissingWordGameLayouts(GameObject root)
@@ -910,6 +970,138 @@ namespace EnglishKingdom.Editor.PortfolioDemo
                 name = target.name + " Material"
             };
             renderer.sharedMaterial = material;
+        }
+
+        private static Component AddComponentByTypeName(GameObject target, string typeName)
+        {
+            if (target == null)
+                return null;
+
+            Type type = Type.GetType(typeName);
+            if (type == null || !typeof(Component).IsAssignableFrom(type))
+                return null;
+
+            return target.AddComponent(type);
+        }
+
+        private static Component FindComponentByTypeName(GameObject target, string typeName)
+        {
+            if (target == null)
+                return null;
+
+            MonoBehaviour[] behaviours = target.GetComponents<MonoBehaviour>();
+            for (int i = 0; i < behaviours.Length; i++)
+            {
+                MonoBehaviour behaviour = behaviours[i];
+                if (behaviour != null && behaviour.GetType().Name == typeName)
+                    return behaviour;
+            }
+
+            return null;
+        }
+
+        private static Component FindComponentByTypeNameInChildren(Transform root, string typeName)
+        {
+            if (root == null)
+                return null;
+
+            MonoBehaviour[] behaviours = root.GetComponentsInChildren<MonoBehaviour>(true);
+            for (int i = 0; i < behaviours.Length; i++)
+            {
+                MonoBehaviour behaviour = behaviours[i];
+                if (behaviour != null && behaviour.GetType().Name == typeName)
+                    return behaviour;
+            }
+
+            return null;
+        }
+
+        private static void EnsureInteractionZone(GameObject player)
+        {
+            if (player == null)
+                return;
+
+            Transform zone = player.transform.Find(InteractionZoneName);
+            if (zone == null)
+            {
+                GameObject zoneObject = new(InteractionZoneName);
+                zoneObject.transform.SetParent(player.transform, false);
+                zoneObject.transform.localPosition = Vector3.zero;
+                zone = zoneObject.transform;
+            }
+
+            SphereCollider collider = zone.GetComponent<SphereCollider>();
+            if (collider == null)
+                collider = zone.gameObject.AddComponent<SphereCollider>();
+
+            zone.gameObject.layer = 0;
+            collider.isTrigger = true;
+            collider.radius = 2.4f;
+
+            Rigidbody rigidbody = zone.GetComponent<Rigidbody>();
+            if (rigidbody == null)
+                rigidbody = zone.gameObject.AddComponent<Rigidbody>();
+
+            rigidbody.useGravity = false;
+            rigidbody.isKinematic = true;
+            rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+
+            if (zone.GetComponent<InteractionZoneTrigger>() == null)
+                zone.gameObject.AddComponent<InteractionZoneTrigger>();
+
+            if (zone.GetComponent<PlayerInteraction>() == null)
+            {
+                PlayerInteraction interaction = player.GetComponent<PlayerInteraction>();
+                InteractionZoneTrigger trigger = zone.GetComponent<InteractionZoneTrigger>();
+                if (interaction != null && trigger != null)
+                    SetObjectMember(trigger, "playerInteractionScript", interaction);
+            }
+        }
+
+        private static void SetIntMember(Component target, string memberName, int value)
+        {
+            if (target == null)
+                return;
+
+            const System.Reflection.BindingFlags flags =
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic;
+
+            Type type = target.GetType();
+            System.Reflection.PropertyInfo property = type.GetProperty(memberName, flags);
+            if (property != null && property.CanWrite && property.PropertyType == typeof(int))
+            {
+                property.SetValue(target, value);
+                return;
+            }
+
+            System.Reflection.FieldInfo field = type.GetField(memberName, flags);
+            if (field != null && field.FieldType == typeof(int))
+                field.SetValue(target, value);
+        }
+
+        private static void SetObjectMember(Component target, string memberName, object value)
+        {
+            if (target == null)
+                return;
+
+            const System.Reflection.BindingFlags flags =
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic;
+
+            Type type = target.GetType();
+            System.Reflection.PropertyInfo property = type.GetProperty(memberName, flags);
+            if (property != null && property.CanWrite)
+            {
+                property.SetValue(target, value);
+                return;
+            }
+
+            System.Reflection.FieldInfo field = type.GetField(memberName, flags);
+            if (field != null)
+                field.SetValue(target, value);
         }
 
         private static void SetAsFirstBuildScene()

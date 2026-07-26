@@ -123,8 +123,8 @@ namespace EnglishKingdom.PortfolioDemo
                 if (hit == null || hit.transform.IsChildOf(transform))
                     continue;
 
-                CollectInteractables(hit.GetComponents<IInteractable>());
-                CollectInteractables(hit.GetComponentsInParent<IInteractable>());
+                CollectInteractables(hit.GetComponents<MonoBehaviour>());
+                CollectInteractables(hit.GetComponentsInParent<MonoBehaviour>(true));
             }
 
             IInteractable closest = null;
@@ -146,10 +146,13 @@ namespace EnglishKingdom.PortfolioDemo
             SetCurrentTarget(closest);
         }
 
-        private void CollectInteractables(IInteractable[] interactables)
+        private void CollectInteractables(MonoBehaviour[] behaviours)
         {
-            for (int i = 0; i < interactables.Length; i++)
-                candidates.Add(interactables[i]);
+            for (int i = 0; i < behaviours.Length; i++)
+            {
+                if (behaviours[i] is IInteractable interactable)
+                    candidates.Add(interactable);
+            }
         }
 
         private void SetCurrentTarget(IInteractable target)
