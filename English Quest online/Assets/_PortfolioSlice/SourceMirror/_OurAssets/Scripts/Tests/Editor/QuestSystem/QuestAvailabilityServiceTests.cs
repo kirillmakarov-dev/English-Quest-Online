@@ -141,6 +141,20 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
 
         [Test]
+        public void CanInteractWithNpc_ReturnsFalse_WhenNoQuestIsVisible()
+        {
+            _questService.Quests.Clear();
+
+            Assert.IsFalse(_service.CanInteractWithNpc("teacher_maya"));
+        }
+
+        [Test]
+        public void CanInteractWithNpc_ReturnsTrue_WhenQuestIsAvailable()
+        {
+            Assert.IsTrue(_service.CanInteractWithNpc("teacher_maya"));
+        }
+
+        [Test]
         public void TryGetDefinition_FromCatalog_FallsBackWhenNotInMap()
         {
             var catalog = ScriptableObject.CreateInstance<QuestCatalogSO>();

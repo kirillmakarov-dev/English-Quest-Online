@@ -46,6 +46,11 @@ public class QuestAvailabilityService : MonoBehaviour, IQuestAvailabilityService
         return QuestNpcIndicatorState.None;
     }
 
+    public bool CanInteractWithNpc(string npcId)
+    {
+        return GetBestIndicator(npcId) != QuestNpcIndicatorState.None;
+    }
+
     public bool TryGetDefinition(QuestInfo quest, out QuestDefinitionSO definition)
     {
         if (quest != null && _definitionByQuest.TryGetValue(quest, out definition))

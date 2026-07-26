@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3aae6b3982e570948a1818b588cd22cb, type: 3}
+  m_Name: QuestLineRegistry_MVP
+  questLines:
+  - {fileID: 11400000, guid: 6d2411a69ccf47b5b8f6a2cbc1c8bb99, type: 2}
+  - {fileID: 11400000, guid: c6b79c4db86045eab449f4bee3b6b3ea, type: 2}
+  - {fileID: 11400000, guid: a3b90a31ac5b4da89fee2259f6d1d364, type: 2}
+  questCatalog: {fileID: 11400000, guid: 1845462d56d64aa8959829a8c0275462, type: 2}
+  worldCatalogSet: {fileID: 11400000, guid: 274572cb38cd429ea3639e9e79bc8eb0, type: 2}
+  questRuntimeShellPrefab: {fileID: 0}
+  activeQuestJournalCanvasPrefab: {fileID: 0}

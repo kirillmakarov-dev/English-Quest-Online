@@ -681,6 +681,29 @@ namespace EnglishKingdom.Tests.QuestSystem
             Assert.AreEqual(QuestState.IN_PROGRESS, quest.state);
         }
 
+        [Test]
+        public void FinishQuest_LastMandatoryQuest_FiresLevelCompleted()
+        {
+            var questA = CreateQuest();
+            var questB = CreateQuest();
+            SetAllQuestInfos(new List<QuestInfo> { questA, questB });
+            CallInitializeQuests();
+
+            bool levelCompletedFired = false;
+            _manager.OnLevelCompleted += () => levelCompletedFired = true;
+
+            questA.SetState(QuestState.CAN_FINISH);
+            _manager.FinishQuest(questA);
+
+            Assert.IsFalse(_manager.IsLevelCompleted);
+
+            questB.SetState(QuestState.CAN_FINISH);
+            _manager.FinishQuest(questB);
+
+            Assert.IsTrue(_manager.IsLevelCompleted);
+            Assert.IsTrue(levelCompletedFired);
+        }
+
         private sealed class StubPlayerLevelProvider : IPlayerLevelProvider
         {
             public int Level = 1;

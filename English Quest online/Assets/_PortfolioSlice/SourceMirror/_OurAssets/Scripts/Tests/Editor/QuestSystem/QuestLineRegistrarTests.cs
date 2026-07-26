@@ -167,6 +167,53 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
 
         [Test]
+        public void Awake_LinePrerequisite_BlocksSecondNpcUntilFirstLineIsComplete()
+        {
+            QuestDefinitionSO q01 = QuestSystemTestSupport.CreateDefinition("q01", "teacher_maya");
+            q01.objectives = new List<QuestObjectiveDefinition>
+            {
+                new QuestObjectiveDefinition { type = QuestObjectiveType.EnterArea, targetId = "area_a" }
+            };
+
+            QuestDefinitionSO q02 = QuestSystemTestSupport.CreateDefinition("q02", "teacher_maya");
+            q02.objectives = new List<QuestObjectiveDefinition>
+            {
+                new QuestObjectiveDefinition { type = QuestObjectiveType.EnterArea, targetId = "area_b" }
+            };
+
+            var lineA = ScriptableObject.CreateInstance<QuestLineSO>();
+            lineA.lineId = "line_a";
+            lineA.npcId = "teacher_maya";
+            lineA.quests = new List<QuestDefinitionSO> { q01 };
+
+            var lineB = ScriptableObject.CreateInstance<QuestLineSO>();
+            lineB.lineId = "line_b";
+            lineB.npcId = "teacher_maya";
+            lineB.prerequisiteLineId = "line_a";
+            lineB.quests = new List<QuestDefinitionSO> { q02 };
+
+            var registry = ScriptableObject.CreateInstance<QuestLineRegistrySO>();
+            registry.questLines = new List<QuestLineSO> { lineA, lineB };
+            _createdAssets.Add(lineA);
+            _createdAssets.Add(lineB);
+            _createdAssets.Add(registry);
+
+            QuestLineRegistrar registrar = CreateRegistrarWithRegistry(registry);
+            QuestSystemTestSupport.InvokeAwake(registrar);
+
+            QuestInfo first = _manager.GetQuestById("q01");
+            QuestInfo second = _manager.GetQuestById("q02");
+
+            Assert.AreEqual(QuestState.CAN_START, first.state);
+            Assert.AreEqual(QuestState.REQUIREMENTS_NOT_MET, second.state);
+
+            first.SetState(QuestState.CAN_FINISH);
+            _manager.FinishQuest(first);
+
+            Assert.AreEqual(QuestState.CAN_START, second.state);
+        }
+
+        [Test]
         public void Awake_RegistersAvailabilityService()
         {
             QuestDefinitionSO definition = QuestSystemTestSupport.CreateDefinition(

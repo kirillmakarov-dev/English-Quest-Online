@@ -46,7 +46,7 @@ namespace EnglishKingdom.PortfolioDemo
 
         private void HandleMiniGameCompleted(QuestObjectiveEvents.MiniGameCompleted e)
         {
-            SetStatus($"Completed: {e.GameId}");
+            SetStatus(GetCompletionMessage(e.GameId));
         }
 
         private void HandleDialogueStarted() => SetStatus("Dialogue started");
@@ -56,6 +56,17 @@ namespace EnglishKingdom.PortfolioDemo
         {
             if (statusText != null)
                 statusText.text = message;
+        }
+
+        private static string GetCompletionMessage(string gameId)
+        {
+            return gameId switch
+            {
+                "line_match" => "Line Match completed. Coach Ben is unlocked.",
+                "letter_ordering" => "Letter Ordering completed. Guide Nora is unlocked.",
+                "word_ordering" => "Word Ordering completed. MVP quest chain finished.",
+                _ => $"Completed: {gameId}"
+            };
         }
     }
 }

@@ -127,11 +127,15 @@ public class QuestLineRegistrar : MonoBehaviour
             return questRuntimeShellPrefab;
 
 #if UNITY_EDITOR
-        return UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+        GameObject asset = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
             "Assets/_OurAssets/Data/Quests/Prefabs/QuestRuntimeShell.prefab");
+        if (asset != null)
+            return asset;
 #else
-        return null;
 #endif
+        GameObject fallback = new GameObject("QuestRuntimeShell");
+        fallback.hideFlags = HideFlags.HideAndDontSave;
+        return fallback;
     }
 
     private bool TryResolveLines(out List<QuestLineSO> lines)
@@ -189,15 +193,63 @@ public class QuestLineRegistrar : MonoBehaviour
             return;
         }
 
+        IReadOnlyDictionary<string, string> lineCompletionQuestIds = BuildLineCompletionQuestIds(lines);
+
         foreach (QuestLineSO line in lines)
-            RegisterQuestLine(questService, line, shellPrefab);
+            RegisterQuestLine(questService, line, shellPrefab, lineCompletionQuestIds);
     }
 
-    private void RegisterQuestLine(IQuestService questService, QuestLineSO line, GameObject shellPrefab)
+    private static IReadOnlyDictionary<string, string> BuildLineCompletionQuestIds(IReadOnlyList<QuestLineSO> lines)
+    {
+        var result = new Dictionary<string, string>();
+        if (lines == null)
+            return result;
+
+        foreach (QuestLineSO line in lines)
+        {
+            if (line == null || string.IsNullOrEmpty(line.lineId) || line.quests == null)
+                continue;
+
+            for (int i = line.quests.Count - 1; i >= 0; i--)
+            {
+                QuestDefinitionSO definition = line.quests[i];
+                if (definition == null || string.IsNullOrEmpty(definition.id))
+                    continue;
+
+                result[line.lineId] = definition.id;
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    private void RegisterQuestLine(
+        IQuestService questService,
+        QuestLineSO line,
+        GameObject shellPrefab,
+        IReadOnlyDictionary<string, string> lineCompletionQuestIds)
     {
         if (line.quests == null)
             return;
 
+        string prerequisiteQuestId = null;
+        if (!string.IsNullOrEmpty(line.prerequisiteLineId))
+        {
+            if (lineCompletionQuestIds != null &&
+                lineCompletionQuestIds.TryGetValue(line.prerequisiteLineId, out prerequisiteQuestId))
+            {
+                // Found the quest that completes the previous NPC line.
+            }
+            else
+            {
+                AppLog.Warning(
+                    $"[QuestLineRegistrar] Quest line '{line.lineId}' references prerequisite line '{line.prerequisiteLineId}', but no completion quest was found.",
+                    this);
+            }
+        }
+
+        bool isFirstQuestInLine = true;
         foreach (QuestDefinitionSO definition in line.quests)
         {
             if (definition == null || string.IsNullOrEmpty(definition.id))
@@ -224,6 +276,9 @@ public class QuestLineRegistrar : MonoBehaviour
                 definition.waitForNpcTurnIn,
                 definition.prerequisiteQuestId);
 
+            if (isFirstQuestInLine && !string.IsNullOrEmpty(prerequisiteQuestId))
+                questInfo.AddRequiredQuestId(prerequisiteQuestId);
+
             QuestDefinitionLink link = instance.GetComponent<QuestDefinitionLink>();
             if (link == null)
                 link = instance.AddComponent<QuestDefinitionLink>();
@@ -231,6 +286,7 @@ public class QuestLineRegistrar : MonoBehaviour
 
             questService.RegisterQuest(questInfo);
             _definitionByQuest[questInfo] = definition;
+            isFirstQuestInLine = false;
         }
     }
 
@@ -265,7 +321,8 @@ public class QuestLineRegistrar : MonoBehaviour
         if (questService is QuestManager questManager)
             questManager.ConfigureObjectiveRuntime(resolver);
 
-        if (GetComponent<QuestObjectiveEventBus>() == null)
+        if (FindFirstObjectByType<QuestObjectiveEventBus>(FindObjectsInactive.Include) == null &&
+            GetComponent<QuestObjectiveEventBus>() == null)
             gameObject.AddComponent<QuestObjectiveEventBus>();
     }
 }

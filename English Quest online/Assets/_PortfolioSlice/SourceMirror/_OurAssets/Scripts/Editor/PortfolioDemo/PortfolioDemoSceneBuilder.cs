@@ -69,7 +69,16 @@ namespace EnglishKingdom.Editor.PortfolioDemo
             LineMatchQuestConfigSO lineConfig = CreateLineMatchConfig();
             LetterOrderingQuestConfigSO letterConfig = CreateLetterOrderingConfig();
             WordOrderingQuestConfigSO wordConfig = CreateWordOrderingConfig();
-            DialogueNode dialogueStart = CreateDialogueData();
+            DialogueNode lettersDialogue = CreateLetterIntroDialogue();
+            DialogueNode missingLetterDialogue = CreateMissingLetterDialogue();
+            DialogueNode questionDialogue = CreateQuestionDialogue();
+            QuestLineRegistrySO questRegistry = CreateQuestRegistry(
+                lettersDialogue,
+                missingLetterDialogue,
+                questionDialogue,
+                lineConfig,
+                letterConfig,
+                wordConfig);
 
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             scene.name = "PortfolioDemo";
@@ -85,7 +94,28 @@ namespace EnglishKingdom.Editor.PortfolioDemo
             DialogueManager dialogueManager = CreateDialogueUi();
             PortfolioDemoHud hud = CreateHud(eventBus, dialogueManager);
             CreatePlayer(camera, hud);
-            CreateNpc(dialogueStart);
+            CreateQuestSystems(questRegistry);
+            CreateNpc(
+                "NPC - Teacher Ada",
+                new Vector3(-5f, 1f, -1f),
+                new Color(0.94f, 0.68f, 0.24f),
+                "NPC: Teacher Ada\nLesson 1 - Two letters",
+                "teacher_ada",
+                questRegistry.questLines[0]);
+            CreateNpc(
+                "NPC - Coach Ben",
+                new Vector3(0f, 1f, -1f),
+                new Color(0.28f, 0.72f, 0.94f),
+                "NPC: Coach Ben\nLesson 2 - Missing letter",
+                "coach_ben",
+                questRegistry.questLines[1]);
+            CreateNpc(
+                "NPC - Guide Nora",
+                new Vector3(7f, 1f, -1f),
+                new Color(0.72f, 0.33f, 0.92f),
+                "NPC: Guide Nora\nLesson 3 - Choose the word",
+                "guide_nora",
+                questRegistry.questLines[2]);
 
             LetterConnectionBootstrap lineBootstrap =
                 InstantiatePrefabComponent<LetterConnectionBootstrap>(LineMatchPrefabPath, "UI - Line Match");
@@ -222,7 +252,7 @@ namespace EnglishKingdom.Editor.PortfolioDemo
             TextMeshProUGUI title = CreateUiText(
                 canvas.transform,
                 "Title",
-                "TEACHER ADVENTURE - SYSTEM TEST",
+                "ENGLISH QUEST MVP - OPEN WORLD + QUEST CHAINS",
                 28f,
                 TextAlignmentOptions.TopLeft,
                 new Vector2(24f, -20f),
@@ -233,7 +263,7 @@ namespace EnglishKingdom.Editor.PortfolioDemo
             TextMeshProUGUI help = CreateUiText(
                 canvas.transform,
                 "Controls",
-                "WASD - Move    E - Interact    Mouse - Mini-game UI",
+                "WASD - Move    E - Interact    3 NPCs - 3 learning stages",
                 20f,
                 TextAlignmentOptions.TopLeft,
                 new Vector2(26f, -68f),
@@ -314,6 +344,7 @@ namespace EnglishKingdom.Editor.PortfolioDemo
                 new Vector2(920f, 120f),
                 new Vector2(0f, 1f),
                 new Vector2(0f, 1f));
+            dialogueText.raycastTarget = false;
 
             GameObject choices = new("Choices", typeof(RectTransform), typeof(HorizontalLayoutGroup));
             choices.transform.SetParent(panel.transform, false);
@@ -375,17 +406,40 @@ namespace EnglishKingdom.Editor.PortfolioDemo
             return prefab;
         }
 
-        private static void CreateNpc(DialogueNode dialogueStart)
+        private static void CreateNpc(
+            string objectName,
+            Vector3 position,
+            Color color,
+            string labelText,
+            string npcId,
+            QuestLineSO questLine)
         {
             GameObject npc = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            npc.name = "NPC - Teacher Ada";
-            npc.transform.position = new Vector3(-6f, 1f, -1f);
-            ApplyColor(npc, new Color(0.94f, 0.68f, 0.24f));
+            npc.name = objectName;
+            npc.transform.position = position;
+            ApplyColor(npc, color);
 
-            NpcDialogueTrigger trigger = npc.AddComponent<NpcDialogueTrigger>();
-            trigger.startingNode = dialogueStart;
+            NpcQuestGiver questGiver = npc.AddComponent<NpcQuestGiver>();
+            SerializedObject serialized = new(questGiver);
+            serialized.FindProperty("npcId").stringValue = npcId;
+            serialized.FindProperty("questLine").objectReferenceValue = questLine;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
 
-            CreateWorldLabel(npc.transform, "NPC: Teacher Ada\nPress E to talk", new Vector3(0f, 1.65f, 0f));
+            CreateWorldLabel(npc.transform, labelText, new Vector3(0f, 1.65f, 0f));
+        }
+
+        private static void CreateQuestSystems(QuestLineRegistrySO questRegistry)
+        {
+            QuestManager questManager = new GameObject("Quest Manager").AddComponent<QuestManager>();
+            SerializedObject serializedManager = new(questManager);
+            serializedManager.FindProperty("loadQuestState").boolValue = false;
+            serializedManager.ApplyModifiedPropertiesWithoutUndo();
+
+            GameObject registrarObject = new("Quest Line Registrar");
+            QuestLineRegistrar registrar = registrarObject.AddComponent<QuestLineRegistrar>();
+            SerializedObject serialized = new(registrar);
+            serialized.FindProperty("registry").objectReferenceValue = questRegistry;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static void CreateMiniGameStation(
@@ -501,31 +555,252 @@ namespace EnglishKingdom.Editor.PortfolioDemo
             return asset;
         }
 
-        private static DialogueNode CreateDialogueData()
+        private static QuestLineRegistrySO CreateQuestRegistry(
+            DialogueNode lettersDialogue,
+            DialogueNode missingLetterDialogue,
+            DialogueNode questionDialogue,
+            LineMatchQuestConfigSO lineConfig,
+            LetterOrderingQuestConfigSO letterConfig,
+            WordOrderingQuestConfigSO wordConfig)
         {
-            const string startPath = DataRoot + "/Dialogue_Teacher_Start.asset";
-            const string systemsPath = DataRoot + "/Dialogue_Teacher_Systems.asset";
+            QuestDefinitionSO teacherQuest = CreateQuestDefinition(
+                DataRoot + "/Quest_TeacherAda_Letters.asset",
+                "Quest_TeacherAda_Letters",
+                "quest_teacher_ada_letters",
+                "Lesson 1 - Two letters",
+                "Complete the first mini-game to learn the opening letters and unlock the second NPC.",
+                "teacher_ada",
+                100,
+                lettersDialogue,
+                lineConfig,
+                "line_match",
+                "Match the first two letters.");
 
-            DialogueNode systems = LoadOrCreate<DialogueNode>(systemsPath);
-            systems.speakerName = "Teacher Ada";
-            systems.dialogueText =
-                "This scene uses Service Locator, dialogue ScriptableObjects, quest events, and reusable mini-game presenters.";
-            systems.actionType = DialogueActionType.None;
-            systems.choices = new List<DialogueChoice>();
-            EditorUtility.SetDirty(systems);
+            QuestDefinitionSO coachQuest = CreateQuestDefinition(
+                DataRoot + "/Quest_CoachBen_MissingLetter.asset",
+                "Quest_CoachBen_MissingLetter",
+                "quest_coach_ben_missing_letter",
+                "Lesson 2 - Missing letter",
+                "Fill the missing letter and learn a new word before the next NPC unlocks.",
+                "coach_ben",
+                125,
+                missingLetterDialogue,
+                letterConfig,
+                "letter_ordering",
+                "Complete the missing-letter mini-game.");
 
-            DialogueNode start = LoadOrCreate<DialogueNode>(startPath);
-            start.speakerName = "Teacher Ada";
-            start.dialogueText =
-                "Welcome to the Teacher Adventure portfolio lab. What would you like to verify?";
-            start.actionType = DialogueActionType.None;
-            start.choices = new List<DialogueChoice>
+            QuestDefinitionSO guideQuest = CreateQuestDefinition(
+                DataRoot + "/Quest_GuideNora_ChooseWord.asset",
+                "Quest_GuideNora_ChooseWord",
+                "quest_guide_nora_choose_word",
+                "Lesson 3 - Choose the word",
+                "Pick the correct word from three options and complete the last MVP step.",
+                "guide_nora",
+                150,
+                questionDialogue,
+                wordConfig,
+                "word_ordering",
+                "Choose the correct word from three answers.");
+
+            QuestLineSO teacherLine = CreateQuestLine(
+                DataRoot + "/QuestLine_TeacherAda.asset",
+                "QuestLine_TeacherAda",
+                "line_teacher_ada",
+                "teacher_ada",
+                null,
+                "Teacher Ada",
+                "Learn the first two letters.",
+                teacherQuest);
+
+            QuestLineSO coachLine = CreateQuestLine(
+                DataRoot + "/QuestLine_CoachBen.asset",
+                "QuestLine_CoachBen",
+                "line_coach_ben",
+                "coach_ben",
+                "line_teacher_ada",
+                "Coach Ben",
+                "Fill the missing letter and learn a new word.",
+                coachQuest);
+
+            QuestLineSO guideLine = CreateQuestLine(
+                DataRoot + "/QuestLine_GuideNora.asset",
+                "QuestLine_GuideNora",
+                "line_guide_nora",
+                "guide_nora",
+                "line_coach_ben",
+                "Guide Nora",
+                "Choose the correct word from three options.",
+                guideQuest);
+
+            QuestCatalogSO questCatalog = LoadOrCreate<QuestCatalogSO>(DataRoot + "/QuestCatalog_MVP.asset");
+            questCatalog.definitions = new List<QuestDefinitionSO> { teacherQuest, coachQuest, guideQuest };
+            EditorUtility.SetDirty(questCatalog);
+
+            QuestWorldCatalogSetSO worldCatalogSet =
+                LoadOrCreate<QuestWorldCatalogSetSO>(DataRoot + "/QuestWorldCatalogSet_MVP.asset");
+            worldCatalogSet.interactableCatalog = CreateInteractableCatalog();
+            worldCatalogSet.questCatalog = questCatalog;
+            EditorUtility.SetDirty(worldCatalogSet);
+
+            QuestLineRegistrySO registry = LoadOrCreate<QuestLineRegistrySO>(DataRoot + "/QuestLineRegistry_MVP.asset");
+            registry.questLines = new List<QuestLineSO> { teacherLine, coachLine, guideLine };
+            registry.questCatalog = questCatalog;
+            registry.worldCatalogSet = worldCatalogSet;
+            registry.questRuntimeShellPrefab = null;
+            registry.activeQuestJournalCanvasPrefab = null;
+            EditorUtility.SetDirty(registry);
+            return registry;
+        }
+
+        private static InteractableCatalogSO CreateInteractableCatalog()
+        {
+            InteractableCatalogSO catalog =
+                LoadOrCreate<InteractableCatalogSO>(DataRoot + "/InteractableCatalog_MVP.asset");
+
+            SerializedObject serialized = new(catalog);
+            SerializedProperty entries = serialized.FindProperty("entries");
+            entries.arraySize = 3;
+            SetInteractableEntry(entries.GetArrayElementAtIndex(0), "line_match", "Line Match");
+            SetInteractableEntry(entries.GetArrayElementAtIndex(1), "letter_ordering", "Letter Ordering");
+            SetInteractableEntry(entries.GetArrayElementAtIndex(2), "word_ordering", "Word Ordering");
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(catalog);
+            return catalog;
+        }
+
+        private static void SetInteractableEntry(SerializedProperty entry, string id, string displayName)
+        {
+            entry.FindPropertyRelative("id").stringValue = id;
+            entry.FindPropertyRelative("kind").enumValueIndex = (int)InteractableCatalogKind.MiniGame;
+            entry.FindPropertyRelative("displayName").stringValue = displayName;
+        }
+
+        private static QuestDefinitionSO CreateQuestDefinition(
+            string path,
+            string assetName,
+            string questId,
+            string displayName,
+            string description,
+            string giverNpcId,
+            int xpReward,
+            DialogueNode dialogue,
+            QuestMiniGameConfigSO miniGameConfig,
+            string targetId,
+            string objectiveDisplayText)
+        {
+            QuestDefinitionSO asset = LoadOrCreate<QuestDefinitionSO>(path);
+            asset.name = assetName;
+            asset.id = questId;
+            asset.displayName = displayName;
+            asset.description = description;
+            asset.levelRequired = 0;
+            asset.giverNpcId = giverNpcId;
+            asset.prerequisiteQuest = null;
+            asset.prerequisiteQuestId = null;
+            asset.waitForNpcTurnIn = false;
+            asset.rewards ??= new QuestRewardData();
+            asset.rewards.xp = xpReward;
+            asset.rewards.items = new List<QuestRewardItemData>();
+            asset.rewardDefinition = null;
+            asset.startDialogue = dialogue;
+            asset.inProgressDialogue = dialogue;
+            asset.turnInDialogue = dialogue;
+            asset.cannotStartDialogue = null;
+            asset.alreadyFinishedDialogue = dialogue;
+            asset.objectives = new List<QuestObjectiveDefinition>
             {
-                new() { choiceText = "Explain the architecture", nextNode = systems },
-                new() { choiceText = "Everything works. Goodbye!", nextNode = null }
+                new()
+                {
+                    type = QuestObjectiveType.CompleteMiniGame,
+                    targetId = targetId,
+                    count = 1,
+                    displayText = objectiveDisplayText,
+                    parameters = new List<QuestObjectiveParameter>(),
+                    miniGameConfig = miniGameConfig,
+                    requiredItemId = 0,
+                    dialogue = null,
+                    dialogueAfterFinished = null,
+                    stepReward = null,
+                    showStepRewardPopup = true
+                }
             };
-            EditorUtility.SetDirty(start);
-            return start;
+            asset.authoringCatalogSet = null;
+            EditorUtility.SetDirty(asset);
+            return asset;
+        }
+
+        private static QuestLineSO CreateQuestLine(
+            string path,
+            string assetName,
+            string lineId,
+            string npcId,
+            string prerequisiteLineId,
+            string displayName,
+            string theme,
+            QuestDefinitionSO quest)
+        {
+            QuestLineSO asset = LoadOrCreate<QuestLineSO>(path);
+            asset.name = assetName;
+            asset.lineId = lineId;
+            asset.npcId = npcId;
+            asset.prerequisiteLineId = prerequisiteLineId;
+            asset.displayName = displayName;
+            asset.theme = theme;
+            asset.quests = new List<QuestDefinitionSO> { quest };
+            asset.worldCatalogSet = null;
+            EditorUtility.SetDirty(asset);
+            return asset;
+        }
+
+        private static DialogueNode CreateLetterIntroDialogue()
+        {
+            const string path = DataRoot + "/Dialogue_Lesson_01_Letters.asset";
+
+            return CreateDialogueNode(
+                path,
+                "Teacher Ada",
+                "Lesson 1: we start with two letters. Match them first, then the second NPC will unlock.",
+                "Got it");
+        }
+
+        private static DialogueNode CreateMissingLetterDialogue()
+        {
+            const string path = DataRoot + "/Dialogue_Lesson_02_MissingLetter.asset";
+
+            return CreateDialogueNode(
+                path,
+                "Coach Ben",
+                "Lesson 2: fill the missing letter and learn new English words along the way.",
+                "Continue");
+        }
+
+        private static DialogueNode CreateQuestionDialogue()
+        {
+            const string path = DataRoot + "/Dialogue_Lesson_03_ChooseWord.asset";
+
+            return CreateDialogueNode(
+                path,
+                "Guide Nora",
+                "Lesson 3: I show you a word, and you choose the correct answer from three options.",
+                "Let's do it");
+        }
+
+        private static DialogueNode CreateDialogueNode(
+            string path,
+            string speakerName,
+            string dialogueText,
+            string choiceText)
+        {
+            DialogueNode node = LoadOrCreate<DialogueNode>(path);
+            node.speakerName = speakerName;
+            node.dialogueText = dialogueText;
+            node.actionType = DialogueActionType.None;
+            node.choices = new List<DialogueChoice>
+            {
+                new() { choiceText = choiceText, nextNode = null }
+            };
+            EditorUtility.SetDirty(node);
+            return node;
         }
 
         private static T LoadOrCreate<T>(string path) where T : ScriptableObject
