@@ -114,6 +114,25 @@ public class QuestInfo : MonoBehaviour
         }
     }
 
+    public void AddRequiredQuestId(string questId)
+    {
+        if (string.IsNullOrEmpty(questId))
+            return;
+
+        if (requirements == null)
+            requirements = new List<QuestRequirement>();
+
+        if (requirements.Count == 0)
+            requirements.Add(new QuestRequirement());
+
+        QuestRequirement requirement = requirements[0];
+        if (requirement.requiredQuestIds == null)
+            requirement.requiredQuestIds = new List<string>();
+
+        if (!requirement.requiredQuestIds.Contains(questId))
+            requirement.requiredQuestIds.Add(questId);
+    }
+
     public void InitializeQuest()
     {
         int stepCount = ResolveStepCount();

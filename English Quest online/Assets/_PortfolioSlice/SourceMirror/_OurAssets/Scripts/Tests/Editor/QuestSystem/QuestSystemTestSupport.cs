@@ -137,6 +137,9 @@ namespace EnglishKingdom.Tests.QuestSystem
         public event System.Action<QuestInfo> OnQuestCompleted;
         public event System.Action<QuestInfo> OnQuestStateChanged;
         public event System.Action<QuestObjectiveProgressEvent> OnObjectiveProgressChanged;
+        public event System.Action OnLevelCompleted;
+
+        public bool IsLevelCompleted => false;
 
         public void ReportObjectiveProgress(QuestInfo questInfo, int stepIndex, int current, int target)
         {

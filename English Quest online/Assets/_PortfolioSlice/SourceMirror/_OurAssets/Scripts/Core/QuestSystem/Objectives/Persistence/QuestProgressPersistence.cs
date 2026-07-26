@@ -51,6 +51,7 @@ namespace EnglishKingdom.QuestSystem
                 questManager.RefreshMiniGameBindings();
                 await WaitForLevelServiceReadyAsync();
                 questManager.ReevaluateQuestRequirements();
+                questManager.RefreshLevelCompletionState();
             }
             catch (Exception ex)
             {

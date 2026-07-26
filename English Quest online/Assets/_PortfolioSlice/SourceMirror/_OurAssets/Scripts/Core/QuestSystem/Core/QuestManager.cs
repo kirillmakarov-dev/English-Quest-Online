@@ -31,12 +31,15 @@ public class QuestManager : StaticInstance<QuestManager>, IQuestService
     public event Action<QuestInfo> OnQuestCompleted;
     public event Action<QuestInfo> OnQuestStateChanged;
     public event Action<QuestObjectiveProgressEvent> OnObjectiveProgressChanged;
+    public event Action OnLevelCompleted;
 
     private readonly Dictionary<string, QuestStep> activeSteps = new Dictionary<string, QuestStep>();
     private QuestProgressPersistence _persistence;
     private QuestMiniGameBinder _miniGameBinder;
+    private bool _levelCompleted;
 
     public IReadOnlyList<QuestInfo> AllQuests => allQuestInfos;
+    public bool IsLevelCompleted => _levelCompleted;
 
     protected override void Awake()
     {
@@ -64,7 +67,8 @@ public class QuestManager : StaticInstance<QuestManager>, IQuestService
         if (questObjectiveDirector == null)
             questObjectiveDirector = gameObject.AddComponent<QuestObjectiveDirector>();
 
-        if (GetComponent<QuestObjectiveEventBus>() == null)
+        if (FindFirstObjectByType<QuestObjectiveEventBus>(FindObjectsInactive.Include) == null &&
+            GetComponent<QuestObjectiveEventBus>() == null)
             gameObject.AddComponent<QuestObjectiveEventBus>();
 
         // Register world targets before default-order marker OnEnable (see DefaultExecutionOrder).
@@ -258,6 +262,7 @@ public class QuestManager : StaticInstance<QuestManager>, IQuestService
         else
         {
             ChangeQuestState(questInfo, QuestState.CAN_FINISH);
+            RefreshMiniGameBindings();
             OnQuestUpdated?.Invoke(questInfo);
 
             if (!questInfo.waitForNpcTurnIn)
@@ -279,6 +284,7 @@ public class QuestManager : StaticInstance<QuestManager>, IQuestService
         allQuestInfos.Add(questInfo);
         questInfo.InitializeQuest();
         RegisterLegacySteps(questInfo);
+        EvaluateLevelCompletion();
         LogVerbose($"[QuestManager] Registered quest '{questInfo.id}'.");
     }
 
@@ -314,9 +320,11 @@ public class QuestManager : StaticInstance<QuestManager>, IQuestService
             return;
 
         ChangeQuestState(questInfo, QuestState.FINISHED);
+        RefreshMiniGameBindings();
         TryGrantDefinitionReward(questInfo);
         OnQuestCompleted?.Invoke(questInfo);
         ReevaluateQuestRequirements();
+        RefreshMiniGameBindings();
         LogVerbose($"Quest '{questInfo.id}' completed.");
         _persistence?.CaptureFromQuests(this);
         _persistence?.ScheduleSave();
@@ -326,6 +334,8 @@ public class QuestManager : StaticInstance<QuestManager>, IQuestService
             questInfo.InitializeQuest();
             OnQuestStateChanged?.Invoke(questInfo);
         }
+
+        EvaluateLevelCompletion();
     }
 
     private void TryGrantDefinitionReward(QuestInfo questInfo)
@@ -375,16 +385,24 @@ public class QuestManager : StaticInstance<QuestManager>, IQuestService
         }
     }
 
+    public void RefreshLevelCompletionState()
+    {
+        EvaluateLevelCompletion();
+    }
+
     private void InitializeQuests()
     {
         if (allQuestInfos == null)
             allQuestInfos = new List<QuestInfo>();
 
+        _levelCompleted = false;
         foreach (QuestInfo questInfo in allQuestInfos)
         {
             questInfo.InitializeQuest();
             RegisterLegacySteps(questInfo);
         }
+
+        EvaluateLevelCompletion();
     }
 
     public void ConfigureObjectiveRuntime(IQuestWorldResolver resolver)
@@ -492,6 +510,7 @@ public class QuestManager : StaticInstance<QuestManager>, IQuestService
         questInfo.InitializeQuest();
         OnQuestStateChanged?.Invoke(questInfo);
         _persistence?.ScheduleSave();
+        EvaluateLevelCompletion();
     }
 
     public void Guider_AdvanceCurrentStep(QuestInfo questInfo)
@@ -638,6 +657,8 @@ public class QuestManager : StaticInstance<QuestManager>, IQuestService
             if (q != null && q.state != QuestState.FINISHED)
                 Debug_ForceCompleteQuest(q);
         }
+
+        EvaluateLevelCompletion();
     }
 
     public string FormatDebugState(QuestInfo quest) => QuestDebugSnapshotBuilder.FormatLine(quest, this);
@@ -660,5 +681,38 @@ public class QuestManager : StaticInstance<QuestManager>, IQuestService
     {
         if (VerboseLogging)
             AppLog.Info(message);
+    }
+
+    private void EvaluateLevelCompletion()
+    {
+        bool completed = AreAllNonRepeatableQuestsFinished();
+        if (completed == _levelCompleted)
+            return;
+
+        _levelCompleted = completed;
+        if (_levelCompleted)
+        {
+            AppLog.Info("[QuestManager] All mandatory quests completed. Level finished.");
+            OnLevelCompleted?.Invoke();
+        }
+    }
+
+    private bool AreAllNonRepeatableQuestsFinished()
+    {
+        if (allQuestInfos == null || allQuestInfos.Count == 0)
+            return false;
+
+        bool hasMandatoryQuest = false;
+        foreach (QuestInfo quest in allQuestInfos)
+        {
+            if (quest == null || quest.isRepeatable)
+                continue;
+
+            hasMandatoryQuest = true;
+            if (quest.state != QuestState.FINISHED)
+                return false;
+        }
+
+        return hasMandatoryQuest;
     }
 }

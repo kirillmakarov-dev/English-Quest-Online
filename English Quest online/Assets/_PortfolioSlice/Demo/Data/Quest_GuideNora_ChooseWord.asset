@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61de27adc580b3c40a0c18714975db13, type: 3}
+  m_Name: Quest_GuideNora_ChooseWord
+  m_EditorClassIdentifier: _Project::QuestDefinitionSO
+  id: quest_guide_nora_choose_word
+  displayName: Lesson 3 - Choose the word
+  description: Pick the correct word from three options and complete the last MVP step.
+  levelRequired: 0
+  giverNpcId: guide_nora
+  prerequisiteQuest: {fileID: 0}
+  prerequisiteQuestId: 
+  waitForNpcTurnIn: 0
+  rewards:
+    xp: 150
+    items: []
+  rewardDefinition: {fileID: 0}
+  startDialogue: {fileID: 11400000, guid: 1bb93a00cca84b5c9a9dbd8e8456ee7b, type: 2}
+  inProgressDialogue: {fileID: 11400000, guid: 1bb93a00cca84b5c9a9dbd8e8456ee7b, type: 2}
+  turnInDialogue: {fileID: 11400000, guid: 1bb93a00cca84b5c9a9dbd8e8456ee7b, type: 2}
+  cannotStartDialogue: {fileID: 0}
+  alreadyFinishedDialogue: {fileID: 11400000, guid: 1bb93a00cca84b5c9a9dbd8e8456ee7b, type: 2}
+  objectives:
+  - type: 3
+    targetId: word_ordering
+    count: 1
+    displayText: Choose the correct word from three answers.
+    parameters: []
+    miniGameConfig: {fileID: 11400000, guid: 6f00f72f2ed2cdf49bb1f08aae9346fc, type: 2}
+    requiredItemId: 0
+    dialogue: {fileID: 0}
+    dialogueAfterFinished: {fileID: 0}
+    stepReward: {fileID: 0}
+    showStepRewardPopup: 1
+  authoringCatalogSet: {fileID: 0}

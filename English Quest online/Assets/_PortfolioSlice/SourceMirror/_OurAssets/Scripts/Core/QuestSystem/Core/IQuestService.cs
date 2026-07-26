@@ -9,8 +9,10 @@ public interface IQuestService
     event Action<QuestInfo> OnQuestCompleted;
     event Action<QuestInfo> OnQuestStateChanged;
     event Action<QuestObjectiveProgressEvent> OnObjectiveProgressChanged;
+    event Action OnLevelCompleted;
 
     IReadOnlyList<QuestInfo> AllQuests { get; }
+    bool IsLevelCompleted { get; }
 
     void StartQuest(QuestInfo questInfo);
     void FinishQuest(QuestInfo questInfo);
