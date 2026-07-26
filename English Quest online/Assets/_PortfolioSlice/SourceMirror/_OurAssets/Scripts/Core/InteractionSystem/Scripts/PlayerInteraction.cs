@@ -1,12 +1,16 @@
 using System.Collections;
 using Fusion;
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 public class PlayerInteraction : NetworkBehaviour
 {
     [Header("Configuration")]
     public Transform itemHolderPos; // Where objects are held
     [SerializeField] private KeyCode _interactionKey = KeyCode.E;
+    [SerializeField] private KeyCode _alternateInteractionKey = KeyCode.I;
     
     // Events mapping to Observer Pattern
     public event System.Action<IInteractable> OnHoverTargetChanged;
@@ -20,13 +24,24 @@ public class PlayerInteraction : NetworkBehaviour
     // Helper property for PickableItems to access the hold point
     public Transform HoldPoint => itemHolderPos;
 
+    public string InteractionKeyLabel =>
+        _alternateInteractionKey != KeyCode.None
+            ? $"{_interactionKey}/{_alternateInteractionKey}"
+            : _interactionKey.ToString();
+
     /// <summary>
     /// True when this local player should read keyboard input.
     /// In Fusion Multi-Peer mode only the focused runner has <see cref="NetworkRunner.ProvideInput"/>.
     /// </summary>
-    public bool CanProcessLocalInput =>
+    public bool CanProcessLocalInput => HasNetworkInputAuthority || HasLocalDemoInputFallback;
+
+    private bool HasNetworkInputAuthority =>
         Object != null && Object.IsValid && Object.HasInputAuthority
         && Runner != null && Runner.IsRunning && Runner.ProvideInput;
+
+    // The portfolio scene can use a scene-authored Starter Assets player before Fusion owns it.
+    private bool HasLocalDemoInputFallback =>
+        GetComponent<NetworkObject>() == null && gameObject.scene.IsValid();
 
     private Coroutine _reenableNotifyCoroutine;
 
@@ -68,7 +83,7 @@ public class PlayerInteraction : NetworkBehaviour
     private void Update()
     {
         // 1. Input Handling (focused local player only — one runner in Multi-Peer mode)
-        if (CanProcessLocalInput && Input.GetKeyDown(_interactionKey))
+        if (CanProcessLocalInput && WasInteractionKeyPressed())
             TryInteract();
 
         // 2. Cleanup: runs after input so same-frame interactions are reflected immediately.
@@ -122,6 +137,35 @@ public class PlayerInteraction : NetworkBehaviour
     {
         return !IsGoneOrInactive(interactable) && interactable.CanInteract;
     }
+
+    private bool WasInteractionKeyPressed()
+    {
+        if (WasKeyPressed(_interactionKey))
+            return true;
+
+        return _alternateInteractionKey != KeyCode.None && WasKeyPressed(_alternateInteractionKey);
+    }
+
+    private bool WasKeyPressed(KeyCode keyCode)
+    {
+#if ENABLE_INPUT_SYSTEM
+        if (Keyboard.current != null && TryGetInputSystemKey(keyCode, out Key inputSystemKey))
+            return Keyboard.current[inputSystemKey].wasPressedThisFrame;
+#endif
+
+#if ENABLE_LEGACY_INPUT_MANAGER
+        return Input.GetKeyDown(keyCode);
+#else
+        return false;
+#endif
+    }
+
+#if ENABLE_INPUT_SYSTEM
+    private static bool TryGetInputSystemKey(KeyCode keyCode, out Key inputSystemKey)
+    {
+        return System.Enum.TryParse(keyCode.ToString(), out inputSystemKey);
+    }
+#endif
 
     // Helper to check if a Unity Object underlying an interface has been destroyed or deactivated
     private bool IsGoneOrInactive(IInteractable interactable)

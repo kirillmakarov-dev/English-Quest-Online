@@ -37,19 +37,26 @@ public class InteractionZoneTrigger : MonoBehaviour
     // priority over a local one when both live on the same GameObject.
     private IInteractable ResolveInteractable(Collider other)
     {
-        IInteractable[] candidates = other.GetComponents<IInteractable>();
-        if (candidates.Length == 0)
-            candidates = other.GetComponentsInParent<IInteractable>();
+        MonoBehaviour[] candidates = other.GetComponents<MonoBehaviour>();
+        if (candidates == null || candidates.Length == 0)
+            candidates = other.GetComponentsInParent<MonoBehaviour>();
 
-        foreach (IInteractable candidate in candidates)
-            if (candidate is NetworkBehaviour && candidate.CanInteract) return candidate;
+        foreach (MonoBehaviour candidate in candidates)
+            if (candidate is NetworkBehaviour interactable && interactable is IInteractable canInteract && canInteract.CanInteract)
+                return canInteract;
 
-        foreach (IInteractable candidate in candidates)
-            if (candidate.CanInteract) return candidate;
+        foreach (MonoBehaviour candidate in candidates)
+            if (candidate is IInteractable interactable && interactable.CanInteract)
+                return interactable;
 
-        foreach (IInteractable candidate in candidates)
-            if (candidate is NetworkBehaviour) return candidate;
+        foreach (MonoBehaviour candidate in candidates)
+            if (candidate is IInteractable interactable && candidate is NetworkBehaviour)
+                return interactable;
 
-        return candidates.Length > 0 ? candidates[0] : null;
+        foreach (MonoBehaviour candidate in candidates)
+            if (candidate is IInteractable interactable)
+                return interactable;
+
+        return null;
     }
 }
