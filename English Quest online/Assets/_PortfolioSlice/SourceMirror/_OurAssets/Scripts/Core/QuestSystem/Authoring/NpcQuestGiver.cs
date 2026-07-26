@@ -7,6 +7,7 @@ using UnityServiceLocator;
 public class NpcQuestGiver : MonoBehaviour, IInteractable
 {
     [SerializeField] private string npcId;
+    [SerializeField] private QuestLineSO questLine;
     [SerializeField] private QuestSelectionUI questSelectionUI;
     [SerializeField] private DialogueNode fallbackCannotStartDialogue;
     [SerializeField] private DialogueNode fallbackInProgressDialogue;
@@ -17,41 +18,124 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
     private IDialogueService _dialogueService;
 
     public string InteractionPrompt => "Talk";
-    public string NpcId => npcId;
+    public string NpcId => ResolveNpcId();
 
-    public bool CanInteract => !string.IsNullOrEmpty(npcId) && enabled;
+    public bool CanInteract
+    {
+        get
+        {
+            string resolvedNpcId = ResolveNpcId();
+            if (string.IsNullOrEmpty(resolvedNpcId) || !enabled)
+                return false;
+
+            IQuestAvailabilityService availability = ResolveAvailabilityService();
+            return availability != null &&
+                   availability.CanInteractWithNpc(resolvedNpcId) &&
+                   HasRelevantQuestDialogue(resolvedNpcId);
+        }
+    }
 
     private void OnEnable()
     {
-        QuestWorldTargetRegistration.TryRegister(this, QuestObjectiveType.TalkToNpc, npcId);
-        QuestWorldTargetRegistration.TryRegister(this, QuestObjectiveType.DeliverItem, npcId);
+        string resolvedNpcId = ResolveNpcId();
+        QuestWorldTargetRegistration.TryRegister(this, QuestObjectiveType.TalkToNpc, resolvedNpcId);
+        QuestWorldTargetRegistration.TryRegister(this, QuestObjectiveType.DeliverItem, resolvedNpcId);
     }
 
     private void OnDisable()
     {
-        QuestWorldTargetRegistration.TryUnregister(this, QuestObjectiveType.TalkToNpc, npcId);
-        QuestWorldTargetRegistration.TryUnregister(this, QuestObjectiveType.DeliverItem, npcId);
+        string resolvedNpcId = ResolveNpcId();
+        QuestWorldTargetRegistration.TryUnregister(this, QuestObjectiveType.TalkToNpc, resolvedNpcId);
+        QuestWorldTargetRegistration.TryUnregister(this, QuestObjectiveType.DeliverItem, resolvedNpcId);
+    }
+
+    private string ResolveNpcId()
+    {
+        if (!string.IsNullOrEmpty(npcId))
+            return npcId;
+
+        return questLine != null ? questLine.npcId : null;
+    }
+
+    private bool HasRelevantQuestDialogue(string resolvedNpcId)
+    {
+        IQuestService questService = ResolveQuestService();
+        IQuestAvailabilityService availability = ResolveAvailabilityService();
+        if (questService == null || availability == null || string.IsNullOrEmpty(resolvedNpcId))
+            return false;
+
+        if (HasDialogueForState(availability.GetReadyToTurnIn(resolvedNpcId), StateKind.TurnIn, resolvedNpcId))
+            return true;
+
+        if (HasDialogueForState(availability.GetInProgress(resolvedNpcId), StateKind.InProgress, resolvedNpcId))
+            return true;
+
+        return HasDialogueForState(availability.GetAvailableToStart(resolvedNpcId), StateKind.Start, resolvedNpcId);
+    }
+
+    private bool HasDialogueForState(IReadOnlyList<QuestInfo> quests, StateKind stateKind, string resolvedNpcId)
+    {
+        if (quests == null)
+            return false;
+
+        foreach (QuestInfo quest in quests)
+        {
+            if (quest == null || !ResolveAvailabilityService().TryGetDefinition(quest, out QuestDefinitionSO definition))
+                continue;
+
+            if (definition.giverNpcId != resolvedNpcId)
+                continue;
+
+            if (stateKind == StateKind.Start && definition.startDialogue != null)
+                return true;
+
+            if (stateKind == StateKind.InProgress &&
+                (definition.inProgressDialogue != null || definition.startDialogue != null || HasObjectiveDialogue(quest)))
+                return true;
+
+            if (stateKind == StateKind.TurnIn &&
+                (definition.turnInDialogue != null || definition.alreadyFinishedDialogue != null))
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool HasObjectiveDialogue(QuestInfo quest)
+    {
+        if (quest == null || !quest.UsesObjectives())
+            return false;
+
+        if (!quest.TryGetObjectiveDefinition(quest.currentStepIndex, out QuestObjectiveDefinition definition))
+            return false;
+
+        if (definition.type != QuestObjectiveType.TalkToNpc &&
+            definition.type != QuestObjectiveType.DeliverItem)
+            return false;
+
+        return definition.dialogue != null || definition.dialogueAfterFinished != null;
     }
 
     public bool Interact(PlayerInteraction interactor)
     {
+        string resolvedNpcId = ResolveNpcId();
         if (!CanInteract || ResolveQuestService() == null || ResolveAvailabilityService() == null)
             return false;
 
-        if (TryHandleActiveNpcObjective(interactor))
+        if (TryHandleActiveNpcObjective(interactor, resolvedNpcId))
             return true;
 
-        QuestObjectiveEventBus.TryPublish(this, new QuestObjectiveEvents.NpcInteracted(npcId));
+        QuestObjectiveEventBus.TryPublish(this, new QuestObjectiveEvents.NpcInteracted(resolvedNpcId));
 
-        IReadOnlyList<QuestInfo> turnIns = ResolveAvailabilityService().GetReadyToTurnIn(npcId);
+        IReadOnlyList<QuestInfo> turnIns = ResolveAvailabilityService().GetReadyToTurnIn(resolvedNpcId);
         if (turnIns.Count > 0)
             return HandleTurnIn(turnIns[0], interactor);
 
-        IReadOnlyList<QuestInfo> inProgress = ResolveAvailabilityService().GetInProgress(npcId);
+        IReadOnlyList<QuestInfo> inProgress = ResolveAvailabilityService().GetInProgress(resolvedNpcId);
         if (inProgress.Count > 0)
-            return HandleInProgress(inProgress[0], interactor);
+            return HandleInProgress(inProgress[0], interactor, resolvedNpcId);
 
-        IReadOnlyList<QuestInfo> available = ResolveAvailabilityService().GetAvailableToStart(npcId);
+        IReadOnlyList<QuestInfo> available = ResolveAvailabilityService().GetAvailableToStart(resolvedNpcId);
         if (available.Count == 1)
             return StartQuestWithDialogue(available[0], interactor);
 
@@ -69,15 +153,15 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
     /// Handles TalkToNpc / DeliverItem for any in-progress quest targeting this NPC
     /// (including non-giver NPCs). Completing the step does not turn in on the same Interact.
     /// </summary>
-    private bool TryHandleActiveNpcObjective(PlayerInteraction interactor)
+    private bool TryHandleActiveNpcObjective(PlayerInteraction interactor, string resolvedNpcId)
     {
-        if (!TryFindActiveNpcObjective(npcId, out QuestInfo quest, out QuestObjectiveDefinition objective, out int stepIndex))
+        if (!TryFindActiveNpcObjective(resolvedNpcId, out QuestInfo quest, out QuestObjectiveDefinition objective, out int stepIndex))
             return false;
 
         int stepBefore = quest.currentStepIndex;
         QuestState stateBefore = quest.state;
 
-        QuestObjectiveEventBus.TryPublish(this, new QuestObjectiveEvents.NpcInteracted(npcId));
+        QuestObjectiveEventBus.TryPublish(this, new QuestObjectiveEvents.NpcInteracted(resolvedNpcId));
 
         bool completed = DidNpcObjectiveComplete(quest, stepBefore, stateBefore, stepIndex);
 
@@ -159,9 +243,9 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
         return true;
     }
 
-    private bool HandleInProgress(QuestInfo quest, PlayerInteraction interactor)
+    private bool HandleInProgress(QuestInfo quest, PlayerInteraction interactor, string resolvedNpcId)
     {
-        if (TryGetPriorNpcObjectiveDialogue(quest, npcId, out DialogueNode afterFinished))
+        if (TryGetPriorNpcObjectiveDialogue(quest, resolvedNpcId, out DialogueNode afterFinished))
         {
             PlayDialogue(afterFinished, interactor);
             return false;
@@ -220,7 +304,7 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
             if (!ResolveAvailabilityService().TryGetDefinition(quest, out QuestDefinitionSO definition))
                 continue;
 
-            if (definition.giverNpcId != npcId || definition.cannotStartDialogue == null)
+            if (definition.giverNpcId != ResolveNpcId() || definition.cannotStartDialogue == null)
                 continue;
 
             if (quest.state == QuestState.REQUIREMENTS_NOT_MET)
@@ -261,6 +345,13 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
                     StartQuestWithDialogue(selected, interactor);
             },
             null);
+    }
+
+    private enum StateKind
+    {
+        Start,
+        InProgress,
+        TurnIn
     }
 
     private QuestSelectionUI ResolveQuestSelectionUI()

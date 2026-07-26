@@ -15,7 +15,7 @@ namespace EnglishKingdom.QuestSystem
 
     public string GameId => gameId;
     public string InteractionPrompt => interactionPrompt;
-    public bool CanInteract => enabled && !string.IsNullOrEmpty(gameId);
+    public bool CanInteract => enabled && !string.IsNullOrEmpty(gameId) && HasActiveBinding();
 
     private void OnEnable()
     {
@@ -53,6 +53,12 @@ namespace EnglishKingdom.QuestSystem
       return config.TryLaunch(launchHost, interactor, OnGameCompleted, null);
     }
 
+    private bool HasActiveBinding()
+    {
+      return ServiceLocator.For(this).TryGet(out IQuestMiniGameBinder binder) &&
+             binder.TryGetConfig(gameId, out _);
+    }
+
     private bool TryResolveConfig(out QuestMiniGameConfigSO config)
     {
       config = null;
@@ -62,18 +68,12 @@ namespace EnglishKingdom.QuestSystem
         return true;
       }
 
-      QuestMiniGameConfigSO fallback = launchHost.FallbackConfig;
-      if (fallback != null && fallback.GameId == gameId)
-      {
-        config = fallback;
-        return true;
-      }
-
       return false;
     }
 
     private void OnGameCompleted(int score)
     {
+      AppLog.Info($"[MiniGameWorldInteractable] Completed '{gameId}' with score {score}. Publishing quest objective event.", this);
       QuestObjectiveEventBus.TryPublish(this, new QuestObjectiveEvents.MiniGameCompleted(gameId, score));
     }
   }

@@ -144,10 +144,12 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
 
         private void HandleLevelCompleted()
         {
-            // Null out _onClosed so the subsequent Hide does not double-fire it.
-            _onClosed = null;
             Action completed = _onCompleted;
             _onCompleted = null;
+            _onClosed = null;
+
+            Presenter?.Hide();
+            ReleaseInteractionLock();
             completed?.Invoke();
         }
     }

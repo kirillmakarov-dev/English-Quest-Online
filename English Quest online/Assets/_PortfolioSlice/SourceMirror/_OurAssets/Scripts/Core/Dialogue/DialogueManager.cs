@@ -9,6 +9,15 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
 {
     private const string DialogueEndNextText = "סיים";
 
+    private static readonly PlayerLockSystem.LockType[] DialogueLocks =
+    {
+        PlayerLockSystem.LockType.Movement,
+        PlayerLockSystem.LockType.Camera,
+        PlayerLockSystem.LockType.Interaction,
+        PlayerLockSystem.LockType.Cursor,
+        PlayerLockSystem.LockType.GameplayInput
+    };
+
     [Header("UI References")]
     public GameObject dialoguePanel;
     public Image portraitImage;
@@ -19,6 +28,7 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
 
     [Header("Settings")]
     public float typingSpeed = 0.02f;
+    private const string MissingDialogueText = "Ready for the next lesson.";
 
     public event Action<DialogueActionType, string> OnDialogueAction;
     public event Action OnDialogueStart;
@@ -28,6 +38,11 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
     private Sprite currentPortrait;
     private bool isDialogueActive = false;
     public bool IsDialogueActive => isDialogueActive;
+    private IPlayerLockSystem inputLocker;
+    private bool ownsInputLock;
+    private bool usingCursorFallback;
+    private CursorLockMode previousCursorLockState;
+    private bool previousCursorVisible;
     
     // Struct to store deferred actions cleanly
     private struct DeferredAction
@@ -61,6 +76,7 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
 
     protected override void OnDestroy()
     {
+        ReleaseDialogueInput();
         ServiceLocator.DeregisterFor<IDialogueService>(this);
         base.OnDestroy();
     }
@@ -72,6 +88,10 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
         Sprite speakerSprite = null,
         string speakerName = "")
     {
+        textTyper?.StopTyping();
+        ClearChoices();
+        ReleaseDialogueInput();
+        AcquireDialogueInput(localPlayer);
         _deferredActions.Clear();
         isDialogueActive = true;
         OnDialogueStart?.Invoke();
@@ -97,7 +117,7 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
         }
 
         // 1. Update UI Elements
-        //if (nameText != null) nameText.text = node.speakerName;
+        if (nameText != null) nameText.text = node.speakerName;
         if (portraitImage != null && currentPortrait != null)
         {
             portraitImage.sprite = currentPortrait;
@@ -118,17 +138,26 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
 
         // 3. Type text
         ClearChoices();
+        string resolvedText = ResolveDialogueText(node);
 
         if (textTyper != null)
         {
-            textTyper.TypeText(node.dialogueText, dialogueText, typingSpeed, () => ShowChoices(node));
+            textTyper.TypeText(resolvedText, dialogueText, typingSpeed, () => ShowChoices(node));
         }
         else
         {
             // Fallback if typer missing
-            if (dialogueText != null) dialogueText.text = node.dialogueText;
+            if (dialogueText != null) dialogueText.text = resolvedText;
             ShowChoices(node);
         }
+    }
+
+    private static string ResolveDialogueText(DialogueNode node)
+    {
+        if (node != null && !string.IsNullOrWhiteSpace(node.dialogueText))
+            return node.dialogueText;
+
+        return MissingDialogueText;
     }
 
     void ClearChoices()
@@ -164,11 +193,18 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
     void CreateChoiceButton(string text, DialogueNode nextNode)
     {
         GameObject buttonObj = Instantiate(choiceButtonPrefab, choiceContainer);
+        buttonObj.SetActive(true);
+
         TextMeshProUGUI btnText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
         if (btnText != null) btnText.text = text;
 
         Button btn = buttonObj.GetComponent<Button>();
-        btn.onClick.AddListener(() => OnChoiceSelected(nextNode));
+        if (btn != null)
+        {
+            btn.interactable = true;
+            btn.onClick.RemoveAllListeners();
+            btn.onClick.AddListener(() => OnChoiceSelected(nextNode));
+        }
     }
 
     void OnChoiceSelected(DialogueNode nextNode)
@@ -203,6 +239,56 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
             
         // Clean up choices
         ClearChoices();
+        ReleaseDialogueInput();
+    }
+
+    private void AcquireDialogueInput(Transform localPlayer)
+    {
+        if (TryResolveInputLocker(localPlayer, out inputLocker))
+        {
+            inputLocker.Lock(this, DialogueLocks);
+            ownsInputLock = true;
+            usingCursorFallback = false;
+            return;
+        }
+
+        previousCursorLockState = Cursor.lockState;
+        previousCursorVisible = Cursor.visible;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        usingCursorFallback = true;
+    }
+
+    private bool TryResolveInputLocker(Transform localPlayer, out IPlayerLockSystem locker)
+    {
+        if (localPlayer != null)
+        {
+            locker = localPlayer.GetComponentInParent<PlayerLockSystem>();
+            if (locker != null)
+                return true;
+        }
+
+        if (ServiceLocator.For(this).TryGet(out locker))
+            return true;
+
+        locker = null;
+        return false;
+    }
+
+    private void ReleaseDialogueInput()
+    {
+        if (ownsInputLock && inputLocker != null)
+            inputLocker.Unlock(this, DialogueLocks);
+
+        if (usingCursorFallback)
+        {
+            Cursor.lockState = previousCursorLockState;
+            Cursor.visible = previousCursorVisible;
+        }
+
+        inputLocker = null;
+        ownsInputLock = false;
+        usingCursorFallback = false;
     }
 
     private void HandleDialogueAction(DialogueActionType type, string parameter)

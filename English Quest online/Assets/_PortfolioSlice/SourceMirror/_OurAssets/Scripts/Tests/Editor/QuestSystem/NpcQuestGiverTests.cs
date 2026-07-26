@@ -116,6 +116,12 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
 
         [Test]
+        public void CanInteract_NoVisibleQuests_ReturnsFalse()
+        {
+            Assert.IsFalse(_giver.CanInteract);
+        }
+
+        [Test]
         public void Interact_TurnInTakesPriorityOverAvailable()
         {
             QuestInfo turnIn = SetupQuest("q_turnin", QuestState.CAN_FINISH, "teacher_maya");
@@ -257,6 +263,10 @@ namespace EnglishKingdom.Tests.QuestSystem
         {
             var definition = QuestSystemTestSupport.CreateDefinition(id, npcId);
             _ownedObjects.Add(definition);
+            definition.startDialogue = CreateDialogue($"{id}_start");
+            definition.inProgressDialogue = CreateDialogue($"{id}_in_progress");
+            definition.turnInDialogue = CreateDialogue($"{id}_turn_in");
+            definition.alreadyFinishedDialogue = CreateDialogue($"{id}_finished");
             QuestInfo quest = QuestSystemTestSupport.CreateQuestInfo(id, state);
             _ownedObjects.Add(quest.gameObject);
             _questService.RegisterQuest(quest);

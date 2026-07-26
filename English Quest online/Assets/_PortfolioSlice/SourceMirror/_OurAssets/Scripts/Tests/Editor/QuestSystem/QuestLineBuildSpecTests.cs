@@ -14,6 +14,7 @@ namespace EnglishKingdom.Tests.QuestSystem
             var spec = ScriptableObject.CreateInstance<QuestLineBuildSpecSO>();
             spec.lineId = "test_line";
             spec.npcId = "npc_a";
+            spec.prerequisiteLineId = "intro_line";
 
             var startDialogue = ScriptableObject.CreateInstance<DialogueNode>();
             var entry = new QuestBuildEntry
@@ -37,6 +38,7 @@ namespace EnglishKingdom.Tests.QuestSystem
             spec.quests = new List<QuestBuildEntry> { entry };
 
             Assert.AreEqual("test_line", spec.lineId);
+            Assert.AreEqual("intro_line", spec.prerequisiteLineId);
             Assert.AreEqual(1, spec.quests.Count);
             Assert.AreSame(startDialogue, spec.quests[0].startDialogue);
             Assert.AreEqual("game_a", spec.quests[0].objectives[0].targetId);

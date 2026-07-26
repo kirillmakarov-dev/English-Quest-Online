@@ -9,6 +9,8 @@ public class QuestLineBuildSpecSO : ScriptableObject
     [Header("Identity")]
     public string lineId;
     public string npcId;
+    [Tooltip("Optional quest line that must be completed before this NPC becomes available.")]
+    public string prerequisiteLineId;
     public string displayName;
     [TextArea] public string theme;
 
