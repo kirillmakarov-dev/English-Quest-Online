@@ -5,7 +5,6 @@ using Fusion;
 using Unity.Cinemachine;
 using Fusion.Addons.Physics;
 using System.Linq;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityServiceLocator;
 
@@ -28,7 +27,6 @@ public class PlayerLockSystem : NetworkBehaviour, IPlayerLockSystem
     private Dictionary<LockType, HashSet<object>> _locks = new Dictionary<LockType, HashSet<object>>();
 
     // Component references to control
-    private PlayerMovement _playerMovement;
     private CinemachineInputAxisController _cameraInput;
     private PlayerInteraction _playerInteraction;
     private NetworkRigidbody3D _networkRigidbody;
@@ -42,7 +40,6 @@ public class PlayerLockSystem : NetworkBehaviour, IPlayerLockSystem
         }
 
         // Get components on the player
-        _playerMovement = PlayerRoot.Resolve<PlayerMovement>(this);
         _playerInteraction = PlayerRoot.Resolve<PlayerInteraction>(this);
         _networkRigidbody = PlayerRoot.Resolve<NetworkRigidbody3D>(this);
         
@@ -137,11 +134,7 @@ public class PlayerLockSystem : NetworkBehaviour, IPlayerLockSystem
         switch (type)
         {
             case LockType.Movement:
-                if (_playerMovement != null)
-                {
-                    _playerMovement.enabled = !isLocked;
-                    if (isLocked) StopPhysicsMovement();
-                }
+                if (isLocked) StopPhysicsMovement();
                 break;
 
             case LockType.Camera:

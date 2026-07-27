@@ -1,5 +1,4 @@
-using Fusion;
-using MoreMountains.Feedbacks;
+﻿using Fusion;
 using UnityEngine;
 
 public class JumpPlatform : NetworkBehaviour
@@ -10,7 +9,7 @@ public class JumpPlatform : NetworkBehaviour
     
     [Header("Feedbacks")]
     [Tooltip("Optional feedback to play when a jump is triggered (sound, particles, etc.).")]
-    [SerializeField] private MMF_Player _feedback;
+    [SerializeField] private MonoBehaviour _feedback;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -106,7 +105,7 @@ public class JumpPlatform : NetworkBehaviour
                 // Play feedback locally
                 if (_feedback != null)
                 {
-                    _feedback.PlayFeedbacks();
+                    OptionalFeedbackPlayer.Play(_feedback);
                 }
             }
         }
@@ -119,3 +118,4 @@ public class JumpPlatform : NetworkBehaviour
         anim.SetBool(paramHash, false);
     }
 }
+

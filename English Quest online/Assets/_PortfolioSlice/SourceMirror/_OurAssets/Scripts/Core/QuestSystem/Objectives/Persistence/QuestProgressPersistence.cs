@@ -2,9 +2,6 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using EnglishKingdom.LevelSystem;
-using EnglishKingdom.SaveSystem;
-using EnglishKingdom.SaveSystem.Data;
-using EnglishKingdom.QuestSystem;
 using UnityEngine;
 using UnityServiceLocator;
 
@@ -18,7 +15,8 @@ namespace EnglishKingdom.QuestSystem
         [SerializeField] private bool autoSave = true;
         [SerializeField] private float saveDebounceSeconds = 1f;
 
-        private ProgressSaveData _progressData;
+        private readonly Dictionary<string, QuestProgressEntry> _progress = new Dictionary<string, QuestProgressEntry>();
+        private readonly Dictionary<string, bool> _completion = new Dictionary<string, bool>();
         private float _saveScheduledAt = -1f;
         private bool _dirty;
         private QuestManager _questManager;
@@ -45,8 +43,6 @@ namespace EnglishKingdom.QuestSystem
 
             try
             {
-                _progressData = await SaveManager.LoadProgressAsync();
-                MigrateLegacyCompletion(_progressData);
                 ApplyToQuests(questManager);
                 questManager.RefreshMiniGameBindings();
                 await WaitForLevelServiceReadyAsync();
@@ -55,8 +51,7 @@ namespace EnglishKingdom.QuestSystem
             }
             catch (Exception ex)
             {
-                AppLog.Warning($"[QuestProgressPersistence] Failed to load progress: {ex.Message}");
-                _progressData = new ProgressSaveData();
+                AppLog.Warning($"[QuestProgressPersistence] Failed to apply in-memory progress: {ex.Message}");
             }
 
             IsLoaded = true;
@@ -81,7 +76,7 @@ namespace EnglishKingdom.QuestSystem
 
         private void Update()
         {
-            if (!autoSave || !_dirty || _questManager == null || _progressData == null)
+            if (!autoSave || !_dirty || _questManager == null)
                 return;
 
             if (Time.unscaledTime < _saveScheduledAt)
@@ -89,7 +84,6 @@ namespace EnglishKingdom.QuestSystem
 
             _dirty = false;
             CaptureFromQuests(_questManager);
-            SaveManager.SaveProgressAsync(_progressData).Forget();
         }
 
         public void ScheduleSave()
@@ -100,17 +94,14 @@ namespace EnglishKingdom.QuestSystem
 
         public void CaptureFromQuests(QuestManager questManager)
         {
-            if (_progressData == null)
-                _progressData = new ProgressSaveData();
-
             foreach (QuestInfo quest in questManager.AllQuests)
             {
                 if (quest == null || string.IsNullOrEmpty(quest.id))
                     continue;
 
-                _progressData.QuestProgress[quest.id] = quest.CreateProgressEntry();
+                _progress[quest.id] = quest.CreateProgressEntry();
                 if (quest.state == QuestState.FINISHED)
-                    _progressData.QuestCompletion[quest.id] = true;
+                    _completion[quest.id] = true;
             }
         }
 
@@ -121,27 +112,10 @@ namespace EnglishKingdom.QuestSystem
                 if (quest == null || string.IsNullOrEmpty(quest.id))
                     continue;
 
-                if (_progressData.QuestProgress.TryGetValue(quest.id, out QuestProgressEntry entry))
+                if (_progress.TryGetValue(quest.id, out QuestProgressEntry entry))
                     quest.ApplyProgressEntry(entry);
-            }
-        }
-
-        private static void MigrateLegacyCompletion(ProgressSaveData data)
-        {
-            if (data.QuestCompletion == null)
-                return;
-
-            foreach (KeyValuePair<string, bool> pair in data.QuestCompletion)
-            {
-                if (!pair.Value || data.QuestProgress.ContainsKey(pair.Key))
-                    continue;
-
-                data.QuestProgress[pair.Key] = new QuestProgressEntry
-                {
-                    State = (int)QuestState.FINISHED,
-                    CurrentStepIndex = 0,
-                    Steps = new List<StepProgressEntry>()
-                };
+                else if (_completion.TryGetValue(quest.id, out bool completed) && completed)
+                    quest.SetState(QuestState.FINISHED);
             }
         }
     }

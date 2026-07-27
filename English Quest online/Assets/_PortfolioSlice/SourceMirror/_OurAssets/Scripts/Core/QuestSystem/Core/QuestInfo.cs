@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using EnglishKingdom.QuestSystem;
-using EnglishKingdom.SaveSystem.Data;
 using UnityEngine;
 using UnityServiceLocator;
 

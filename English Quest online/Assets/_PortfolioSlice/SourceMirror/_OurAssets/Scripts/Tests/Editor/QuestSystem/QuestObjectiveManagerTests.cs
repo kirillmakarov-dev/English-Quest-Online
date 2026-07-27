@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using EnglishKingdom.QuestSystem;
-using EnglishKingdom.SaveSystem.Data;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;

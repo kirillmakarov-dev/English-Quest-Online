@@ -1,12 +1,11 @@
-using UnityEngine;
-using MoreMountains.Feedbacks; // Required for Feel
+﻿using UnityEngine;
 
 public class UIDimmer : StaticInstance<UIDimmer>
 {
 
-    [Header("Feel Animations")]
-    public MMF_Player FadeInFeedbacks;
-    public MMF_Player FadeOutFeedbacks;
+    [Header("Optional Animations")]
+    public MonoBehaviour FadeInFeedbacks;
+    public MonoBehaviour FadeOutFeedbacks;
 
     private CanvasGroup canvasGroup;
 
@@ -21,14 +20,15 @@ public class UIDimmer : StaticInstance<UIDimmer>
     public void Show()
     {
         canvasGroup.blocksRaycasts = true; // Block clicks behind the menu
-        FadeOutFeedbacks.StopFeedbacks();  // Stop hiding if it's currently hiding
-        FadeInFeedbacks.PlayFeedbacks();
+        OptionalFeedbackPlayer.Stop(FadeOutFeedbacks);  // Stop hiding if it's currently hiding
+        OptionalFeedbackPlayer.Play(FadeInFeedbacks);
     }
 
     public void Hide()
     {
         canvasGroup.blocksRaycasts = false; // Allow clicks again
-        FadeInFeedbacks.StopFeedbacks();
-        FadeOutFeedbacks.PlayFeedbacks();
+        OptionalFeedbackPlayer.Stop(FadeInFeedbacks);
+        OptionalFeedbackPlayer.Play(FadeOutFeedbacks);
     }
 }
+

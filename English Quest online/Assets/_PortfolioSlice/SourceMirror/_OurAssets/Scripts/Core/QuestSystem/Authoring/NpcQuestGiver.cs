@@ -8,10 +8,10 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
 {
     [SerializeField] private string npcId;
     [SerializeField] private QuestLineSO questLine;
-    [SerializeField] private QuestSelectionUI questSelectionUI;
+    [SerializeField] private QuestSelectionUI questSelectionUI; 
     [SerializeField] private DialogueNode fallbackCannotStartDialogue;
     [SerializeField] private DialogueNode fallbackInProgressDialogue;
-    [SerializeField] private DialogueNode fallbackFinishedDialogue;
+    [SerializeField] private DialogueNode fallbackFinishedDialogue; 
 
     private IQuestService _questService;
     private IQuestAvailabilityService _availabilityService;

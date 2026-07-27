@@ -1,14 +1,13 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Fusion;
-using MoreMountains.Feedbacks;
 using UnityServiceLocator;
 
 public class InGameMenuController : GameplayUIBase
 {
     [Header("UI Elements")]
-    [Tooltip("The panel containing the menu UI — hidden directly on close")]
+    [Tooltip("The panel containing the menu UI â€” hidden directly on close")]
     [SerializeField] private GameObject _menuPanel;
 
     [Tooltip("Button to resume the game")]
@@ -25,8 +24,8 @@ public class InGameMenuController : GameplayUIBase
 
 
     [Header("Feedbacks")]
-    [Tooltip("MoreMountains feedback that plays when the menu opens (should activate the menu panel inside)")]
-    [SerializeField] private MMF_Player _openFeedback;
+    [Tooltip("Optional feedback that plays when the menu opens (should activate the menu panel inside)")]
+    [SerializeField] private MonoBehaviour _openFeedback;
 
     private bool _isMenuOpen = false;
     private bool _isSettingsOpen = false;
@@ -66,7 +65,7 @@ public class InGameMenuController : GameplayUIBase
             if (_menuPanel != null) _menuPanel.SetActive(true);
             UIDimmer.Instance.Show();
             AudioListener.pause = true;
-            _openFeedback?.PlayFeedbacks();
+            OptionalFeedbackPlayer.Play(_openFeedback);
             BeginInteraction();
         }
         else
@@ -141,3 +140,4 @@ public class InGameMenuController : GameplayUIBase
         if (_menuPanel != null) _menuPanel.SetActive(true);
     }
 }
+

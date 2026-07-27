@@ -1,9 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Editor-friendly debug config for <see cref="LogServiceBootstrapper"/>.
-/// Keep the asset at Assets/_OurAssets/Resources/Editor/LogServiceDebugConfig.asset
-/// so it is easy to change from Tools > English Kingdom > Debug.
+/// Editor-friendly debug config for the project log level menu.
+/// Keep the asset in Resources/Editor so debug tools can load it consistently.
 /// </summary>
 [CreateAssetMenu(
     menuName = "English Kingdom/Dev/Log Service Debug Config",

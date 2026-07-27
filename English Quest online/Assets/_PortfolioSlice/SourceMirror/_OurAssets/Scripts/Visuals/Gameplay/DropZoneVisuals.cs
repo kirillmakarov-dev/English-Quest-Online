@@ -1,18 +1,16 @@
-using UnityEngine;
-using MoreMountains.Feedbacks;
-
+﻿using UnityEngine;
 /// <summary>
-/// Handles visual feedback for a drop zone using MoreMountains Feel (MMF_Player).
+/// Handles optional visual feedback for a drop zone.
 /// Separated from logic to follow Clean Architecture.
 /// </summary>
 public class DropZoneVisuals : MonoBehaviour
 {
     [Header("Feedbacks")]
     [Tooltip("Feedback to play when a correct match occurs.")]
-    public MMF_Player SuccessFeedback;
+    public MonoBehaviour SuccessFeedback;
 
     [Tooltip("Feedback to play when an incorrect match occurs.")]
-    public MMF_Player FailureFeedback;
+    public MonoBehaviour FailureFeedback;
 
     /// <summary>
     /// Plays the success feedback.
@@ -21,7 +19,7 @@ public class DropZoneVisuals : MonoBehaviour
     {
         if (SuccessFeedback != null)
         {
-            SuccessFeedback.PlayFeedbacks();
+            OptionalFeedbackPlayer.Play(SuccessFeedback);
             AppLog.Info($"[{name}] Playing Success Feedback");
         }
     }
@@ -33,8 +31,9 @@ public class DropZoneVisuals : MonoBehaviour
     {
         if (FailureFeedback != null)
         {
-            FailureFeedback.PlayFeedbacks();
+            OptionalFeedbackPlayer.Play(FailureFeedback);
             AppLog.Info($"[{name}] Playing Failure Feedback");
         }
     }
 }
+
