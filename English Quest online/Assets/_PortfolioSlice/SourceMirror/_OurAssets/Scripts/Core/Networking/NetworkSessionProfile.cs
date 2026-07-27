@@ -13,7 +13,7 @@ public class NetworkSessionProfile : ScriptableObject
 {
     [SerializeField] private string _displayName = "Open World";
     [SerializeField] private string _sessionName = "OpenWorld";
-    [SerializeField] private int _maxPlayers = 50;
+    [SerializeField] private int _maxPlayers = 2;
     [SerializeField] private GameMode _gameMode = GameMode.Shared;
     [SerializeField] private string _initialSceneName = "OpenWorld";
     [SerializeField] private string _sessionPropertyKey;

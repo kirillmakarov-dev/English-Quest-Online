@@ -18,7 +18,7 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
     private NetworkLifecycleHandler _lifecycleHandler;
     private NetworkAuthorityService _authorityService;
 
-    private const int DefaultOpenWorldMaxPlayers = 50;
+    private const int DefaultOpenWorldMaxPlayers = 2;
     private const string DefaultOpenWorldSceneName = "OpenWorld";
 
     protected override void Awake()
@@ -269,7 +269,7 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
         {
             GameMode = GameMode.Shared,
             SessionName = sessionName,
-            PlayerCount = Mathf.Max(1, maxPlayers),
+            PlayerCount = Mathf.Clamp(maxPlayers, 1, DefaultOpenWorldMaxPlayers),
             Scene = BuildSingleSceneInfo(sceneRef),
             SceneManager = _sceneManager,
             EnableClientSessionCreation = enableClientSessionCreation
@@ -304,6 +304,10 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
                 SceneManager = _sceneManager
             };
         startArgs.SessionName = openWorldSessionName;
+        startArgs.PlayerCount = Mathf.Clamp(
+            startArgs.PlayerCount.GetValueOrDefault(DefaultOpenWorldMaxPlayers),
+            1,
+            DefaultOpenWorldMaxPlayers);
 
         AppLog.Info($"[GameNetworkManager] Joining Open World shared room '{openWorldSessionName}'.");
         var result = await _runner.StartGame(startArgs);
