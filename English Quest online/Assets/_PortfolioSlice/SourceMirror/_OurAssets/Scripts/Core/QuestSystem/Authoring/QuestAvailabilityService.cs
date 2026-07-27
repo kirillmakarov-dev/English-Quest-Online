@@ -43,12 +43,18 @@ public class QuestAvailabilityService : MonoBehaviour, IQuestAvailabilityService
         if (GetAvailableToStart(npcId).Count > 0)
             return QuestNpcIndicatorState.Available;
 
+        if (FilterByNpc(npcId, QuestState.REQUIREMENTS_NOT_MET).Count > 0)
+            return QuestNpcIndicatorState.Locked;
+
         return QuestNpcIndicatorState.None;
     }
 
     public bool CanInteractWithNpc(string npcId)
     {
-        return GetBestIndicator(npcId) != QuestNpcIndicatorState.None;
+        QuestNpcIndicatorState state = GetBestIndicator(npcId);
+        return state == QuestNpcIndicatorState.Available ||
+               state == QuestNpcIndicatorState.InProgress ||
+               state == QuestNpcIndicatorState.TurnIn;
     }
 
     public bool TryGetDefinition(QuestInfo quest, out QuestDefinitionSO definition)

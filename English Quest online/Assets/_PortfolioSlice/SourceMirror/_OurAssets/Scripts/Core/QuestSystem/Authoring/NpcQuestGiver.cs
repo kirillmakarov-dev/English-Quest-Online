@@ -20,6 +20,11 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
     public string InteractionPrompt => "Talk";
     public string NpcId => ResolveNpcId();
 
+    private void Awake()
+    {
+        EnsureQuestIndicator();
+    }
+
     public bool CanInteract
     {
         get
@@ -55,6 +60,15 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
             return npcId;
 
         return questLine != null ? questLine.npcId : null;
+    }
+
+    private void EnsureQuestIndicator()
+    {
+        QuestNpcIndicator indicator = GetComponent<QuestNpcIndicator>();
+        if (indicator == null)
+            indicator = gameObject.AddComponent<QuestNpcIndicator>();
+
+        indicator.Configure(ResolveNpcId());
     }
 
     private bool HasRelevantQuestDialogue(string resolvedNpcId)

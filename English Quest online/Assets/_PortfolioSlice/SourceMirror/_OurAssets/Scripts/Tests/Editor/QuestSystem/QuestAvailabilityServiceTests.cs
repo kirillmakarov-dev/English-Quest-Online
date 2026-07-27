@@ -149,6 +149,22 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
 
         [Test]
+        public void GetBestIndicator_ReturnsLocked_WhenQuestRequirementsAreNotMet()
+        {
+            _questService.Quests.Clear();
+            QuestInfo quest = CreateQuest("q_locked", QuestState.REQUIREMENTS_NOT_MET);
+            _questService.Quests.Add(quest);
+
+            var definition = ScriptableObject.CreateInstance<QuestDefinitionSO>();
+            definition.id = "q_locked";
+            definition.giverNpcId = "teacher_maya";
+            _service.Initialize(null, new Dictionary<QuestInfo, QuestDefinitionSO> { { quest, definition } });
+
+            Assert.AreEqual(QuestNpcIndicatorState.Locked, _service.GetBestIndicator("teacher_maya"));
+            Assert.IsFalse(_service.CanInteractWithNpc("teacher_maya"));
+        }
+
+        [Test]
         public void CanInteractWithNpc_ReturnsTrue_WhenQuestIsAvailable()
         {
             Assert.IsTrue(_service.CanInteractWithNpc("teacher_maya"));

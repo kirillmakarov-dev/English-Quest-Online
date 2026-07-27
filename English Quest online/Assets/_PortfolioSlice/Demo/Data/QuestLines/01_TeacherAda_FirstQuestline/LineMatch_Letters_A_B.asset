@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 34f9f7adc4efb3c46a2473e7631572e3, type: 3}
-  m_Name: letters A - B
+  m_Name: LineMatch_Letters_A_B
   m_EditorClassIdentifier: Assembly-CSharp::Puzzle.Gameplay.MiniGames.LetterConnection.LetterConnectionLevelConfigSO
   letters:
   - id: 1
