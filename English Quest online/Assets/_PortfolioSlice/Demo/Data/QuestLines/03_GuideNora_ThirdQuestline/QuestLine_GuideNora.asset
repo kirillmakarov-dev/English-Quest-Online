@@ -15,7 +15,7 @@ MonoBehaviour:
   npcId: guide_nora
   prerequisiteLineId: line_coach_ben
   displayName: Guide Nora
-  theme: Choose the correct word from three options.
+  theme: Build a full English sentence from ordered words.
   profile: {fileID: 0}
   quests:
   - {fileID: 11400000, guid: 6630c7932ba74af0bb47c57eaa37e430, type: 2}

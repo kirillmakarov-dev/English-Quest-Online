@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using EnglishKingdom.PortfolioDemo;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.PortfolioDemo;
+using EnglishQuest.QuestSystem;
 using Puzzle.Gameplay.MiniGames.DuolingoWordGame;
 using Puzzle.Gameplay.MiniGames.LetterConnection;
 using TMPro;
@@ -14,7 +14,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Editor.PortfolioDemo
+namespace EnglishQuest.Editor.PortfolioDemo
 {
     [InitializeOnLoad]
     public static class PortfolioDemoSceneBuilder
@@ -1133,3 +1133,4 @@ namespace EnglishKingdom.Editor.PortfolioDemo
         }
     }
 }
+

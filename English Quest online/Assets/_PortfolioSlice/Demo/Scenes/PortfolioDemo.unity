@@ -468,7 +468,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 05acebf23cab86c42925c2a5577252ec, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: _Project::EnglishKingdom.QuestSystem.MiniGameWorldInteractable
+  m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.MiniGameWorldInteractable
   gameId: letter_ordering
   interactionPrompt: Play Letter Ordering
   launchHost: {fileID: 141305125}
@@ -483,7 +483,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a61690989536ce4dab8c098ce4ec230, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: _Project::EnglishKingdom.QuestSystem.MiniGameWorldLaunchHost
+  m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.MiniGameWorldLaunchHost
   wordGameBootstrap: {fileID: 1201884371}
   lineMatchBootstrap: {fileID: 0}
   fallbackConfig: {fileID: 11400000, guid: ac8068a99def73940b94eef190b0af6b, type: 2}
@@ -840,13 +840,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 331644936}
-  m_LocalRotation: {x: -0.0000000094608765, y: 0.976296, z: -0.21643962, w: -0.000000042675254}
+  m_LocalRotation: {x: 0.2164396, y: 0, z: 0, w: 0.97629607}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.18, y: 0.18, z: 0.18}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 141305129}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 25, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 1.25}
@@ -938,7 +938,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 4.0972533, y: 0, z: 3.5100443, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   _SortingLayer: 0
@@ -1709,7 +1709,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 05acebf23cab86c42925c2a5577252ec, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: _Project::EnglishKingdom.QuestSystem.MiniGameWorldInteractable
+  m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.MiniGameWorldInteractable
   gameId: line_match
   interactionPrompt: Play Line Match
   launchHost: {fileID: 629548017}
@@ -1724,7 +1724,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a61690989536ce4dab8c098ce4ec230, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: _Project::EnglishKingdom.QuestSystem.MiniGameWorldLaunchHost
+  m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.MiniGameWorldLaunchHost
   wordGameBootstrap: {fileID: 0}
   lineMatchBootstrap: {fileID: 889180387}
   fallbackConfig: {fileID: 11400000, guid: 5f81dabf5066fd44087ce40b090b3b8b, type: 2}
@@ -2027,7 +2027,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aa8019e83962e2b418756b2f4959cbd4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: _Project::EnglishKingdom.PortfolioDemo.PortfolioDemoHud
+  m_EditorClassIdentifier: _Project::EnglishQuest.PortfolioDemo.PortfolioDemoHud
   interactionPrompt: {fileID: 1037276704}
   statusText: {fileID: 0}
   objectiveEventBus: {fileID: 1449735629}
@@ -2149,7 +2149,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 05acebf23cab86c42925c2a5577252ec, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: _Project::EnglishKingdom.QuestSystem.MiniGameWorldInteractable
+  m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.MiniGameWorldInteractable
   gameId: word_ordering
   interactionPrompt: Play Word Ordering
   launchHost: {fileID: 863010562}
@@ -2164,7 +2164,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a61690989536ce4dab8c098ce4ec230, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: _Project::EnglishKingdom.QuestSystem.MiniGameWorldLaunchHost
+  m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.MiniGameWorldLaunchHost
   wordGameBootstrap: {fileID: 1954221119}
   lineMatchBootstrap: {fileID: 0}
   fallbackConfig: {fileID: 11400000, guid: 6f00f72f2ed2cdf49bb1f08aae9346fc, type: 2}
@@ -2270,9 +2270,53 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 196725688666543240, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5.67
+      objectReference: {fileID: 0}
+    - target: {fileID: 2195921442620595061, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 2195921442620595061, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 4.74
+      objectReference: {fileID: 0}
+    - target: {fileID: 2195921442620595061, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.6148258
+      objectReference: {fileID: 0}
+    - target: {fileID: 2195921442620595061, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.34926963
+      objectReference: {fileID: 0}
+    - target: {fileID: 2195921442620595061, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.6148258
+      objectReference: {fileID: 0}
+    - target: {fileID: 2195921442620595061, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.34926963
+      objectReference: {fileID: 0}
+    - target: {fileID: 2195921442620595061, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2195921442620595061, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -59.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2421124180923281281, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -6.3
+      objectReference: {fileID: 0}
     - target: {fileID: 5306945057554825187, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
       propertyPath: m_Name
       value: UI - Line Match
+      objectReference: {fileID: 0}
+    - target: {fileID: 5306945057554825187, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5870767072946562032, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
       propertyPath: Flags
@@ -3148,13 +3192,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1113490762}
-  m_LocalRotation: {x: -0.0000000094608765, y: 0.976296, z: -0.21643962, w: -0.000000042675254}
+  m_LocalRotation: {x: 0.2164396, y: 0, z: 0, w: 0.97629607}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.18, y: 0.18, z: 0.18}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 863010566}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 25, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 1.25}
@@ -3246,7 +3290,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 3.287173, y: 0, z: 3.606219, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   _SortingLayer: 0
@@ -3316,6 +3360,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI - Letter Ordering
       objectReference: {fileID: 0}
+    - target: {fileID: 5958216977741896, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 68680586431174526, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -3340,6 +3388,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 508318459220144099, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 619146634338673766, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -3359,6 +3411,10 @@ PrefabInstance:
     - target: {fileID: 619146634338673766, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 658819012135074331, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 783788731569931879, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
       propertyPath: m_SizeDelta.y
@@ -3428,6 +3484,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -302.1424
       objectReference: {fileID: 0}
+    - target: {fileID: 2827834073576313827, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2866787041636312987, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -3468,6 +3528,10 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 4035014999719772967, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4173524410001509291, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -3910,7 +3974,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b16bdb7200a219641847d65553d64150, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: _Project::EnglishKingdom.PortfolioDemo.PortfolioPlayerLockService
+  m_EditorClassIdentifier: _Project::EnglishQuest.PortfolioDemo.PortfolioPlayerLockService
   playerController: {fileID: 0}
   starterController: {fileID: 0}
   starterInputs: {fileID: 0}
@@ -4097,13 +4161,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1392133086}
-  m_LocalRotation: {x: -0.0000000094608765, y: 0.976296, z: -0.21643962, w: -0.000000042675254}
+  m_LocalRotation: {x: 0.2164396, y: 0, z: 0, w: 0.97629607}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.18, y: 0.18, z: 0.18}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 629548021}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 25, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 1.25}
@@ -4195,7 +4259,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 3.931204, y: 0, z: 3.7476673, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   _SortingLayer: 0
@@ -4281,7 +4345,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2355921a4ca6f904f81225cc38134806, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: _Project::EnglishKingdom.QuestSystem.QuestObjectiveEventBus
+  m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.QuestObjectiveEventBus
 --- !u!4 &1449735630
 Transform:
   m_ObjectHideFlags: 0
@@ -5002,7 +5066,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b16bdb7200a219641847d65553d64150, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: _Project::EnglishKingdom.PortfolioDemo.PortfolioPlayerLockService
+  m_EditorClassIdentifier: _Project::EnglishQuest.PortfolioDemo.PortfolioPlayerLockService
   playerController: {fileID: 0}
   starterController: {fileID: 0}
   starterInputs: {fileID: 0}
@@ -5018,7 +5082,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f93a4f49af20ea479f473489656a3e5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: _Project::EnglishKingdom.PortfolioDemo.PortfolioDemoPlayerController
+  m_EditorClassIdentifier: _Project::EnglishQuest.PortfolioDemo.PortfolioDemoPlayerController
   moveSpeed: 5
   turnSpeed: 12
   interactionRadius: 2.4
@@ -5165,13 +5229,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1875511930}
-  m_LocalRotation: {x: -0.0000000094608765, y: 0.976296, z: -0.21643962, w: -0.000000042675254}
+  m_LocalRotation: {x: 0.2164396, y: 0, z: 0, w: 0.97629607}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.18, y: 0.18, z: 0.18}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1695108430}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 25, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 1.65}
@@ -5567,6 +5631,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI - Word Ordering
       objectReference: {fileID: 0}
+    - target: {fileID: 5958216977741896, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 191262804255541926, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -5590,6 +5658,10 @@ PrefabInstance:
     - target: {fileID: 191262804255541926, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 386861873410126395, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 626866291650173887, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
       propertyPath: m_SizeDelta.y
@@ -5719,6 +5791,10 @@ PrefabInstance:
       propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3848073688773539788, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4173524410001509291, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -5807,6 +5883,14 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 6171054841296488855, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6461480855319962977, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6507528018010469336, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
@@ -5814,6 +5898,10 @@ PrefabInstance:
     - target: {fileID: 6507528018010469336, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7148461065210399527, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7275510385698308886, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
       propertyPath: m_AnchorMax.y
@@ -6075,13 +6163,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2875511930}
-  m_LocalRotation: {x: -0.0000000094608765, y: 0.976296, z: -0.21643962, w: -0.000000042675254}
+  m_LocalRotation: {x: 0.2164396, y: 0, z: 0, w: 0.97629607}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.18, y: 0.18, z: 0.18}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2695108430}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 25, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 1.65}
@@ -6392,13 +6480,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3875511930}
-  m_LocalRotation: {x: -0.0000000094608765, y: 0.976296, z: -0.21643962, w: -0.000000042675254}
+  m_LocalRotation: {x: 0.2164396, y: 0, z: 0, w: 0.97629607}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.18, y: 0.18, z: 0.18}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3695108430}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 25, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 1.65}

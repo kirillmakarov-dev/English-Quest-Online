@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using NUnit.Framework;
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Tests.QuestSystem
+namespace EnglishQuest.Tests.QuestSystem
 {
     [TestFixture]
     public class GuiderQuestManagerTests
@@ -108,3 +108,4 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
     }
 }
+

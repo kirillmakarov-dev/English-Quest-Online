@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using UnityEngine;
 using UnityServiceLocator;
 
@@ -406,3 +406,4 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
         ResolveDialogueService().StartDialogue(node, transform, localPlayer);
     }
 }
+

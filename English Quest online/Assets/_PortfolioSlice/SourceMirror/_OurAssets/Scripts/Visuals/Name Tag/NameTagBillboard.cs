@@ -35,6 +35,13 @@ public class NameTagBillboard : MonoBehaviour
         cameraTransform = newCameraTransform;
     }
 
+    public void Configure(FacingMode newFacingMode, Vector3 newRotationOffsetEuler)
+    {
+        facingMode = newFacingMode;
+        rotationOffsetEuler = newRotationOffsetEuler;
+        _rotationOffset = Quaternion.Euler(rotationOffsetEuler);
+    }
+
     private Quaternion GetBillboardRotation(Transform cam)
     {
         if (facingMode == FacingMode.MatchCameraYaw)

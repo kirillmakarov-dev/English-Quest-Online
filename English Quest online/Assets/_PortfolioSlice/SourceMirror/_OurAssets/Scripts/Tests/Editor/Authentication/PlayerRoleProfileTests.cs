@@ -1,8 +1,8 @@
-using EnglishKingdom.Tests;
+using EnglishQuest.Tests;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace EnglishKingdom.Tests.Authentication
+namespace EnglishQuest.Tests.Authentication
 {
     [Category(TestCategories.Fast)]
     public class PlayerRoleProfileTests
@@ -48,3 +48,4 @@ namespace EnglishKingdom.Tests.Authentication
         }
     }
 }
+

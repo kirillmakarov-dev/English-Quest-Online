@@ -1,4 +1,4 @@
-using EnglishKingdom.RewardSystem;
+using EnglishQuest.RewardSystem;
 using UnityEngine;
 using UnityServiceLocator;
 
@@ -25,3 +25,4 @@ public class QuestFinishAction_GiveGoldReward : QuestFinishAction
         AppLog.Info($"[QuestFinishAction_GiveGoldReward] Rewarded {goldReward} coins for quest '{questToMonitor.id}'.");
     }
 }
+

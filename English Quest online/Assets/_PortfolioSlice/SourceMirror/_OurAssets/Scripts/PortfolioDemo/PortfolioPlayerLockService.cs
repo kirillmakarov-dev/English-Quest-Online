@@ -4,7 +4,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.PortfolioDemo
+namespace EnglishQuest.PortfolioDemo
 {
     public sealed class PortfolioPlayerLockService : MonoBehaviour, IPlayerLockSystem
     {
@@ -147,3 +147,4 @@ namespace EnglishKingdom.PortfolioDemo
         }
     }
 }
+

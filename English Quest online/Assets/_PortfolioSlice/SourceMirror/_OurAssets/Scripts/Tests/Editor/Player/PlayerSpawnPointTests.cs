@@ -4,7 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace EnglishKingdom.Tests.Player
+namespace EnglishQuest.Tests.Player
 {
     [TestFixture]
     public class PlayerSpawnPointTests
@@ -106,3 +106,4 @@ namespace EnglishKingdom.Tests.Player
         }
     }
 }
+

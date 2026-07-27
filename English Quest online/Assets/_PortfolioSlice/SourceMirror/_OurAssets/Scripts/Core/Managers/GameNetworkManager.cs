@@ -4,13 +4,13 @@ using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityServiceLocator;
-using EnglishKingdom.UI.Loading;
+using EnglishQuest.UI.Loading;
 
 public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSessionService
 {
     public NetworkRunner Runner => ResolveRunner();
 
-    [SerializeField] private EnglishKingdomNetworkSceneManager _sceneManager;
+    [SerializeField] private EnglishQuestNetworkSceneManager _sceneManager;
     [SerializeField] private NetworkSessionProfile _openWorldProfile;
     [SerializeField] private NetworkPrefabRef _sessionBridgePrefab;
 
@@ -37,10 +37,10 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
             if (GetComponent<NetworkAuthorityService>() == null)
                 gameObject.AddComponent<NetworkAuthorityService>();
 
-            if (GetComponent<EnglishKingdomNetworkSceneManager>() == null)
-                _sceneManager = gameObject.AddComponent<EnglishKingdomNetworkSceneManager>();
+            if (GetComponent<EnglishQuestNetworkSceneManager>() == null)
+                _sceneManager = gameObject.AddComponent<EnglishQuestNetworkSceneManager>();
             else if (_sceneManager == null)
-                _sceneManager = GetComponent<EnglishKingdomNetworkSceneManager>();
+                _sceneManager = GetComponent<EnglishQuestNetworkSceneManager>();
 
             _lifecycleHandler = GetComponent<NetworkLifecycleHandler>();
             _lifecycleHandler.UnexpectedShutdown += HandleUnexpectedShutdown;
@@ -240,12 +240,12 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
     {
         // Prefer pooled provider; remove bare default if a previous session attached it.
         NetworkObjectProviderDefault existingDefault = runnerGo.GetComponent<NetworkObjectProviderDefault>();
-        if (existingDefault != null && existingDefault is not EnglishKingdomNetworkObjectProvider)
+        if (existingDefault != null && existingDefault is not EnglishQuestNetworkObjectProvider)
             UnityEngine.Object.Destroy(existingDefault);
 
-        EnglishKingdomNetworkObjectProvider provider = runnerGo.GetComponent<EnglishKingdomNetworkObjectProvider>();
+        EnglishQuestNetworkObjectProvider provider = runnerGo.GetComponent<EnglishQuestNetworkObjectProvider>();
         if (provider == null)
-            provider = runnerGo.AddComponent<EnglishKingdomNetworkObjectProvider>();
+            provider = runnerGo.AddComponent<EnglishQuestNetworkObjectProvider>();
 
         provider.DelayIfSceneManagerIsBusy = true;
     }
@@ -481,3 +481,4 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
 
     #endregion
 }
+

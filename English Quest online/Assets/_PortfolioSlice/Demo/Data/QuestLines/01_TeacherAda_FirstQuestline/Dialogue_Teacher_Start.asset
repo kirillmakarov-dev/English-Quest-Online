@@ -12,14 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81989726be4eb8f4da7531bae57b6ebb, type: 3}
   m_Name: Dialogue_Teacher_Start
   m_EditorClassIdentifier: _Project::DialogueNode
-  dialogueText: Welcome to the Teacher Adventure portfolio lab. What would you like
-    to verify?
+  dialogueText: "Welcome! I am Teacher Ada. This first quest shows the learning flow:
+    meet an NPC, start a lesson, complete a mini-game, then unlock the next teacher.
+    We begin with two friendly letters: A and B."
   speakerName: Teacher Ada
   voiceClip: {fileID: 0}
   choices:
-  - choiceText: Explain the architecture
+  - choiceText: Start Lesson 1
     nextNode: {fileID: 11400000, guid: 2c4b37ddd481c764da6f493b7b8a571e, type: 2}
-  - choiceText: Everything works. Goodbye!
+  - choiceText: Not yet
     nextNode: {fileID: 0}
   actionType: 0
   actionParameter: 

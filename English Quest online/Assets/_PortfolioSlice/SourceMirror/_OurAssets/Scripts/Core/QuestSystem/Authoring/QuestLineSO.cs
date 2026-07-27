@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = ScriptableObjectMenuPaths.CoreQuestLine, fileName = "QuestLine_")]
@@ -17,3 +17,4 @@ public class QuestLineSO : ScriptableObject
     [Tooltip("Optional world catalog set for this line. Used when QuestLineRegistrySO / registrar has no shared set assigned.")]
     public QuestWorldCatalogSetSO worldCatalogSet;
 }
+

@@ -4,7 +4,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools.Polyart
+namespace EnglishQuest.Editor.Tools.Polyart
 {
     /// <summary>
     /// Reverses expensive convex MeshCollider spam on DreamscapeCastle prefabs:
@@ -389,3 +389,4 @@ namespace EnglishKingdom.Editor.Tools.Polyart
         }
     }
 }
+

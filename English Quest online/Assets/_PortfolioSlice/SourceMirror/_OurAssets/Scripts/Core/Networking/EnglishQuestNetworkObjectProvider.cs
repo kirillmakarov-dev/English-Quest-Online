@@ -7,7 +7,7 @@ using UnityEngine;
 /// Pooled <see cref="INetworkObjectProvider"/> for Fusion Shared Mode.
 /// Reuses inactive prefab instances instead of Instantiate/Destroy on every Spawn/Despawn.
 /// </summary>
-public sealed class EnglishKingdomNetworkObjectProvider : NetworkObjectProviderDefault
+public sealed class EnglishQuestNetworkObjectProvider : NetworkObjectProviderDefault
 {
     private const int DefaultMaxPoolPerPrefab = 32;
 
@@ -39,7 +39,7 @@ public sealed class EnglishKingdomNetworkObjectProvider : NetworkObjectProviderD
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[EnglishKingdomNetworkObjectProvider] Failed to load prefab: {ex}");
+            Debug.LogError($"[EnglishQuestNetworkObjectProvider] Failed to load prefab: {ex}");
             return NetworkObjectAcquireResult.Failed;
         }
 
@@ -119,3 +119,4 @@ public sealed class EnglishKingdomNetworkObjectProvider : NetworkObjectProviderD
         pool.Enqueue(instance);
     }
 }
+

@@ -2,7 +2,7 @@ using System.Collections;
 
 using System.Collections.Generic;
 
-using EnglishKingdom.Tests;
+using EnglishQuest.Tests;
 
 using Fusion;
 
@@ -18,7 +18,7 @@ using UnityServiceLocator;
 
 
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 
 {
 
@@ -246,7 +246,7 @@ namespace EnglishKingdom.Tests.RunTime
 
             Assert.That(
 
-                ServiceLocator.Global.TryGet(out EnglishKingdom.UI.Loading.ILoadingScreenService _),
+                ServiceLocator.Global.TryGet(out EnglishQuest.UI.Loading.ILoadingScreenService _),
 
                 Is.True,
 
@@ -295,5 +295,6 @@ namespace EnglishKingdom.Tests.RunTime
     }
 
 }
+
 
 

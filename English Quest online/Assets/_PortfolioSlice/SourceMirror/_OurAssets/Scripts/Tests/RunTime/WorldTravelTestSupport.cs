@@ -10,7 +10,7 @@ using UnityServiceLocator;
 using UnityEditor;
 #endif
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 {
     internal static class WorldTravelTestSupport
     {
@@ -541,3 +541,4 @@ namespace EnglishKingdom.Tests.RunTime
         }
     }
 }
+

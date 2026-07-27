@@ -4,7 +4,7 @@ using Fusion;
 using UnityEditor;
 using UnityEngine;
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 {
     /// <summary>
     /// Spawns networked <see cref="PickableItem"/> instances for Play Mode network tests.
@@ -53,3 +53,4 @@ namespace EnglishKingdom.Tests.RunTime
 }
 
 #endif
+

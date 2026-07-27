@@ -5,7 +5,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace EnglishKingdom.Tests.Editor
+namespace EnglishQuest.Tests.Editor
 {
     internal static class EditorTestSceneUtility
     {
@@ -74,3 +74,4 @@ namespace EnglishKingdom.Tests.Editor
         }
     }
 }
+

@@ -11,6 +11,6 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f55cd434581d904baf2988001f74279, type: 3}
   m_Name: MissingLetterMatchingConfig_q06_adjective_challenge_s1
-  m_EditorClassIdentifier: _Project::EnglishKingdom.QuestSystem.LineMatchQuestConfigSO
+  m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.LineMatchQuestConfigSO
   gameId: Lost_Chest4_Sanctum_Of_Whispering_Light
   levelConfig: {fileID: 11400000, guid: a8bb8628540e40042a0164044fb5f941, type: 2}

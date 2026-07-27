@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     public class QuestWorldResolver : IQuestWorldResolver
     {
@@ -100,3 +100,4 @@ namespace EnglishKingdom.QuestSystem
         }
     }
 }
+

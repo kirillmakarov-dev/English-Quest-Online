@@ -5,12 +5,12 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools.BuildSize
+namespace EnglishQuest.Editor.Tools.BuildSize
 {
     /// <summary>
     /// Applies import and build-profile settings from the Build Size Reduction plan.
     /// Menu: Tools → English Kingdom → Optimization → Build Size → Apply All
-    /// Batch: Unity -batchmode -quit -projectPath ... -executeMethod EnglishKingdom.Editor.Tools.BuildSize.BuildSizeOptimizationApplier.ApplyAllFromCommandLine
+    /// Batch: Unity -batchmode -quit -projectPath ... -executeMethod EnglishQuest.Editor.Tools.BuildSize.BuildSizeOptimizationApplier.ApplyAllFromCommandLine
     /// </summary>
     public static class BuildSizeOptimizationApplier
     {
@@ -422,3 +422,4 @@ namespace EnglishKingdom.Editor.Tools.BuildSize
         }
     }
 }
+

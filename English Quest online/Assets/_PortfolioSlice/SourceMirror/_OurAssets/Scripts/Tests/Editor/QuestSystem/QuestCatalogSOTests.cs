@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-namespace EnglishKingdom.Tests.QuestSystem
+namespace EnglishQuest.Tests.QuestSystem
 {
     [TestFixture]
     public class QuestCatalogSOTests
@@ -41,3 +41,4 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
     }
 }
+

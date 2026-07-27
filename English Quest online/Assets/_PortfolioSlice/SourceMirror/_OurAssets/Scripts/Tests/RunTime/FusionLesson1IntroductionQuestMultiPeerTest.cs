@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using EnglishKingdom.Tests;
+using EnglishQuest.Tests;
 using Fusion;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 {
     /// <summary>
     /// Multi-peer quest test for Lesson 1 Introduction.
@@ -109,3 +109,4 @@ namespace EnglishKingdom.Tests.RunTime
         }
     }
 }
+

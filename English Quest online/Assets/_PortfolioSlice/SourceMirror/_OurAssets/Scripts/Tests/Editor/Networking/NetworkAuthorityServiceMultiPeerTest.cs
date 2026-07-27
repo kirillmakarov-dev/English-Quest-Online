@@ -1,11 +1,11 @@
 using System.Collections;
-using EnglishKingdom.Tests;
+using EnglishQuest.Tests;
 using Fusion;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using UnityEngine.TestTools;
 
-namespace EnglishKingdom.Tests.Networking
+namespace EnglishQuest.Tests.Networking
 {
     [Category(TestCategories.Fast)]
     public class NetworkAuthorityServiceMultiPeerTest
@@ -40,3 +40,4 @@ namespace EnglishKingdom.Tests.Networking
         }
     }
 }
+

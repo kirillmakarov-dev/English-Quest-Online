@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace EnglishKingdom.Tests.QuestSystem
+namespace EnglishQuest.Tests.QuestSystem
 {
     /// <summary>
     /// Unit tests for <see cref="QuestRequirement.IsMet"/>.
@@ -178,3 +178,4 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
     }
 }
+

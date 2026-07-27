@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8549fa67e9c377c47a7830a0bb8e3535, type: 3}
   m_Name: LetterOrderingData
   m_EditorClassIdentifier: _Project::Puzzle.Gameplay.MiniGames.DuolingoWordGame.LetterOrderingDataSO
-  prompt: How are you
+  prompt: Fill the missing letter in GOOD
   targetWord: good
   extraDistractorCount: 2
   customDistractors: 

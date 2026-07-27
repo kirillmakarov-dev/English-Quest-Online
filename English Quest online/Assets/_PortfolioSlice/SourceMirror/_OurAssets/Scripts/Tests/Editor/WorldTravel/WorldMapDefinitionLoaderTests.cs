@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-namespace EnglishKingdom.Tests.WorldTravel
+namespace EnglishQuest.Tests.WorldTravel
 {
     [TestFixture]
     public class WorldMapDefinitionLoaderTests
@@ -42,3 +42,4 @@ namespace EnglishKingdom.Tests.WorldTravel
         }
     }
 }
+

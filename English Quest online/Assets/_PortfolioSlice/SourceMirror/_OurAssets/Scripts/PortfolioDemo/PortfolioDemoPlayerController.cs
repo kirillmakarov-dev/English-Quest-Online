@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 
-namespace EnglishKingdom.PortfolioDemo
+namespace EnglishQuest.PortfolioDemo
 {
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(PlayerInteraction))]
@@ -186,3 +186,4 @@ namespace EnglishKingdom.PortfolioDemo
         }
     }
 }
+

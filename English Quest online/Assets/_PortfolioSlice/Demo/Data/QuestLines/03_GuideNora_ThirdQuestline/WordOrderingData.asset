@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 722d8346ffdb65e49b24535217518e87, type: 3}
   m_Name: WordOrderingData
   m_EditorClassIdentifier: _Project::Puzzle.Gameplay.MiniGames.DuolingoWordGame.WordOrderingDataSO
-  prompt: 
+  prompt: Write the words in correct form
   englishWordsInOrder:
-  - how
-  - are
-  - you
+  - 'The  '
+  - Dog
+  - Is
+  - Big
   preFilledIndices: 
   distractorWords:
   - on

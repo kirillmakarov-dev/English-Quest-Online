@@ -1,4 +1,4 @@
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
   public interface IQuestMiniGameBinder
   {
@@ -6,3 +6,4 @@ namespace EnglishKingdom.QuestSystem
     void Refresh(IQuestService questService);
   }
 }
+

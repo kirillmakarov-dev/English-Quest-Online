@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace EnglishKingdom.Editor.Tools.Profiler
+namespace EnglishQuest.Editor.Tools.Profiler
 {
     internal enum ProfilerFrameExportFormat
     {
@@ -148,3 +148,4 @@ namespace EnglishKingdom.Editor.Tools.Profiler
         }
     }
 }
+

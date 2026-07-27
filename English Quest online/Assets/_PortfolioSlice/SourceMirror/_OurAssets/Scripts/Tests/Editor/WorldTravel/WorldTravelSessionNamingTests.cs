@@ -2,7 +2,7 @@ using Fusion;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
-namespace EnglishKingdom.Tests.WorldTravel
+namespace EnglishQuest.Tests.WorldTravel
 {
     public class WorldTravelSessionNamingTests
     {
@@ -56,3 +56,4 @@ namespace EnglishKingdom.Tests.WorldTravel
         }
     }
 }
+

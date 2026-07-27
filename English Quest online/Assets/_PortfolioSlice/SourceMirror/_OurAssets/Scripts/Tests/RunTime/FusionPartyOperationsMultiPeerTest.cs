@@ -1,11 +1,11 @@
 using System.Collections;
-using EnglishKingdom.Tests;
-using EnglishKingdom.Tests.RunTime.Fixtures;
+using EnglishQuest.Tests;
+using EnglishQuest.Tests.RunTime.Fixtures;
 using Fusion;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 {
     [Category(TestCategories.Fast)]
     public class FusionPartyOperationsMultiPeerTest : SocialMultiPeerFixture
@@ -192,3 +192,4 @@ namespace EnglishKingdom.Tests.RunTime
         }
     }
 }
+

@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace EnglishKingdom.Tests.WorldTravel
+namespace EnglishQuest.Tests.WorldTravel
 {
     [TestFixture]
     public class PlayerTravelArrivalTests
@@ -120,3 +120,4 @@ namespace EnglishKingdom.Tests.WorldTravel
         }
     }
 }
+

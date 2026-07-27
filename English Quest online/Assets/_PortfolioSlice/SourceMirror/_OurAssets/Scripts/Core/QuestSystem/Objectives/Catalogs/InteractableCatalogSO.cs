@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     public enum InteractableCatalogKind
     {
@@ -60,3 +60,4 @@ namespace EnglishKingdom.QuestSystem
 #endif
     }
 }
+

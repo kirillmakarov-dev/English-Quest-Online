@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
-namespace EnglishKingdom.Tests.WorldTravel
+namespace EnglishQuest.Tests.WorldTravel
 {
     public class PartyTravelPresentationGateTests
     {
@@ -50,3 +50,4 @@ namespace EnglishKingdom.Tests.WorldTravel
         }
     }
 }
+

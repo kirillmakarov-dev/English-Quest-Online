@@ -1,4 +1,4 @@
-using EnglishKingdom.Tests;
+using EnglishQuest.Tests;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEditor;
 #endif
 
-namespace EnglishKingdom.Tests.WorldTravel
+namespace EnglishQuest.Tests.WorldTravel
 {
     /// <summary>
     /// Edit Mode tests for world-travel safety rails not covered elsewhere.
@@ -94,3 +94,4 @@ namespace EnglishKingdom.Tests.WorldTravel
         }
     }
 }
+

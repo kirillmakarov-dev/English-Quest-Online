@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Tests.QuestSystem
+namespace EnglishQuest.Tests.QuestSystem
 {
     /// <summary>
     /// Shared Edit Mode helpers for quest system tests.
@@ -216,3 +216,4 @@ namespace EnglishKingdom.Tests.QuestSystem
         public int CurrentLevel => Level;
     }
 }
+

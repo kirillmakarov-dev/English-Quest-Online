@@ -22,9 +22,9 @@ public class SharedModeLauncher : MonoBehaviour
         if (_runner == null)
             _runner = gameObject.AddComponent<NetworkRunner>();
 
-        var sceneManager = _runner.GetComponent<EnglishKingdomNetworkSceneManager>();
+        var sceneManager = _runner.GetComponent<EnglishQuestNetworkSceneManager>();
         if (sceneManager == null)
-            sceneManager = _runner.gameObject.AddComponent<EnglishKingdomNetworkSceneManager>();
+            sceneManager = _runner.gameObject.AddComponent<EnglishQuestNetworkSceneManager>();
 
         EnsureRunnerObjectProvider(_runner.gameObject);
 
@@ -52,12 +52,12 @@ public class SharedModeLauncher : MonoBehaviour
     private static void EnsureRunnerObjectProvider(GameObject runnerGo)
     {
         NetworkObjectProviderDefault existingDefault = runnerGo.GetComponent<NetworkObjectProviderDefault>();
-        if (existingDefault != null && existingDefault is not EnglishKingdomNetworkObjectProvider)
+        if (existingDefault != null && existingDefault is not EnglishQuestNetworkObjectProvider)
             UnityEngine.Object.Destroy(existingDefault);
 
-        EnglishKingdomNetworkObjectProvider provider = runnerGo.GetComponent<EnglishKingdomNetworkObjectProvider>();
+        EnglishQuestNetworkObjectProvider provider = runnerGo.GetComponent<EnglishQuestNetworkObjectProvider>();
         if (provider == null)
-            provider = runnerGo.AddComponent<EnglishKingdomNetworkObjectProvider>();
+            provider = runnerGo.AddComponent<EnglishQuestNetworkObjectProvider>();
 
         provider.DelayIfSceneManagerIsBusy = true;
     }
@@ -68,3 +68,4 @@ public class SharedModeLauncher : MonoBehaviour
     }
 #endif
 }
+

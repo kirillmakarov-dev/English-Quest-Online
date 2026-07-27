@@ -1,4 +1,4 @@
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     public interface IQuestWorldResolver
     {
@@ -8,3 +8,4 @@ namespace EnglishKingdom.QuestSystem
         bool TryGetQuestDefinition(string questId, out QuestDefinitionSO definition);
     }
 }
+

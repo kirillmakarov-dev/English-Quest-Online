@@ -7,8 +7,8 @@ Remove the last live editor/test scripts that still referenced deleted quest rew
 The console errors were coming from these missing symbols:
 
 - `RewardGrantResult`
-- `EnglishKingdom.Editor.Tools.Quests`
-- `EnglishKingdom.UI.LevelUp`
+- `EnglishQuest.Editor.Tools.Quests`
+- `EnglishQuest.UI.LevelUp`
 - `LetterDatabase`
 
 ## What Was Removed

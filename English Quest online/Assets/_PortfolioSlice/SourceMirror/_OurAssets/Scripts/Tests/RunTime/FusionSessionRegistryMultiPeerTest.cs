@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Linq;
-using EnglishKingdom.Tests;
-using EnglishKingdom.Tests.RunTime.Fixtures;
+using EnglishQuest.Tests;
+using EnglishQuest.Tests.RunTime.Fixtures;
 using Fusion;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 {
     [Category(TestCategories.Fast)]
     public class FusionSessionRegistryMultiPeerTest : CombatTestMultiPeerFixture
@@ -185,3 +185,4 @@ namespace EnglishKingdom.Tests.RunTime
         }
     }
 }
+

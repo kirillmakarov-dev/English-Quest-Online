@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
-namespace EnglishKingdom.UI.Loading
+namespace EnglishQuest.UI.Loading
 {
     /// <summary>
     /// Handles the visual representation of a loading progress bar.
@@ -183,3 +183,4 @@ namespace EnglishKingdom.UI.Loading
 #endif
     }
 }
+

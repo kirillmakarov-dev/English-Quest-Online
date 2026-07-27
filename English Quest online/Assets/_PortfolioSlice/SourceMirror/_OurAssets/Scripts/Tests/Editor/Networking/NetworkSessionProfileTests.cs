@@ -1,9 +1,9 @@
 using System.Reflection;
-using EnglishKingdom.Tests;
+using EnglishQuest.Tests;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace EnglishKingdom.Tests.Networking
+namespace EnglishQuest.Tests.Networking
 {
     [Category(TestCategories.Fast)]
     public class NetworkSessionProfileTests
@@ -28,3 +28,4 @@ namespace EnglishKingdom.Tests.Networking
         }
     }
 }
+

@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Editor
+namespace EnglishQuest.Editor
 {
     public static class LogLevelDebugTools
     {
@@ -89,3 +89,4 @@ namespace EnglishKingdom.Editor
     }
 }
 #endif
+

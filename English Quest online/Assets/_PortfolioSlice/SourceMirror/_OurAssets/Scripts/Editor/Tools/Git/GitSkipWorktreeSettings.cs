@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools.Git
+namespace EnglishQuest.Editor.Tools.Git
 {
     [Serializable]
     internal class GitSkipEntryDto
@@ -242,3 +242,4 @@ namespace EnglishKingdom.Editor.Tools.Git
         }
     }
 }
+

@@ -2,7 +2,7 @@ using System;
 using Puzzle.Gameplay.MiniGames.DuolingoWordGame;
 using UnityEngine;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
   [CreateAssetMenu(
     menuName = ScriptableObjectMenuPaths.CoreQuestMiniGameConfig + "/Word Ordering",
@@ -43,3 +43,4 @@ namespace EnglishKingdom.QuestSystem
     }
   }
 }
+

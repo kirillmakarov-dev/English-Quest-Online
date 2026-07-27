@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using TargetIndicators;
 using UnityEngine;
 using UnityServiceLocator;
@@ -160,3 +160,4 @@ public class QuestObjectiveIndicatorDirector : MonoBehaviour
         _indicatorByQuestId.Clear();
     }
 }
+

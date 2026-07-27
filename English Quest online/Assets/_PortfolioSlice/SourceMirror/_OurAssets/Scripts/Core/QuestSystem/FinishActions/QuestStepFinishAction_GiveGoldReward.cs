@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using EnglishKingdom.RewardSystem;
+using EnglishQuest.RewardSystem;
 using UnityEngine;
 using UnityServiceLocator;
 
@@ -49,3 +49,4 @@ public class QuestStepFinishAction_GiveGoldReward : MonoBehaviour
         AppLog.Info($"[QuestStepFinishAction_GiveGoldReward] Rewarded {_goldReward} coins for step '{step.gameObject.name}'.");
     }
 }
+

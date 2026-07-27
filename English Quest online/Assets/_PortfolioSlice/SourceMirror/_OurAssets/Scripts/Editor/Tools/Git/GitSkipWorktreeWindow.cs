@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools.Git
+namespace EnglishQuest.Editor.Tools.Git
 {
     /// <summary>
     /// Manages Git skip-worktree flags for noisy tracked assets.
@@ -548,3 +548,4 @@ namespace EnglishKingdom.Editor.Tools.Git
         }
     }
 }
+

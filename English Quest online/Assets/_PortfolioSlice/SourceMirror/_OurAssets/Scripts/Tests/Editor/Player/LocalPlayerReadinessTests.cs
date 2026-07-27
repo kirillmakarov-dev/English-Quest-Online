@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using EnglishKingdom.Tests.Editor;
+using EnglishQuest.Tests.Editor;
 using Fusion;
 using NUnit.Framework;
 using UnityEngine;
@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityServiceLocator;
 using Assert = NUnit.Framework.Assert;
 
-namespace EnglishKingdom.Tests.Player
+namespace EnglishQuest.Tests.Player
 {
     [TestFixture]
     public class LocalPlayerReadinessTests
@@ -135,3 +135,4 @@ namespace EnglishKingdom.Tests.Player
         }
     }
 }
+

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = ScriptableObjectMenuPaths.CoreQuestLineBuildSpec, fileName = "QuestLineBuildSpec_")]
@@ -39,3 +39,4 @@ public class QuestBuildEntry
     public DialogueNode cannotStartDialogue;
     public DialogueNode alreadyFinishedDialogue;
 }
+

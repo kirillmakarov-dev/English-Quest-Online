@@ -4,7 +4,7 @@ using Fusion;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
-namespace EnglishKingdom.Tests.Social
+namespace EnglishQuest.Tests.Social
 {
     [TestFixture]
     public class PartyInviteServiceEditTests
@@ -94,3 +94,4 @@ namespace EnglishKingdom.Tests.Social
         }
     }
 }
+

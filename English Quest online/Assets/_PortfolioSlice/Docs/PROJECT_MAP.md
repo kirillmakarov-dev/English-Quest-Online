@@ -806,7 +806,7 @@ Assets/_PortfolioSlice/SourceMirror/_OurAssets/_Project.asmdef
 ### Editor
 
 ```text
-Assets/_PortfolioSlice/SourceMirror/_OurAssets/Scripts/Editor/EnglishKingdom.Editor.asmdef
+Assets/_PortfolioSlice/SourceMirror/_OurAssets/Scripts/Editor/EnglishQuest.Editor.asmdef
 ```
 
 Содержит editor tools, включая `PortfolioDemoSceneBuilder`.
@@ -814,7 +814,7 @@ Assets/_PortfolioSlice/SourceMirror/_OurAssets/Scripts/Editor/EnglishKingdom.Edi
 ### Logging
 
 ```text
-Assets/_PortfolioSlice/SourceMirror/_OurAssets/Scripts/Core/Logging/EnglishKingdom.Logging.asmdef
+Assets/_PortfolioSlice/SourceMirror/_OurAssets/Scripts/Core/Logging/EnglishQuest.Logging.asmdef
 ```
 
 Изолирует logging contract/implementation.
@@ -835,13 +835,13 @@ Tests активируются через `UNITY_INCLUDE_TESTS`.
 
 Для текущего portfolio vertical slice это допустимо, потому что приоритетом был безопасный перенос. В дальнейшем можно выделить отдельные assemblies:
 
-- `EnglishKingdom.Core`
-- `EnglishKingdom.Interaction`
-- `EnglishKingdom.Dialogue`
-- `EnglishKingdom.Quests`
-- `EnglishKingdom.Save`
-- `EnglishKingdom.MiniGames`
-- `EnglishKingdom.PortfolioDemo`
+- `EnglishQuest.Core`
+- `EnglishQuest.Interaction`
+- `EnglishQuest.Dialogue`
+- `EnglishQuest.Quests`
+- `EnglishQuest.Save`
+- `EnglishQuest.MiniGames`
+- `EnglishQuest.PortfolioDemo`
 
 Делать это лучше после подключения quest/save scene, чтобы границы основывались на реальном composition flow.
 

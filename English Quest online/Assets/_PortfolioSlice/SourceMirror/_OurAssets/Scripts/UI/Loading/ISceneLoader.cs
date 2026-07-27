@@ -1,4 +1,4 @@
-namespace EnglishKingdom.UI.Loading
+namespace EnglishQuest.UI.Loading
 {
     /// <summary>
     /// Interface for scene loading implementations.
@@ -24,3 +24,4 @@ namespace EnglishKingdom.UI.Loading
         bool IsLoading { get; }
     }
 }
+

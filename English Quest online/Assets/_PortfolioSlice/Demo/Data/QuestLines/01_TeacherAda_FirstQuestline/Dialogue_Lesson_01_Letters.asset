@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81989726be4eb8f4da7531bae57b6ebb, type: 3}
   m_Name: Dialogue_Lesson_01_Letters
   m_EditorClassIdentifier: _Project::DialogueNode
-  dialogueText: 'Lesson 1: we start with two letters. Match them first, then Coach
-    Ben and the missing-letter game will unlock.'
+  dialogueText: "Lesson 1 is about recognition. Match the letters A and B with their
+    sounds and pictures. When this is complete, Coach Ben unlocks and the quest chain
+    moves to word building."
   speakerName: Teacher Ada
   voiceClip: {fileID: 0}
   choices:

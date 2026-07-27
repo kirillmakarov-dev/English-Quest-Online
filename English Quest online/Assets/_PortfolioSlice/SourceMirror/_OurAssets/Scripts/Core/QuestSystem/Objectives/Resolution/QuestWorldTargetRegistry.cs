@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     public sealed class QuestWorldTargetRegistry : IQuestWorldTargetRegistry
     {
@@ -45,3 +45,4 @@ namespace EnglishKingdom.QuestSystem
         }
     }
 }
+

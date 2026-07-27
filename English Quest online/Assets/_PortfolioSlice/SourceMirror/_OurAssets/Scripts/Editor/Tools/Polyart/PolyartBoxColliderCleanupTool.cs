@@ -3,7 +3,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools.Polyart
+namespace EnglishQuest.Editor.Tools.Polyart
 {
     /// <summary>
     /// Fixes Polyart DreamscapeCastle colliders for open-world mirroring.
@@ -214,3 +214,4 @@ namespace EnglishKingdom.Editor.Tools.Polyart
 
     }
 }
+

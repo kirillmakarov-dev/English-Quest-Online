@@ -2,7 +2,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools
+namespace EnglishQuest.Editor.Tools
 {
     /// <summary>
     /// Editor window for configuring and triggering the Build → Deploy pipeline.
@@ -202,3 +202,4 @@ namespace EnglishKingdom.Editor.Tools
         }
     }
 }
+

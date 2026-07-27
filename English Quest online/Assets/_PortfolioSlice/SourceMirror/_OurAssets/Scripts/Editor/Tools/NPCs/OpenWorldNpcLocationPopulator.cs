@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using NPC;
 using TMPro;
 using UnityEditor;
@@ -457,3 +457,4 @@ public static class OpenWorldNpcLocationPopulator
     }
 }
 #endif
+

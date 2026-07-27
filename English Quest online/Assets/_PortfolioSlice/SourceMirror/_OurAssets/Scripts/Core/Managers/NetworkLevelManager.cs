@@ -2,7 +2,7 @@ using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Cysharp.Threading.Tasks;
-using EnglishKingdom.UI.Loading;
+using EnglishQuest.UI.Loading;
 using UnityServiceLocator;
 
 public class NetworkLevelManager : Singleton<NetworkLevelManager>, ILevelManager
@@ -164,3 +164,4 @@ public class NetworkLevelManager : Singleton<NetworkLevelManager>, ILevelManager
         _isTransitioning = false;
     }
 }
+

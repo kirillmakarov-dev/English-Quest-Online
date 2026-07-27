@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Tests.QuestSystem
+namespace EnglishQuest.Tests.QuestSystem
 {
     /// <summary>
     /// Integration tests for <see cref="QuestManager"/> covering the full
@@ -711,3 +711,4 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
     }
 }
+

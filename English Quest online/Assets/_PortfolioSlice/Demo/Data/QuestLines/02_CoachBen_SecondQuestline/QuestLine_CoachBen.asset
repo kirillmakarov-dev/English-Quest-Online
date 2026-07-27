@@ -15,7 +15,7 @@ MonoBehaviour:
   npcId: coach_ben
   prerequisiteLineId: line_teacher_ada
   displayName: Coach Ben
-  theme: Fill the missing letter and learn a new word.
+  theme: Build vocabulary by filling a missing letter after Ada's lesson is complete.
   profile: {fileID: 0}
   quests:
   - {fileID: 11400000, guid: cb7345f23d2c4f459af67bd9228b2f67, type: 2}

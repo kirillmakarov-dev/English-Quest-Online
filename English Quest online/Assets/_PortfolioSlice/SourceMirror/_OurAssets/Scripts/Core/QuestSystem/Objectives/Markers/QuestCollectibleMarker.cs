@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     [AddComponentMenu(QuestSystemComponentMenuPaths.Markers + "/Collectible Marker")]
     public class QuestCollectibleMarker : MonoBehaviour, IInteractable
@@ -38,3 +38,4 @@ namespace EnglishKingdom.QuestSystem
         }
     }
 }
+

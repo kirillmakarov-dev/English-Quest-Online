@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e67f5034725e68c4b9f4204e99abfed0, type: 3}
   m_Name: InteractableCatalog_MVP
-  m_EditorClassIdentifier: _Project::EnglishKingdom.QuestSystem.InteractableCatalogSO
+  m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.InteractableCatalogSO
   entries:
   - id: line_match
     kind: 1

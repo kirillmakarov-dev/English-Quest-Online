@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools.Git
+namespace EnglishQuest.Editor.Tools.Git
 {
     internal static class GitSkipWorktreeService
     {
@@ -346,3 +346,4 @@ namespace EnglishKingdom.Editor.Tools.Git
         }
     }
 }
+

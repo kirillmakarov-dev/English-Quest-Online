@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using EnglishKingdom.RewardSystem;
+using EnglishQuest.RewardSystem;
 using UnityEngine;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     [Serializable]
     public class QuestObjectiveDefinition
@@ -47,3 +47,4 @@ namespace EnglishKingdom.QuestSystem
         public string value;
     }
 }
+

@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 {
     /// <summary>
     /// Helpers for Play Mode tests that verify Menu → gameplay scene transitions
@@ -315,3 +315,4 @@ namespace EnglishKingdom.Tests.RunTime
         }
     }
 }
+

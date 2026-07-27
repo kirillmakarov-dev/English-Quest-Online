@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace EnglishKingdom.Tests.QuestSystem
+namespace EnglishQuest.Tests.QuestSystem
 {
     [TestFixture]
     public class QuestLineBuildSpecTests
@@ -45,3 +45,4 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
     }
 }
+

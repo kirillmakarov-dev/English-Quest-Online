@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
   /// <summary>
   /// Generic world interactable that launches a quest-owned mini-game config and publishes completion by id.
@@ -78,3 +78,4 @@ namespace EnglishKingdom.QuestSystem
     }
   }
 }
+

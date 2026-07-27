@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     [Serializable]
     public sealed class QuestProgressEntry
@@ -19,3 +19,4 @@ namespace EnglishKingdom.QuestSystem
         public int Status;
     }
 }
+

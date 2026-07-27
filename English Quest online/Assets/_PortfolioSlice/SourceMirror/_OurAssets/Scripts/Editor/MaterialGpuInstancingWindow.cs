@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools
+namespace EnglishQuest.Editor.Tools
 {
     public class MaterialGpuInstancingWindow : EditorWindow
     {

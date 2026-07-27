@@ -2,7 +2,7 @@ using System;
 using Puzzle.Gameplay.MiniGames.LetterConnection;
 using UnityEngine;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
   [CreateAssetMenu(
     menuName = ScriptableObjectMenuPaths.CoreQuestMiniGameConfig + "/Line Match",
@@ -36,3 +36,4 @@ namespace EnglishKingdom.QuestSystem
     }
   }
 }
+

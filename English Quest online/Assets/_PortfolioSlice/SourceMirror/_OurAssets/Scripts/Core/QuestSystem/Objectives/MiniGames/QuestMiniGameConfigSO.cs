@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
   /// <summary>
   /// Quest-owned wrapper that binds a mini-game catalog id to launchable content.
@@ -17,3 +17,4 @@ namespace EnglishKingdom.QuestSystem
       Action onClosed);
   }
 }
+

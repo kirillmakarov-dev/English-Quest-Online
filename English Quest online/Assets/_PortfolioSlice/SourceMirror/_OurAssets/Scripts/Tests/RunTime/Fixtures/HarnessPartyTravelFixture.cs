@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using EnglishKingdom.Tests;
+using EnglishQuest.Tests;
 using Fusion;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
-namespace EnglishKingdom.Tests.RunTime.Fixtures
+namespace EnglishQuest.Tests.RunTime.Fixtures
 {
     [Category(TestCategories.Fast)]
     public abstract class HarnessPartyTravelFixture
@@ -122,3 +122,4 @@ namespace EnglishKingdom.Tests.RunTime.Fixtures
         }
     }
 }
+

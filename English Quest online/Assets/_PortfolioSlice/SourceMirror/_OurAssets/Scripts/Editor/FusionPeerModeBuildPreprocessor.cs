@@ -6,7 +6,7 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor
+namespace EnglishQuest.Editor
 {
     /// <summary>
     /// Player builds always use Fusion Single peer so scene loading matches Development
@@ -109,3 +109,4 @@ namespace EnglishKingdom.Editor
     }
 }
 #endif
+

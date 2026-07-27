@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     [AddComponentMenu(QuestSystemComponentMenuPaths.Objectives + "/World Target Registrar")]
     public class QuestWorldTargetRegistrar : MonoBehaviour
@@ -37,3 +37,4 @@ namespace EnglishKingdom.QuestSystem
         }
     }
 }
+

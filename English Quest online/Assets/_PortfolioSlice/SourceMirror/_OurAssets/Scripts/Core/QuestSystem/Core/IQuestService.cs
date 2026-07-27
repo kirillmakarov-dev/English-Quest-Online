@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 
 public interface IQuestService
 {
@@ -26,3 +26,4 @@ public interface IQuestService
     void CompleteObjectiveStep(QuestInfo questInfo, int stepIndex, string finalState = "");
     void ReevaluateQuestRequirements();
 }
+

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using EnglishKingdom.Tests.Editor;
+using EnglishQuest.Tests.Editor;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Tests.ServiceLocatorLifecycle
+namespace EnglishQuest.Tests.ServiceLocatorLifecycle
 {
     [TestFixture]
     public class ServiceLocatorSceneScopeTests
@@ -288,3 +288,4 @@ namespace EnglishKingdom.Tests.ServiceLocatorLifecycle
         }
     }
 }
+

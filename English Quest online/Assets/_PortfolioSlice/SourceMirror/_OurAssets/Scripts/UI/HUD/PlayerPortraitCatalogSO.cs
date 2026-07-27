@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace EnglishKingdom.UI.HUD
+namespace EnglishQuest.UI.HUD
 {
     /// <summary>
     /// Maps <see cref="CoreSaveData.SelectedAvatarIndex"/> to HUD portrait textures.
@@ -23,3 +23,4 @@ namespace EnglishKingdom.UI.HUD
         }
     }
 }
+

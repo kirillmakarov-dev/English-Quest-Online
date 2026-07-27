@@ -1,4 +1,4 @@
-using EnglishKingdom.LevelSystem;
+using EnglishQuest.LevelSystem;
 using UnityEngine;
 using UnityServiceLocator;
 
@@ -80,3 +80,4 @@ public class PlayerLevelProvider : MonoBehaviour, IPlayerLevelProvider
             questService.ReevaluateQuestRequirements();
     }
 }
+

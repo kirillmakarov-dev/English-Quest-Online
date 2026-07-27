@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
-using EnglishKingdom.Tests;
+using EnglishQuest.Tests;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 {
     /// <summary>
     /// Play Mode regression tests for Menu → networked gameplay scene transitions.
@@ -112,3 +112,4 @@ namespace EnglishKingdom.Tests.RunTime
         }
     }
 }
+

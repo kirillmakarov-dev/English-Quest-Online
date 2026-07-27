@@ -9,7 +9,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using Unity.Profiling;
 
-namespace EnglishKingdom.Editor.Tools.Profiler
+namespace EnglishQuest.Editor.Tools.Profiler
 {
     internal static class ProfilerFrameExporter
     {
@@ -847,3 +847,4 @@ namespace EnglishKingdom.Editor.Tools.Profiler
         }
     }
 }
+

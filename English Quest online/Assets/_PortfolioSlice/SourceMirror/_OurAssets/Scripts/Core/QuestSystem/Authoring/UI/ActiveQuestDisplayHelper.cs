@@ -1,4 +1,4 @@
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 
 public static class ActiveQuestDisplayHelper
 {
@@ -118,3 +118,4 @@ public static class ActiveQuestDisplayHelper
         }
     }
 }
+

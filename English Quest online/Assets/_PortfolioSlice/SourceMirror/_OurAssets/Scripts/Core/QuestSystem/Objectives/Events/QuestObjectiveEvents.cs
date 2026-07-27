@@ -1,6 +1,6 @@
 using System;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     public static class QuestObjectiveEvents
     {
@@ -60,3 +60,4 @@ namespace EnglishKingdom.QuestSystem
         void Publish(QuestObjectiveEvents.CustomObjectiveSignaled e);
     }
 }
+

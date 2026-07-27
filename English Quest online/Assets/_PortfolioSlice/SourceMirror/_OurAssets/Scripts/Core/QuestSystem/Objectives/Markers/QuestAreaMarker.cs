@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     [AddComponentMenu(QuestSystemComponentMenuPaths.Markers + "/Area Marker")]
     public class QuestAreaMarker : MonoBehaviour
@@ -54,3 +54,4 @@ namespace EnglishKingdom.QuestSystem
         }
     }
 }
+

@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools.Profiler
+namespace EnglishQuest.Editor.Tools.Profiler
 {
     /// <summary>
     /// Exports the currently selected Profiler frame to JSON or Markdown for AI analysis.
@@ -252,3 +252,4 @@ namespace EnglishKingdom.Editor.Tools.Profiler
         }
     }
 }
+

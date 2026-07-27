@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61de27adc580b3c40a0c18714975db13, type: 3}
-  m_Name: Quest_GuideNora_ChooseWord
+  m_Name: Quest_GuideNora_Sentence
   m_EditorClassIdentifier: _Project::QuestDefinitionSO
   id: quest_guide_nora_choose_word
-  displayName: Lesson 3 - Choose the word
-  description: Pick the correct word from three options and complete the last MVP step.
+  displayName: Lesson 3 - Build the Sentence
+  description: Arrange the words into a complete English sentence. This completes
+    the MVP questline flow from letters to words to sentences.
   levelRequired: 0
   giverNpcId: guide_nora
   prerequisiteQuest: {fileID: 0}
@@ -33,7 +34,7 @@ MonoBehaviour:
   - type: 3
     targetId: word_ordering
     count: 1
-    displayText: Choose the correct word from three answers.
+    displayText: Arrange the words into a full sentence.
     parameters: []
     miniGameConfig: {fileID: 11400000, guid: 6f00f72f2ed2cdf49bb1f08aae9346fc, type: 2}
     requiredItemId: 0

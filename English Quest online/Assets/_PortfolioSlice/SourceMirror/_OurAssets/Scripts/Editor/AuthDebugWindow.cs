@@ -5,7 +5,7 @@ using Unity.Services.Authentication;
 using UnityEditor;
     using UnityEngine;
     
-    namespace EnglishKingdom.Editor
+    namespace EnglishQuest.Editor
     {
         /// <summary>
         /// Editor debug window for testing the launcher → game authentication handoff.
@@ -327,3 +327,4 @@ using UnityEditor;
         }
     }
     
+

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools
+namespace EnglishQuest.Editor.Tools
 {
     /// <summary>
     /// Single responsibility: knows how to invoke Deploy.ps1 in a visible
@@ -39,3 +39,4 @@ namespace EnglishKingdom.Editor.Tools
         }
     }
 }
+

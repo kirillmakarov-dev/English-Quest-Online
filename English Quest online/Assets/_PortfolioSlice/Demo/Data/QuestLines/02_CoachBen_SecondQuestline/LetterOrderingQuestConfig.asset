@@ -11,6 +11,6 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09ff3928e5918ec42952b21b7d5e3001, type: 3}
   m_Name: LetterOrderingQuestConfig
-  m_EditorClassIdentifier: _Project::EnglishKingdom.QuestSystem.LetterOrderingQuestConfigSO
+  m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.LetterOrderingQuestConfigSO
   gameId: letter_ordering
   data: {fileID: 11400000, guid: ed94f3ea0cc384640905424bf356f0c3, type: 2}

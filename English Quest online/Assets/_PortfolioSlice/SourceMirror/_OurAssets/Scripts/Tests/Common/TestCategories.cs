@@ -1,4 +1,4 @@
-namespace EnglishKingdom.Tests
+namespace EnglishQuest.Tests
 {
     public static class TestCategories
     {
@@ -6,3 +6,4 @@ namespace EnglishKingdom.Tests
         public const string Integration = "Integration";
     }
 }
+

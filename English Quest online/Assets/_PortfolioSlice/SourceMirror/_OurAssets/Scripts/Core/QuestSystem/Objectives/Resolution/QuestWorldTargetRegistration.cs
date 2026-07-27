@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     public static class QuestWorldTargetRegistration
     {
@@ -32,3 +32,4 @@ namespace EnglishKingdom.QuestSystem
         }
     }
 }
+

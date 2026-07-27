@@ -1,4 +1,4 @@
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     public enum QuestObjectiveType
     {
@@ -10,3 +10,4 @@ namespace EnglishKingdom.QuestSystem
         Custom
     }
 }
+

@@ -4,7 +4,7 @@ using UnityEditor.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EnglishKingdom.Editor.Tools
+namespace EnglishQuest.Editor.Tools
 {
     /// <summary>
     /// Unity Editor window tool for rounding object positions to specified margins.

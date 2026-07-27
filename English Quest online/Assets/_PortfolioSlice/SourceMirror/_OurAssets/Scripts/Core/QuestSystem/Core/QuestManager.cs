@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using EnglishKingdom.QuestSystem;
-using EnglishKingdom.RewardSystem;
+using EnglishQuest.QuestSystem;
+using EnglishQuest.RewardSystem;
 using UnityEngine;
 using UnityServiceLocator;
 
@@ -716,3 +716,4 @@ public class QuestManager : StaticInstance<QuestManager>, IQuestService
         return hasMandatoryQuest;
     }
 }
+

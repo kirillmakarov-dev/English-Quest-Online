@@ -7,11 +7,11 @@ I added a small compatibility layer under:
 
 It provides minimal, project-local stand-ins for the external systems that were causing namespace errors after we removed the old packages from the portfolio slice:
 
-- `EnglishKingdom.LevelSystem`
-- `EnglishKingdom.RewardSystem`
+- `EnglishQuest.LevelSystem`
+- `EnglishQuest.RewardSystem`
 - `TargetIndicators`
 - `DTT.WordConnect`
-- `EnglishKingdom.UI.LevelUp`
+- `EnglishQuest.UI.LevelUp`
 
 ## Why this was needed
 

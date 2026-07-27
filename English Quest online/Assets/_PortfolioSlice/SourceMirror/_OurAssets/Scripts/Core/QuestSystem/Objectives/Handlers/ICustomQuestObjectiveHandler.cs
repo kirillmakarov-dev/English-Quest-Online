@@ -1,4 +1,4 @@
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     public interface ICustomQuestObjectiveHandler
     {
@@ -6,3 +6,4 @@ namespace EnglishKingdom.QuestSystem
         bool TryHandle(QuestInfo quest, QuestObjectiveDefinition definition, int stepIndex, string payload);
     }
 }
+

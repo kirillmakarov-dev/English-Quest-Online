@@ -3,7 +3,7 @@ using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 {
     /// <summary>
     /// Verbose diagnostics for Play Mode tests. Logs are prefixed so they are easy to grep in Unity console.
@@ -91,3 +91,4 @@ namespace EnglishKingdom.Tests.RunTime
         }
     }
 }
+

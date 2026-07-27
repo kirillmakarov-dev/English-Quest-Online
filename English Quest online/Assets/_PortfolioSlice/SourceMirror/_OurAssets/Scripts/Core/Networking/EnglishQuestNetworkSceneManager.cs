@@ -15,9 +15,9 @@ using UnityServiceLocator;
 /// newly loaded scene to capture its own lightmaps/RenderSettings before the merge, then restore that
 /// snapshot onto the simulation scene afterward.
 /// </summary>
-public class EnglishKingdomNetworkSceneManager : NetworkSceneManagerDefault
+public class EnglishQuestNetworkSceneManager : NetworkSceneManagerDefault
 {
-    const string LogPrefix = "[EnglishKingdomNetworkSceneManager]";
+    const string LogPrefix = "[EnglishQuestNetworkSceneManager]";
 
     SceneEnvironmentSnapshot _pendingEnvironmentSnapshot;
     LightmapSnapshot _pendingLightmapSnapshot;
@@ -494,3 +494,4 @@ public class EnglishKingdomNetworkSceneManager : NetworkSceneManagerDefault
         }
     }
 }
+

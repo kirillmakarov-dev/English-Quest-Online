@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Tests.QuestSystem
+namespace EnglishQuest.Tests.QuestSystem
 {
     /// <summary>
     /// Edit-mode tests for <see cref="QuestInfo"/>.
@@ -313,3 +313,4 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
     }
 }
+

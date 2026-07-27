@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-namespace EnglishKingdom.Tests.Social
+namespace EnglishQuest.Tests.Social
 {
     [TestFixture]
     public class PartyTravelAuthorityTests
@@ -36,3 +36,4 @@ namespace EnglishKingdom.Tests.Social
         }
     }
 }
+

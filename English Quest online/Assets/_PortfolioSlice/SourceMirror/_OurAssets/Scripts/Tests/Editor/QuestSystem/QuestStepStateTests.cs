@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace EnglishKingdom.Tests.QuestSystem
+namespace EnglishQuest.Tests.QuestSystem
 {
     /// <summary>
     /// Pure unit tests for <see cref="QuestStepState"/>.
@@ -75,3 +75,4 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
     }
 }
+

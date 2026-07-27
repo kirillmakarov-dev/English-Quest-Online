@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using Cysharp.Threading.Tasks;
 
-using EnglishKingdom.Tests.RunTime.Fixtures;
+using EnglishQuest.Tests.RunTime.Fixtures;
 
 using Fusion;
 
@@ -16,7 +16,7 @@ using UnityEngine.TestTools;
 
 
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 
 {
 
@@ -462,9 +462,9 @@ namespace EnglishKingdom.Tests.RunTime
 
         {
 
-            EnglishKingdom.UI.Loading.LoadingScreenManager loadingScreen =
+            EnglishQuest.UI.Loading.LoadingScreenManager loadingScreen =
 
-                Object.FindFirstObjectByType<EnglishKingdom.UI.Loading.LoadingScreenManager>(
+                Object.FindFirstObjectByType<EnglishQuest.UI.Loading.LoadingScreenManager>(
 
                     FindObjectsInactive.Include);
 
@@ -587,5 +587,6 @@ namespace EnglishKingdom.Tests.RunTime
     }
 
 }
+
 
 

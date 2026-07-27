@@ -14,7 +14,7 @@ using UnityServiceLocator;
 
 
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 
 {
 
@@ -389,5 +389,6 @@ namespace EnglishKingdom.Tests.RunTime
     }
 
 }
+
 
 

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     public static class QuestObjectiveDefinitionExtensions
     {
@@ -32,3 +32,4 @@ namespace EnglishKingdom.QuestSystem
         }
     }
 }
+

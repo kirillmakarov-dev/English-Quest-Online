@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Reflection;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Tests.QuestSystem
+namespace EnglishQuest.Tests.QuestSystem
 {
     [TestFixture]
     public class QuestObjectiveManagerTests
@@ -243,3 +243,4 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
     }
 }
+

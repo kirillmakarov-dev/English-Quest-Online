@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     [DefaultExecutionOrder(-5)]
     [AddComponentMenu(QuestSystemComponentMenuPaths.Objectives + "/Quest Objective Event Bus")]
@@ -55,3 +55,4 @@ namespace EnglishKingdom.QuestSystem
         }
     }
 }
+

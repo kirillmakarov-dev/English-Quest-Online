@@ -3,7 +3,7 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace EnglishKingdom.Tests.WorldTravel
+namespace EnglishQuest.Tests.WorldTravel
 {
     [TestFixture]
     public class WorldMapDefinitionSOTests
@@ -95,3 +95,4 @@ namespace EnglishKingdom.Tests.WorldTravel
         }
     }
 }
+

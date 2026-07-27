@@ -5,7 +5,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools.BuildSize
+namespace EnglishQuest.Editor.Tools.BuildSize
 {
     /// <summary>
     /// Lists third-party demo/example assets not referenced by game scenes in the build profile.
@@ -93,3 +93,4 @@ namespace EnglishKingdom.Editor.Tools.BuildSize
         }
     }
 }
+

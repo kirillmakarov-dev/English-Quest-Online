@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace EnglishKingdom.LevelSystem
+namespace EnglishQuest.LevelSystem
 {
     public interface ILevelService
     {
@@ -12,7 +12,7 @@ namespace EnglishKingdom.LevelSystem
     }
 }
 
-namespace EnglishKingdom.RewardSystem
+namespace EnglishQuest.RewardSystem
 {
     [Serializable]
     public sealed class RewardBundle
@@ -108,3 +108,4 @@ namespace TargetIndicators
         }
     }
 }
+

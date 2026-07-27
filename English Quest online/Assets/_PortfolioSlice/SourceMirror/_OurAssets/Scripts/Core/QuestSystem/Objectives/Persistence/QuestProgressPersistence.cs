@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using EnglishKingdom.LevelSystem;
+using EnglishQuest.LevelSystem;
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     [DefaultExecutionOrder(20)]
     public class QuestProgressPersistence : MonoBehaviour
@@ -120,3 +120,4 @@ namespace EnglishKingdom.QuestSystem
         }
     }
 }
+

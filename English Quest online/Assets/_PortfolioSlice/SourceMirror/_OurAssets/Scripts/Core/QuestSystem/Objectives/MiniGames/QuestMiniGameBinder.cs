@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
   public sealed class QuestMiniGameBinder : IQuestMiniGameBinder
   {
@@ -49,3 +49,4 @@ namespace EnglishKingdom.QuestSystem
     }
   }
 }
+

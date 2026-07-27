@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = ScriptableObjectMenuPaths.CoreQuestDefinition, fileName = "QuestDefinition_")]
@@ -22,7 +22,7 @@ public class QuestDefinitionSO : ScriptableObject
 
     [Header("Rewards")]
     public QuestRewardData rewards = new();
-    public EnglishKingdom.RewardSystem.RewardDefinition rewardDefinition;
+    public EnglishQuest.RewardSystem.RewardDefinition rewardDefinition;
 
     [Header("Dialogue")]
     public DialogueNode startDialogue;
@@ -46,3 +46,4 @@ public class QuestDefinitionSO : ScriptableObject
     }
 #endif
 }
+

@@ -22,7 +22,7 @@ public static class GameHandoffService
         "CourseGame", ".auth");
 
     // Shared entropy constant — must match the launcher's GameHandoffService.
-    private const string AppHandoffSecret = "EnglishKingdom-DPAPI-Handoff-v1";
+    private const string AppHandoffSecret = "EnglishQuest-DPAPI-Handoff-v1";
 
     /// <summary>Holds both fields from the launcher handoff payload.</summary>
     public struct HandoffData
@@ -174,3 +174,4 @@ public static class GameHandoffService
     }
 #endif
 }
+

@@ -1,6 +1,6 @@
 using System;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     [Serializable]
     public struct ObjectiveProgress
@@ -38,3 +38,4 @@ namespace EnglishKingdom.QuestSystem
         }
     }
 }
+

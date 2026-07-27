@@ -1,4 +1,4 @@
-using EnglishKingdom.RewardSystem;
+using EnglishQuest.RewardSystem;
 using UnityEngine;
 using UnityServiceLocator;
 
@@ -27,3 +27,4 @@ public class QuestFinishAction_GiveReward : QuestFinishAction
         AppLog.Info($"[QuestFinishAction_GiveReward] Granted '{rewardDefinition.name}' for quest '{questToMonitor.id}'.");
     }
 }
+

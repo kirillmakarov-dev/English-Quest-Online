@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using EnglishKingdom.RewardSystem;
+using EnglishQuest.RewardSystem;
 using UnityEngine;
 
 [Serializable]
@@ -24,3 +24,4 @@ public class QuestRewardData
         return bundle;
     }
 }
+

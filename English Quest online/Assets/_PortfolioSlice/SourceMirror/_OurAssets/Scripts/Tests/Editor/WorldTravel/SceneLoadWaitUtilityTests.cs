@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-namespace EnglishKingdom.Tests.WorldTravel
+namespace EnglishQuest.Tests.WorldTravel
 {
     public class SceneLoadWaitUtilityTests
     {
@@ -53,3 +53,4 @@ namespace EnglishKingdom.Tests.WorldTravel
         }
     }
 }
+

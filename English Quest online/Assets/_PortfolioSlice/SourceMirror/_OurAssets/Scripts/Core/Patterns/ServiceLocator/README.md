@@ -14,7 +14,7 @@ Add a GameObject with **ServiceLocator Scene** component per scene.
 
 > Or via the Unity menu: `GameObject → ServiceLocator → Add Global / Add Scene`
 
-Fusion multi-peer merges level content into each runner's `SimulationUnityScene`. After merge, `EnglishKingdomNetworkSceneManager` calls `ServiceLocator.RefreshForScene` so child scene locators re-register under the simulation scene.
+Fusion multi-peer merges level content into each runner's `SimulationUnityScene`. After merge, `EnglishQuestNetworkSceneManager` calls `ServiceLocator.RefreshForScene` so child scene locators re-register under the simulation scene.
 
 ---
 

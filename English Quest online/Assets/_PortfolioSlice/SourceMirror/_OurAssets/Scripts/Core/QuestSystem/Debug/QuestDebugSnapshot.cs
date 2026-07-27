@@ -1,4 +1,4 @@
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using UnityEngine;
 using UnityServiceLocator;
 
@@ -253,3 +253,4 @@ public static class QuestDebugSnapshotBuilder
         return null;
     }
 }
+

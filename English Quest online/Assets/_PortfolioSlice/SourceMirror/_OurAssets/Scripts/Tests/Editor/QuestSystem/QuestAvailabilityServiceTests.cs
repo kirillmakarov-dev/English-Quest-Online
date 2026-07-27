@@ -3,7 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Tests.QuestSystem
+namespace EnglishQuest.Tests.QuestSystem
 {
     [TestFixture]
     public class QuestAvailabilityServiceTests
@@ -212,3 +212,4 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
     }
 }
+

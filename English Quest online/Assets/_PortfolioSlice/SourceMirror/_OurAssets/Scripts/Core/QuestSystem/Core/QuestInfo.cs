@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using UnityEngine;
 using UnityServiceLocator;
 
@@ -320,3 +320,4 @@ public class QuestInfo : MonoBehaviour
         return 1;
     }
 }
+

@@ -16,7 +16,7 @@ MonoBehaviour:
   npcId: teacher_ada
   prerequisiteLineId: 
   displayName: Teacher Ada
-  theme: Learn the first two letters.
+  theme: Learn two starter letters and prove the first NPC-to-mini-game quest loop.
   quests:
   - {fileID: 11400000, guid: e25423f1d59d438ca63eaffbf7e25f64, type: 2}
   worldCatalogSet: {fileID: 0}

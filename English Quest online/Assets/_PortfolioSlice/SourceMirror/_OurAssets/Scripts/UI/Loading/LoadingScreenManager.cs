@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.UI.Loading
+namespace EnglishQuest.UI.Loading
 {
     /// <summary>
     /// Manages the loading screen display and scene loading process.
@@ -424,3 +424,4 @@ namespace EnglishKingdom.UI.Loading
         }
     }
 }
+

@@ -2,7 +2,7 @@ using Puzzle.Gameplay.MiniGames.DuolingoWordGame;
 using Puzzle.Gameplay.MiniGames.LetterConnection;
 using UnityEngine;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
   /// <summary>
   /// Scene bootstrap references for <see cref="MiniGameWorldInteractable"/>.
@@ -53,3 +53,4 @@ namespace EnglishKingdom.QuestSystem
     }
   }
 }
+

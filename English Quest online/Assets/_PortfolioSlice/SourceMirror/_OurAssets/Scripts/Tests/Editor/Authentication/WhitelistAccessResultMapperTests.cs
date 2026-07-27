@@ -1,7 +1,7 @@
-using EnglishKingdom.Tests;
+using EnglishQuest.Tests;
 using NUnit.Framework;
 
-namespace EnglishKingdom.Tests.Authentication
+namespace EnglishQuest.Tests.Authentication
 {
     [Category(TestCategories.Fast)]
     public class WhitelistAccessResultMapperTests
@@ -21,3 +21,4 @@ namespace EnglishKingdom.Tests.Authentication
         }
     }
 }
+

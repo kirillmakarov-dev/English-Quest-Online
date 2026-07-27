@@ -1,5 +1,5 @@
 using System;
-using EnglishKingdom.PortfolioDemo;
+using EnglishQuest.PortfolioDemo;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -282,3 +282,4 @@ public static class StarterAssetsPlayerAutoWire
             SetObjectMember(trigger, "playerInteractionScript", interaction);
     }
 }
+

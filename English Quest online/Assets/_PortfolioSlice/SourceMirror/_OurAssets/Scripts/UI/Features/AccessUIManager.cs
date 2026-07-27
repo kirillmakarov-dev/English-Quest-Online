@@ -1,4 +1,4 @@
-using EnglishKingdom.UI.Loading;
+using EnglishQuest.UI.Loading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

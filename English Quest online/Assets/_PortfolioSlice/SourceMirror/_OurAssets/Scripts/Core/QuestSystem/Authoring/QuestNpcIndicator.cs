@@ -126,7 +126,8 @@ public class QuestNpcIndicator : MonoBehaviour
         _defaultLabel.outlineWidth = 0.25f;
         _defaultLabel.outlineColor = Color.black;
 
-        _defaultMarker.AddComponent<NameTagBillboard>();
+        NameTagBillboard billboard = _defaultMarker.AddComponent<NameTagBillboard>();
+        billboard.Configure(NameTagBillboard.FacingMode.TowardCamera, new Vector3(0f, 180f, 0f));
     }
 
     private void SetDefaultMarker(QuestNpcIndicatorState state)

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Quest_TeacherAda_Letters
   m_EditorClassIdentifier: _Project::QuestDefinitionSO
   id: quest_teacher_ada_letters
-  displayName: Lesson 1 - Two letters
-  description: Complete the first mini-game to learn the opening letters and unlock
-    the second NPC.
+  displayName: Lesson 1 - Meet A and B
+  description: Start the MVP learning chain by matching the first two letters. This
+    proves NPC dialogue, quest start, mini-game gating, completion, and next NPC unlock.
   levelRequired: 0
   giverNpcId: teacher_ada
   prerequisiteQuest: {fileID: 0}
@@ -34,7 +34,7 @@ MonoBehaviour:
   - type: 3
     targetId: line_match
     count: 1
-    displayText: Match the first two letters.
+    displayText: Match A and B with their correct pairs.
     parameters: []
     miniGameConfig: {fileID: 11400000, guid: 5f81dabf5066fd44087ce40b090b3b8b, type: 2}
     requiredItemId: 0

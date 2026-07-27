@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     [CreateAssetMenu(menuName = ScriptableObjectMenuPaths.CoreQuestWorldCatalogSet, fileName = "QuestWorldCatalogSet_")]
     public class QuestWorldCatalogSetSO : ScriptableObject
@@ -11,3 +11,4 @@ namespace EnglishKingdom.QuestSystem
         public QuestCatalogSO questCatalog;
     }
 }
+

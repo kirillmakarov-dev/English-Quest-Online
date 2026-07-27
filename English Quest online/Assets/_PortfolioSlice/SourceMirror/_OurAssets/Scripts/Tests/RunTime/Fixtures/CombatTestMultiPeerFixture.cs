@@ -5,7 +5,7 @@ using Fusion;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
-namespace EnglishKingdom.Tests.RunTime.Fixtures
+namespace EnglishQuest.Tests.RunTime.Fixtures
 {
     public abstract class CombatTestMultiPeerFixture
     {
@@ -59,3 +59,4 @@ namespace EnglishKingdom.Tests.RunTime.Fixtures
         }
     }
 }
+

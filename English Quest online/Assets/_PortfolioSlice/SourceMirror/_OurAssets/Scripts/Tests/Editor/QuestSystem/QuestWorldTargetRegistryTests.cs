@@ -1,8 +1,8 @@
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace EnglishKingdom.Tests.QuestSystem
+namespace EnglishQuest.Tests.QuestSystem
 {
     public class QuestWorldTargetRegistryTests
     {
@@ -79,3 +79,4 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
     }
 }
+

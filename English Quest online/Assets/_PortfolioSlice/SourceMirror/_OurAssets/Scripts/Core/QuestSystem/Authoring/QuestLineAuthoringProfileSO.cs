@@ -1,4 +1,4 @@
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = ScriptableObjectMenuPaths.CoreQuestLine + "/Line Authoring Profile", fileName = "QuestLineAuthoringProfile_")]
@@ -13,3 +13,4 @@ public class QuestLineAuthoringProfileSO : ScriptableObject
     public QuestWorldCatalogSetSO worldCatalogSet;
     public QuestCatalogSO questCatalog;
 }
+

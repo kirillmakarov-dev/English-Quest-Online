@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools
+namespace EnglishQuest.Editor.Tools
 {
     /// <summary>
     /// IL2CPP / Burst builds emit large diagnostic folders beside the player exe.
@@ -153,3 +153,4 @@ namespace EnglishKingdom.Editor.Tools
         }
     }
 }
+

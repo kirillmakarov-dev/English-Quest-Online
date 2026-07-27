@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     public interface IQuestWorldTargetRegistry
     {
@@ -9,3 +9,4 @@ namespace EnglishKingdom.QuestSystem
         bool TryGetTransform(QuestObjectiveType type, string targetId, out Transform transform);
     }
 }
+

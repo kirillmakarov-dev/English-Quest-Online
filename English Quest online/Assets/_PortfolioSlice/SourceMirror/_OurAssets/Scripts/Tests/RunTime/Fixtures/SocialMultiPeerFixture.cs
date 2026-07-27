@@ -1,11 +1,11 @@
 using System.Collections;
-using EnglishKingdom.Tests.RunTime.Fixtures;
+using EnglishQuest.Tests.RunTime.Fixtures;
 using Fusion;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace EnglishKingdom.Tests.RunTime.Fixtures
+namespace EnglishQuest.Tests.RunTime.Fixtures
 {
     public abstract class SocialMultiPeerFixture : CombatTestMultiPeerFixture
     {
@@ -44,3 +44,4 @@ namespace EnglishKingdom.Tests.RunTime.Fixtures
         }
     }
 }
+

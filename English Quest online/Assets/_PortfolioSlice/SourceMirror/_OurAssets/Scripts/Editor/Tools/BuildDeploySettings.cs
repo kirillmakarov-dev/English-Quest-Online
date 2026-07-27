@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace EnglishKingdom.Editor.Tools
+namespace EnglishQuest.Editor.Tools
 {
     /// <summary>
     /// EditorPrefs-backed settings for the Build Deploy pipeline.
@@ -40,3 +40,4 @@ namespace EnglishKingdom.Editor.Tools
         }
     }
 }
+

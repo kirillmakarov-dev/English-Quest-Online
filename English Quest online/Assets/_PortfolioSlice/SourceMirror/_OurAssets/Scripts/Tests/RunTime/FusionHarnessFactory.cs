@@ -8,7 +8,7 @@ using UnityServiceLocator;
 using UnityEditor;
 #endif
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 {
     /// <summary>
     /// Builds a lightweight Fusion + world-travel harness inside CombatTest at runtime.
@@ -161,7 +161,7 @@ namespace EnglishKingdom.Tests.RunTime
                         Object.FindFirstObjectByType<GameNetworkManager>(FindObjectsInactive.Include));
                 }
 
-                if (Object.FindFirstObjectByType<EnglishKingdom.UI.Loading.LoadingScreenManager>(
+                if (Object.FindFirstObjectByType<EnglishQuest.UI.Loading.LoadingScreenManager>(
                         FindObjectsInactive.Include) == null)
                 {
                     GameObject loadingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(LoadingCanvasPrefabPath);
@@ -169,14 +169,14 @@ namespace EnglishKingdom.Tests.RunTime
                     {
                         GameObject loadingInstance = Object.Instantiate(loadingPrefab, bootstrapRoot.transform);
                         RegisterHarnessLoadingServiceGlobally(
-                            loadingInstance.GetComponentInChildren<EnglishKingdom.UI.Loading.LoadingScreenManager>(
+                            loadingInstance.GetComponentInChildren<EnglishQuest.UI.Loading.LoadingScreenManager>(
                                 includeInactive: true));
                     }
                 }
                 else
                 {
                     RegisterHarnessLoadingServiceGlobally(
-                        Object.FindFirstObjectByType<EnglishKingdom.UI.Loading.LoadingScreenManager>(
+                        Object.FindFirstObjectByType<EnglishQuest.UI.Loading.LoadingScreenManager>(
                             FindObjectsInactive.Include));
                 }
 
@@ -210,7 +210,7 @@ namespace EnglishKingdom.Tests.RunTime
             RegisterHarnessNetworkServiceGlobally(
                 Object.FindFirstObjectByType<GameNetworkManager>(FindObjectsInactive.Include));
             RegisterHarnessLoadingServiceGlobally(
-                Object.FindFirstObjectByType<EnglishKingdom.UI.Loading.LoadingScreenManager>(
+                Object.FindFirstObjectByType<EnglishQuest.UI.Loading.LoadingScreenManager>(
                     FindObjectsInactive.Include));
         }
 
@@ -228,7 +228,7 @@ namespace EnglishKingdom.Tests.RunTime
         }
 
         private static void RegisterHarnessLoadingServiceGlobally(
-            EnglishKingdom.UI.Loading.LoadingScreenManager loadingScreen)
+            EnglishQuest.UI.Loading.LoadingScreenManager loadingScreen)
         {
             if (loadingScreen == null)
                 return;
@@ -237,8 +237,8 @@ namespace EnglishKingdom.Tests.RunTime
             if (global == null)
                 return;
 
-            if (!global.TryGet(out EnglishKingdom.UI.Loading.ILoadingScreenService _))
-                global.Register<EnglishKingdom.UI.Loading.ILoadingScreenService>(loadingScreen);
+            if (!global.TryGet(out EnglishQuest.UI.Loading.ILoadingScreenService _))
+                global.Register<EnglishQuest.UI.Loading.ILoadingScreenService>(loadingScreen);
         }
 
         private static void RegisterHarnessTravelServiceGlobally(WorldTravelService travelService)
@@ -255,3 +255,4 @@ namespace EnglishKingdom.Tests.RunTime
         }
     }
 }
+

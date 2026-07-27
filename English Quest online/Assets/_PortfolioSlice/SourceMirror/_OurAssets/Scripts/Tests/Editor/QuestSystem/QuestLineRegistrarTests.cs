@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Reflection;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using NUnit.Framework;
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Tests.QuestSystem
+namespace EnglishQuest.Tests.QuestSystem
 {
     [TestFixture]
     public class QuestLineRegistrarTests
@@ -265,3 +265,4 @@ namespace EnglishKingdom.Tests.QuestSystem
         }
     }
 }
+

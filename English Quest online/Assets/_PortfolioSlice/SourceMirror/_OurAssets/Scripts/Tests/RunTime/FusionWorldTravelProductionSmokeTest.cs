@@ -2,7 +2,7 @@ using System.Collections;
 
 using System.Collections.Generic;
 
-using EnglishKingdom.Tests;
+using EnglishQuest.Tests;
 
 using Fusion;
 
@@ -12,7 +12,7 @@ using UnityEngine.TestTools;
 
 
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 
 {
 
@@ -143,5 +143,6 @@ namespace EnglishKingdom.Tests.RunTime
     }
 
 }
+
 
 

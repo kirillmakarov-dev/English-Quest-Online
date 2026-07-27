@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using UnityEngine;
 
 /// <summary>
@@ -64,3 +64,4 @@ public class QuestLineRegistrySO : ScriptableObject
     }
 #endif
 }
+

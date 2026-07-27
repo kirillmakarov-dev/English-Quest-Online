@@ -3,7 +3,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace EnglishKingdom.Editor.Tools.BuildSize
+namespace EnglishQuest.Editor.Tools.BuildSize
 {
     public static class BuildSizeValidation
     {
@@ -34,3 +34,4 @@ namespace EnglishKingdom.Editor.Tools.BuildSize
         }
     }
 }
+

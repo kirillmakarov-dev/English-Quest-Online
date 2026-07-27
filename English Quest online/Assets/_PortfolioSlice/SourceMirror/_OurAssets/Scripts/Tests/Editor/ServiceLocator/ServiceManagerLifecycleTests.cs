@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Tests.ServiceLocatorLifecycle
+namespace EnglishQuest.Tests.ServiceLocatorLifecycle
 {
     [TestFixture]
     public class ServiceManagerLifecycleTests
@@ -84,3 +84,4 @@ namespace EnglishKingdom.Tests.ServiceLocatorLifecycle
         }
     }
 }
+

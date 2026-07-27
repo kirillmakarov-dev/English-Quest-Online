@@ -1,8 +1,8 @@
-using EnglishKingdom.QuestSystem;
+using EnglishQuest.QuestSystem;
 using TMPro;
 using UnityEngine;
 
-namespace EnglishKingdom.PortfolioDemo
+namespace EnglishQuest.PortfolioDemo
 {
     public sealed class PortfolioDemoHud : MonoBehaviour
     {
@@ -70,3 +70,4 @@ namespace EnglishKingdom.PortfolioDemo
         }
     }
 }
+

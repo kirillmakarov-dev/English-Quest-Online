@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.Tests.RunTime
+namespace EnglishQuest.Tests.RunTime
 {
     /// <summary>
     /// Shared helpers for Fusion Multi-Peer Play Mode tests.
@@ -1281,3 +1281,4 @@ namespace EnglishKingdom.Tests.RunTime
         }
     }
 }
+

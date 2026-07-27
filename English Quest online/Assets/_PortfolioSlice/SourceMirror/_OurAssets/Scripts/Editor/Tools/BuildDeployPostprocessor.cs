@@ -2,7 +2,7 @@ using System.IO;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 
-namespace EnglishKingdom.Editor.Tools
+namespace EnglishQuest.Editor.Tools
 {
     /// <summary>
     /// Post-build hook. If "Upload on Finish" is enabled and the build succeeded,
@@ -68,3 +68,4 @@ namespace EnglishKingdom.Editor.Tools
         }
     }
 }
+

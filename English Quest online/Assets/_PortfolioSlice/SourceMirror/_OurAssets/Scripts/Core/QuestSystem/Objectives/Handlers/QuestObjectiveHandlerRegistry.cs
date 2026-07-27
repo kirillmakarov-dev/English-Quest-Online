@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     public class QuestObjectiveHandlerRegistry
     {
@@ -136,3 +136,4 @@ namespace EnglishKingdom.QuestSystem
         }
     }
 }
+

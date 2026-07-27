@@ -11,6 +11,6 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9fb281b0cfc0baf4c9afc76e2c10d07e, type: 3}
   m_Name: WordOrderingQuestConfig
-  m_EditorClassIdentifier: _Project::EnglishKingdom.QuestSystem.WordOrderingQuestConfigSO
+  m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.WordOrderingQuestConfigSO
   gameId: word_ordering
   data: {fileID: 11400000, guid: aedcd99154e474e4cae82b7e5d27dd0c, type: 2}

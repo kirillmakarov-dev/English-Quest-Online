@@ -1,9 +1,9 @@
-using EnglishKingdom.Tests;
+using EnglishQuest.Tests;
 using Fusion;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
-namespace EnglishKingdom.Tests.Networking
+namespace EnglishQuest.Tests.Networking
 {
     [Category(TestCategories.Fast)]
     public class NetworkAuthorityServiceTests
@@ -40,3 +40,4 @@ namespace EnglishKingdom.Tests.Networking
         }
     }
 }
+

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityServiceLocator;
 
-namespace EnglishKingdom.QuestSystem
+namespace EnglishQuest.QuestSystem
 {
     [DefaultExecutionOrder(5)]
     [AddComponentMenu(QuestSystemComponentMenuPaths.Objectives + "/Quest Objective Director")]
@@ -64,3 +64,4 @@ namespace EnglishKingdom.QuestSystem
         private void HandleCustomObjective(QuestObjectiveEvents.CustomObjectiveSignaled e) => _registry?.HandleCustomObjective(e);
     }
 }
+
