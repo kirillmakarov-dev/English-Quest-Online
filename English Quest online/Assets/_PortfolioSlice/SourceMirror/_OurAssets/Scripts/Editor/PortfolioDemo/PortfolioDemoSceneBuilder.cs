@@ -468,7 +468,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
         {
             QuestManager questManager = new GameObject("Quest Manager").AddComponent<QuestManager>();
             SerializedObject serializedManager = new(questManager);
-            serializedManager.FindProperty("loadQuestState").boolValue = false;
+            serializedManager.FindProperty("loadQuestState").boolValue = true;
             serializedManager.ApplyModifiedPropertiesWithoutUndo();
 
             GameObject registrarObject = new("Quest Line Registrar");

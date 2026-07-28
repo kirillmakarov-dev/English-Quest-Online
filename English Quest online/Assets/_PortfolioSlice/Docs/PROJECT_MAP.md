@@ -1,5 +1,14 @@
 # English Quest Online - Project Map
 
+## Companion docs
+
+For the active implementation plan and phase tracking, see:
+
+- `Assets/_PortfolioSlice/Docs/MVP_SENIOR_ROADMAP.md`
+
+Use this file as the architecture and inventory map.
+Use the roadmap file as the source of truth for what gets implemented next.
+
 ## Назначение документа
 
 Это основной навигационный документ портфолио-проекта.

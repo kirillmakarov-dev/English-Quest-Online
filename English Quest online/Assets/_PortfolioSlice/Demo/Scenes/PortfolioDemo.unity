@@ -5973,7 +5973,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df6f20faf5cbff47ac64aab042a4c97, type: 3}
   m_Name:
   m_EditorClassIdentifier: _Project::QuestManager
-  loadQuestState: 0
+  loadQuestState: 1
   allQuestInfos: []
   questProgressPersistence: {fileID: 0}
   questObjectiveDirector: {fileID: 0}

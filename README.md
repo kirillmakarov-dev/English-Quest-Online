@@ -188,6 +188,13 @@ The main scene is:
 Assets/_PortfolioSlice/Demo/Scenes/PortfolioDemo.unity
 ```
 
+## Project docs
+
+For the current implementation roadmap and the technical map of the slice, start here:
+
+- `English Quest online/Assets/_PortfolioSlice/Docs/MVP_SENIOR_ROADMAP.md`
+- `English Quest online/Assets/_PortfolioSlice/Docs/PROJECT_MAP.md`
+
 The scene can also be regenerated from:
 
 ```text

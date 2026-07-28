@@ -22,6 +22,12 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
 
     private void Awake()
     {
+        if (string.IsNullOrEmpty(ResolveNpcId()))
+            AppLog.Warning($"[NpcQuestGiver] '{name}' has no npcId and no questLine npcId fallback.", this);
+
+        if (questLine == null)
+            AppLog.Warning($"[NpcQuestGiver] '{name}' has no quest line assigned.", this);
+
         EnsureQuestIndicator();
     }
 
@@ -399,8 +405,17 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
 
     private void PlayDialogue(DialogueNode node, PlayerInteraction interactor)
     {
-        if (node == null || ResolveDialogueService() == null)
+        if (node == null)
+        {
+            AppLog.Warning($"[NpcQuestGiver] '{name}' tried to play a missing dialogue node.", this);
             return;
+        }
+
+        if (ResolveDialogueService() == null)
+        {
+            AppLog.Warning($"[NpcQuestGiver] Dialogue service is missing for NPC '{name}'.", this);
+            return;
+        }
 
         Transform localPlayer = interactor != null ? interactor.transform : null;
         ResolveDialogueService().StartDialogue(node, transform, localPlayer);

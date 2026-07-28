@@ -19,6 +19,16 @@ namespace EnglishQuest.QuestSystem
 
     public QuestMiniGameConfigSO FallbackConfig => fallbackConfig;
 
+    private void Awake()
+    {
+      if (wordGameBootstrap == null && lineMatchBootstrap == null)
+      {
+        AppLog.Warning(
+          $"[MiniGameWorldLaunchHost] '{name}' has no bootstrap references. It can only launch through fallback discovery.",
+          this);
+      }
+    }
+
     public WordGameBootstrap ResolveWordGameBootstrap()
     {
       if (wordGameBootstrap != null)

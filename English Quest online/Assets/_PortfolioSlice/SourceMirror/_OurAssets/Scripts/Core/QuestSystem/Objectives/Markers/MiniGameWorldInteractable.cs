@@ -31,6 +31,12 @@ namespace EnglishQuest.QuestSystem
     {
       if (launchHost == null)
         launchHost = GetComponent<MiniGameWorldLaunchHost>();
+
+      if (string.IsNullOrEmpty(gameId))
+        AppLog.Warning($"[MiniGameWorldInteractable] '{name}' has an empty gameId.", this);
+
+      if (launchHost == null)
+        AppLog.Warning($"[MiniGameWorldInteractable] '{name}' is missing MiniGameWorldLaunchHost.", this);
     }
 
     public bool Interact(PlayerInteraction interactor)

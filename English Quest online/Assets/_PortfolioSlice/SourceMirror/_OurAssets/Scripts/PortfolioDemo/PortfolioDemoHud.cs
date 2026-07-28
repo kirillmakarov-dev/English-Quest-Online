@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityServiceLocator;
 
 namespace EnglishQuest.PortfolioDemo
 {
@@ -23,24 +24,34 @@ namespace EnglishQuest.PortfolioDemo
         private RectTransform demoBriefingRoot;
         private RectTransform playerPanelRoot;
         private RectTransform playerListRoot;
+        private RectTransform completionPanelRoot;
         private float nextPlayerPanelRefreshTime;
         private string lastPlayerPanelHash = "";
         private bool isOpenWorldHudVisible = true;
+        private PortfolioGameFlowCoordinator flowCoordinator;
+        private PortfolioDemoDebugOverlay debugOverlay;
+        private IQuestService questService;
+        private Button replayButton;
+        private Button closeCompletionButton;
+        private TextMeshProUGUI completionBodyText;
+        private bool completionDismissed;
 
         private void Awake()
         {
+            EnsureFlowCoordinator();
             EnsureDemoBriefingPanel();
             EnsurePlayerPanel();
+            EnsureCompletionPanel();
+            EnsureDebugOverlay();
             CacheOpenWorldHudRoots();
-            ApplyOpenWorldHudVisibility(!IsAnyMiniGameOpen());
+            ApplyState(CurrentStateOrFallback());
         }
 
         private void Update()
         {
-            bool isMiniGameOpen = IsAnyMiniGameOpen();
-            ApplyOpenWorldHudVisibility(!isMiniGameOpen);
+            ApplyState(CurrentStateOrFallback());
 
-            if (isMiniGameOpen)
+            if (!isOpenWorldHudVisible)
                 return;
 
             if (Time.unscaledTime < nextPlayerPanelRefreshTime)
@@ -60,6 +71,10 @@ namespace EnglishQuest.PortfolioDemo
                 dialogueManager.OnDialogueStart += HandleDialogueStarted;
                 dialogueManager.OnDialogueEnd += HandleDialogueEnded;
             }
+
+            ResolveQuestService();
+            if (questService != null)
+                questService.OnLevelCompleted += HandleLevelCompleted;
         }
 
         private void OnDisable()
@@ -72,6 +87,9 @@ namespace EnglishQuest.PortfolioDemo
                 dialogueManager.OnDialogueStart -= HandleDialogueStarted;
                 dialogueManager.OnDialogueEnd -= HandleDialogueEnded;
             }
+
+            if (questService != null)
+                questService.OnLevelCompleted -= HandleLevelCompleted;
         }
 
         public void SetInteractionPrompt(string message)
@@ -90,6 +108,13 @@ namespace EnglishQuest.PortfolioDemo
 
         private void HandleDialogueStarted() => SetStatus("Dialogue started");
         private void HandleDialogueEnded() => SetStatus("Dialogue completed");
+        private void HandleLevelCompleted()
+        {
+            completionDismissed = false;
+            SetStatus("All lessons completed. MVP level finished.");
+            UpdateCompletionPanelContent();
+            ApplyState(PortfolioGameFlowState.LevelCompleted);
+        }
 
         private void SetStatus(string message)
         {
@@ -106,6 +131,20 @@ namespace EnglishQuest.PortfolioDemo
                 "word_ordering" => "Word Ordering completed. MVP quest chain finished.",
                 _ => $"Completed: {gameId}"
             };
+        }
+
+        private void EnsureFlowCoordinator()
+        {
+            flowCoordinator = GetComponent<PortfolioGameFlowCoordinator>();
+            if (flowCoordinator == null)
+                flowCoordinator = gameObject.AddComponent<PortfolioGameFlowCoordinator>();
+        }
+
+        private void EnsureDebugOverlay()
+        {
+            debugOverlay = GetComponent<PortfolioDemoDebugOverlay>();
+            if (debugOverlay == null)
+                debugOverlay = gameObject.AddComponent<PortfolioDemoDebugOverlay>();
         }
 
         private void EnsurePlayerPanel()
@@ -249,6 +288,75 @@ namespace EnglishQuest.PortfolioDemo
                 TextAlignmentOptions.Left,
                 wrap: true);
             body.lineSpacing = 8f;
+        }
+
+        private void EnsureCompletionPanel()
+        {
+            if (completionPanelRoot != null)
+                return;
+
+            Transform host = transform;
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas != null)
+                host = canvas.transform;
+
+            GameObject panel = new GameObject("Completion Panel", typeof(RectTransform));
+            panel.transform.SetParent(host, false);
+
+            completionPanelRoot = panel.GetComponent<RectTransform>();
+            completionPanelRoot.anchorMin = new Vector2(0.5f, 0.5f);
+            completionPanelRoot.anchorMax = new Vector2(0.5f, 0.5f);
+            completionPanelRoot.pivot = new Vector2(0.5f, 0.5f);
+            completionPanelRoot.anchoredPosition = Vector2.zero;
+            completionPanelRoot.sizeDelta = new Vector2(900f, 420f);
+
+            Image background = panel.AddComponent<Image>();
+            background.color = new Color(0.02f, 0.05f, 0.07f, 0.96f);
+
+            VerticalLayoutGroup layout = panel.AddComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(30, 30, 28, 28);
+            layout.spacing = 18f;
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandHeight = false;
+            layout.childForceExpandWidth = true;
+
+            CreateText(
+                "Title",
+                panel.transform,
+                "Level Complete",
+                34f,
+                FontStyles.Bold,
+                new Color(1f, 0.84f, 0.36f, 1f),
+                TextAlignmentOptions.Center);
+
+            completionBodyText = CreateText(
+                "Body",
+                panel.transform,
+                "",
+                22f,
+                FontStyles.Normal,
+                Color.white,
+                TextAlignmentOptions.Center,
+                wrap: true);
+            completionBodyText.lineSpacing = 8f;
+
+            GameObject buttons = new("Buttons", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+            buttons.transform.SetParent(panel.transform, false);
+
+            HorizontalLayoutGroup buttonsLayout = buttons.GetComponent<HorizontalLayoutGroup>();
+            buttonsLayout.spacing = 18f;
+            buttonsLayout.childAlignment = TextAnchor.MiddleCenter;
+            buttonsLayout.childControlWidth = false;
+            buttonsLayout.childControlHeight = false;
+            buttonsLayout.childForceExpandWidth = false;
+            buttonsLayout.childForceExpandHeight = false;
+
+            replayButton = CreateActionButton(buttons.transform, "Replay From Start", ReplayFromStart);
+            closeCompletionButton = CreateActionButton(buttons.transform, "Close", HideCompletionPanel);
+
+            panel.SetActive(false);
         }
 
         private void RefreshPlayerPanel(bool force = false)
@@ -436,6 +544,19 @@ namespace EnglishQuest.PortfolioDemo
                 RefreshPlayerPanel(force: true);
         }
 
+        private void ApplyState(PortfolioGameFlowState state)
+        {
+            bool showOpenWorldHud = state != PortfolioGameFlowState.Dialogue &&
+                                    state != PortfolioGameFlowState.MiniGame &&
+                                    (state != PortfolioGameFlowState.LevelCompleted || completionDismissed);
+
+            ApplyOpenWorldHudVisibility(showOpenWorldHud);
+
+            bool showCompletion = state == PortfolioGameFlowState.LevelCompleted && !completionDismissed;
+            if (completionPanelRoot != null && completionPanelRoot.gameObject.activeSelf != showCompletion)
+                completionPanelRoot.gameObject.SetActive(showCompletion);
+        }
+
         private void SetPlayerPanelVisible(bool isVisible)
         {
             isVisible &= isOpenWorldHudVisible;
@@ -461,6 +582,88 @@ namespace EnglishQuest.PortfolioDemo
             }
 
             return null;
+        }
+
+        private PortfolioGameFlowState CurrentStateOrFallback()
+        {
+            return flowCoordinator != null
+                ? flowCoordinator.CurrentState
+                : PortfolioGameFlowState.OpenWorld;
+        }
+
+        private void ResolveQuestService()
+        {
+            if (questService != null)
+                return;
+
+            ServiceLocator.For(this)?.TryGet(out questService);
+            if (questService == null && QuestManager.HasInstance)
+                questService = QuestManager.Instance;
+        }
+
+        private void UpdateCompletionPanelContent()
+        {
+            if (completionBodyText == null)
+                return;
+
+            completionBodyText.text =
+                "You finished the full English Quest MVP slice.\n\n" +
+                "Teacher Ada introduced the first letters.\n" +
+                "Coach Ben reinforced vocabulary through missing letters.\n" +
+                "Guide Nora completed the flow with the final lesson.\n\n" +
+                "You can now restart the prototype from the beginning.";
+        }
+
+        private void ReplayFromStart()
+        {
+            if (QuestManager.HasInstance)
+                QuestManager.Instance.ResetAllProgress();
+
+            if (QuestManager.HasInstance &&
+                QuestManager.Instance.TryGetComponent(out QuestProgressPersistence persistence))
+            {
+                persistence.ClearSavedProgress();
+            }
+
+            SetStatus("Progress reset. Start again from Teacher Ada.");
+            completionDismissed = false;
+            HideCompletionPanel();
+
+            if (flowCoordinator != null)
+                flowCoordinator.RefreshNow(force: true);
+        }
+
+        private void HideCompletionPanel()
+        {
+            completionDismissed = true;
+            if (completionPanelRoot != null)
+                completionPanelRoot.gameObject.SetActive(false);
+        }
+
+        private static Button CreateActionButton(Transform parent, string label, UnityEngine.Events.UnityAction onClick)
+        {
+            GameObject buttonObject = new(label + " Button", typeof(RectTransform), typeof(Image), typeof(Button));
+            buttonObject.transform.SetParent(parent, false);
+
+            RectTransform rect = buttonObject.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(260f, 64f);
+
+            Image image = buttonObject.GetComponent<Image>();
+            image.color = new Color(0.12f, 0.52f, 0.46f, 1f);
+
+            Button button = buttonObject.GetComponent<Button>();
+            button.onClick.AddListener(onClick);
+
+            CreateText(
+                "Label",
+                buttonObject.transform,
+                label,
+                22f,
+                FontStyles.Bold,
+                Color.white,
+                TextAlignmentOptions.Center).rectTransform.StretchToParent();
+
+            return button;
         }
     }
 }

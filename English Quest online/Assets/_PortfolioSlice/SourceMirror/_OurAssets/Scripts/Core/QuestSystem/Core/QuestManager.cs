@@ -390,6 +390,26 @@ public class QuestManager : StaticInstance<QuestManager>, IQuestService
         EvaluateLevelCompletion();
     }
 
+    public void ResetAllProgress()
+    {
+        _persistence?.ClearSavedProgress();
+        InitializeQuests();
+        ReevaluateQuestRequirements();
+        RefreshMiniGameBindings();
+
+        if (allQuestInfos != null)
+        {
+            foreach (QuestInfo quest in allQuestInfos)
+            {
+                if (quest == null)
+                    continue;
+
+                OnQuestStateChanged?.Invoke(quest);
+                OnQuestUpdated?.Invoke(quest);
+            }
+        }
+    }
+
     private void InitializeQuests()
     {
         if (allQuestInfos == null)
