@@ -129,9 +129,21 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
                         continue;
                     }
 
+                    letterView.Pressed += HandleLetterPressed;
                     letterView.DragStarted += HandleDragStarted;
                     letterView.Dragged += HandleDragged;
                     letterView.DragEnded += HandleDragEnded;
+                }
+
+                for (int i = 0; i < screenView.WordSlotViews.Count; i++)
+                {
+                    WordSlotView slotView = screenView.WordSlotViews[i];
+                    if (slotView == null)
+                    {
+                        continue;
+                    }
+
+                    slotView.Clicked += HandleSlotClicked;
                 }
             }
 
@@ -159,9 +171,21 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
                         continue;
                     }
 
+                    letterView.Pressed -= HandleLetterPressed;
                     letterView.DragStarted -= HandleDragStarted;
                     letterView.Dragged -= HandleDragged;
                     letterView.DragEnded -= HandleDragEnded;
+                }
+
+                for (int i = 0; i < screenView.WordSlotViews.Count; i++)
+                {
+                    WordSlotView slotView = screenView.WordSlotViews[i];
+                    if (slotView == null)
+                    {
+                        continue;
+                    }
+
+                    slotView.Clicked -= HandleSlotClicked;
                 }
             }
 
@@ -184,6 +208,24 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             screenView?.ClearLines();
             ResetSession();
             screenView?.Open();
+        }
+
+        private void HandleLetterPressed(LetterItemView letterView)
+        {
+            if (letterView == null)
+            {
+                return;
+            }
+
+            LetterState letterState = GetLetterState(letterView.Id);
+            if (letterState == null || letterState.IsUsed)
+            {
+                CancelCurrentDrag();
+                return;
+            }
+
+            activeDraggedLetterView = letterView;
+            screenView?.BeginTemporaryLine(letterView);
         }
 
         private void HandleDragStarted(LetterItemView letterView, PointerEventData eventData)
@@ -227,6 +269,22 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             WordSlotView slotView = screenView != null ? screenView.GetSlotUnderPointer(eventData.position) : null;
 
             if (!TryHandleConnection(letterView, slotView))
+            {
+                screenView?.CancelTemporaryLine();
+            }
+
+            ClearSlotHighlight();
+            activeDraggedLetterView = null;
+        }
+
+        private void HandleSlotClicked(WordSlotView slotView)
+        {
+            if (activeDraggedLetterView == null || slotView == null)
+            {
+                return;
+            }
+
+            if (!TryHandleConnection(activeDraggedLetterView, slotView))
             {
                 screenView?.CancelTemporaryLine();
             }

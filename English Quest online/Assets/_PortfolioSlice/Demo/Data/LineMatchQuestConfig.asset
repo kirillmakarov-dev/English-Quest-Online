@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: LineMatchQuestConfig
   m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.LineMatchQuestConfigSO
   gameId: line_match
-  levelConfig: {fileID: 0}
+  levelConfig: {fileID: 11400000, guid: 7094cebde2ca56040ba98224c0932517, type: 2}

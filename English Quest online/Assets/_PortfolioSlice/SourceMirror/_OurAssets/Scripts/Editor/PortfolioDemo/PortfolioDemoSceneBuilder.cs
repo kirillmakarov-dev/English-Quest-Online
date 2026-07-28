@@ -38,11 +38,11 @@ namespace EnglishQuest.Editor.PortfolioDemo
             DataRoot + "/QuestLines/Shared_MVP_Catalogs/OpenWorldNetworkSessionProfile.asset";
         private const string InteractionZoneName = "Interaction Zone";
         private const string LineMatchDataPath =
-            "Assets/_PortfolioSlice/Data/MiniGames/LineMatch/Letters_A_B.asset";
+            "Assets/_PortfolioSlice/Demo/Data/QuestLines/01_TeacherAda_FirstQuestline/LineMatch_Letters_A_B.asset";
         private const string LetterOrderDataPath =
-            "Assets/_PortfolioSlice/Art/Prefabs/UI/GamePlay/MiniGame/WordOrderingGame/LetterOrderingData.asset";
+            "Assets/_PortfolioSlice/Demo/Data/QuestLines/02_CoachBen_SecondQuestline/LetterOrderingData.asset";
         private const string WordOrderDataPath =
-            "Assets/_PortfolioSlice/Art/Prefabs/UI/GamePlay/MiniGame/WordOrderingGame/WordOrderingData.asset";
+            "Assets/_PortfolioSlice/Demo/Data/QuestLines/03_GuideNora_ThirdQuestline/WordOrderingData.asset";
 
         static PortfolioDemoSceneBuilder()
         {
@@ -467,6 +467,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
         private static void CreateQuestSystems(QuestLineRegistrySO questRegistry)
         {
             QuestManager questManager = new GameObject("Quest Manager").AddComponent<QuestManager>();
+            questManager.gameObject.AddComponent<EnglishQuest.PortfolioDemo.PortfolioQuestProgressController>();
             SerializedObject serializedManager = new(questManager);
             serializedManager.FindProperty("loadQuestState").boolValue = true;
             serializedManager.ApplyModifiedPropertiesWithoutUndo();

@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: WordOrderingQuestConfig
   m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.WordOrderingQuestConfigSO
   gameId: word_ordering
-  data: {fileID: 0}
+  data: {fileID: 11400000, guid: aedcd99154e474e4cae82b7e5d27dd0c, type: 2}

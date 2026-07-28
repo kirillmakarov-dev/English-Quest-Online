@@ -23,6 +23,11 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             {
                 lineRectTransform.pivot = new Vector2(0f, 0.5f);
             }
+
+            if (lineImage != null)
+            {
+                lineImage.raycastTarget = false;
+            }
         }
 
         public void SetStart(Vector2 start)

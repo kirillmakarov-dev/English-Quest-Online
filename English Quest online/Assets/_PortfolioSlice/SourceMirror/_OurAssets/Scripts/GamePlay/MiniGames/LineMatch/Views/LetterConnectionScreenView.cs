@@ -8,6 +8,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
     public class LetterConnectionScreenView : MonoBehaviour
     {
         [SerializeField] private CanvasGroup rootCanvasGroup;
+        [SerializeField] private Canvas screenCanvas;
         [SerializeField] private RectTransform rootPanel;
         [SerializeField] private RectTransform lettersContainer;
         [SerializeField] private RectTransform wordsContainer;
@@ -15,6 +16,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
         [SerializeField] private GameObject completePanel;
         [SerializeField] private Button closeButton;
         [SerializeField] private Button restartButton;
+        [SerializeField] private int openSortingOrder = 100;
 
         private readonly List<LetterItemView> letterViews = new List<LetterItemView>();
         private readonly List<WordSlotView> wordSlotViews = new List<WordSlotView>();
@@ -36,7 +38,14 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
 
         private void Awake()
         {
+            if (screenCanvas == null)
+            {
+                screenCanvas = GetComponentInParent<Canvas>(true);
+            }
+
             parentCanvas = GetComponentInParent<Canvas>();
+            EnsureCanvasReady(gameObject.activeInHierarchy);
+            ApplyCanvasGroupState(gameObject.activeInHierarchy);
 
             if (closeButton != null)
             {
@@ -54,6 +63,16 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             }
         }
 
+        private void OnEnable()
+        {
+            ApplyCanvasGroupState(true);
+        }
+
+        private void OnDisable()
+        {
+            ApplyCanvasGroupState(false);
+        }
+
         private void OnDestroy()
         {
             if (closeButton != null)
@@ -69,14 +88,10 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
 
         public void Open()
         {
+            EnsureHierarchyActive();
+            EnsureCanvasReady(true);
             gameObject.SetActive(true);
-
-            if (rootCanvasGroup != null)
-            {
-                rootCanvasGroup.alpha = 1f;
-                rootCanvasGroup.interactable = true;
-                rootCanvasGroup.blocksRaycasts = true;
-            }
+            ApplyCanvasGroupState(true);
 
             if (completePanel != null)
             {
@@ -87,12 +102,11 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
         public void Close()
         {
             CancelTemporaryLine();
+            EnsureCanvasReady(false);
 
             if (rootCanvasGroup != null)
             {
-                rootCanvasGroup.alpha = 0f;
-                rootCanvasGroup.interactable = false;
-                rootCanvasGroup.blocksRaycasts = false;
+                ApplyCanvasGroupState(false);
             }
 
             gameObject.SetActive(false);
@@ -322,6 +336,55 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             }
 
             return parentCanvas.worldCamera;
+        }
+
+        private void ApplyCanvasGroupState(bool isOpen)
+        {
+            if (rootCanvasGroup == null)
+            {
+                return;
+            }
+
+            rootCanvasGroup.alpha = isOpen ? 1f : 0f;
+            rootCanvasGroup.interactable = isOpen;
+            rootCanvasGroup.blocksRaycasts = isOpen;
+        }
+
+        private void EnsureHierarchyActive()
+        {
+            Transform current = transform;
+            while (current != null)
+            {
+                if (!current.gameObject.activeSelf)
+                {
+                    current.gameObject.SetActive(true);
+                }
+
+                current = current.parent;
+            }
+        }
+
+        private void EnsureCanvasReady(bool isOpen)
+        {
+            if (screenCanvas == null)
+            {
+                screenCanvas = GetComponentInParent<Canvas>(true);
+            }
+
+            if (screenCanvas == null)
+            {
+                return;
+            }
+
+            screenCanvas.enabled = true;
+            screenCanvas.overrideSorting = true;
+            screenCanvas.sortingOrder = openSortingOrder;
+
+            GraphicRaycaster raycaster = screenCanvas.GetComponent<GraphicRaycaster>();
+            if (raycaster != null)
+            {
+                raycaster.enabled = isOpen;
+            }
         }
 
         private static void ClearChildren(Transform parent)

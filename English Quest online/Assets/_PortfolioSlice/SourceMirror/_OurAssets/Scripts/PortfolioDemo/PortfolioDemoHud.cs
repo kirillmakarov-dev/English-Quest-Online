@@ -35,6 +35,9 @@ namespace EnglishQuest.PortfolioDemo
         private Button closeCompletionButton;
         private TextMeshProUGUI completionBodyText;
         private bool completionDismissed;
+        private CanvasGroup completionCanvasGroup;
+        private IPlayerLockSystem completionLockSystem;
+        private bool completionInteractionOwned;
 
         private void Awake()
         {
@@ -90,6 +93,8 @@ namespace EnglishQuest.PortfolioDemo
 
             if (questService != null)
                 questService.OnLevelCompleted -= HandleLevelCompleted;
+
+            ReleaseCompletionInteraction();
         }
 
         public void SetInteractionPrompt(string message)
@@ -312,6 +317,11 @@ namespace EnglishQuest.PortfolioDemo
 
             Image background = panel.AddComponent<Image>();
             background.color = new Color(0.02f, 0.05f, 0.07f, 0.96f);
+
+            completionCanvasGroup = panel.AddComponent<CanvasGroup>();
+            completionCanvasGroup.alpha = 0f;
+            completionCanvasGroup.interactable = false;
+            completionCanvasGroup.blocksRaycasts = false;
 
             VerticalLayoutGroup layout = panel.AddComponent<VerticalLayoutGroup>();
             layout.padding = new RectOffset(30, 30, 28, 28);
@@ -553,8 +563,7 @@ namespace EnglishQuest.PortfolioDemo
             ApplyOpenWorldHudVisibility(showOpenWorldHud);
 
             bool showCompletion = state == PortfolioGameFlowState.LevelCompleted && !completionDismissed;
-            if (completionPanelRoot != null && completionPanelRoot.gameObject.activeSelf != showCompletion)
-                completionPanelRoot.gameObject.SetActive(showCompletion);
+            SetCompletionPanelVisible(showCompletion);
         }
 
         private void SetPlayerPanelVisible(bool isVisible)
@@ -636,8 +645,96 @@ namespace EnglishQuest.PortfolioDemo
         private void HideCompletionPanel()
         {
             completionDismissed = true;
-            if (completionPanelRoot != null)
-                completionPanelRoot.gameObject.SetActive(false);
+            SetCompletionPanelVisible(false);
+        }
+
+        private void SetCompletionPanelVisible(bool isVisible)
+        {
+            if (completionPanelRoot == null)
+                return;
+
+            if (isVisible)
+            {
+                completionPanelRoot.SetAsLastSibling();
+                completionPanelRoot.gameObject.SetActive(true);
+
+                if (completionCanvasGroup != null)
+                {
+                    completionCanvasGroup.alpha = 1f;
+                    completionCanvasGroup.interactable = true;
+                    completionCanvasGroup.blocksRaycasts = true;
+                }
+
+                AcquireCompletionInteraction();
+                return;
+            }
+
+            ReleaseCompletionInteraction();
+
+            if (completionCanvasGroup != null)
+            {
+                completionCanvasGroup.alpha = 0f;
+                completionCanvasGroup.interactable = false;
+                completionCanvasGroup.blocksRaycasts = false;
+            }
+
+            completionPanelRoot.gameObject.SetActive(false);
+        }
+
+        private void AcquireCompletionInteraction()
+        {
+            if (completionInteractionOwned)
+                return;
+
+            if (!TryResolveCompletionLockSystem(out completionLockSystem))
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                return;
+            }
+
+            completionLockSystem.Lock(this,
+                PlayerLockSystem.LockType.Movement,
+                PlayerLockSystem.LockType.Camera,
+                PlayerLockSystem.LockType.Interaction,
+                PlayerLockSystem.LockType.Cursor,
+                PlayerLockSystem.LockType.GameplayInput);
+
+            completionInteractionOwned = true;
+        }
+
+        private void ReleaseCompletionInteraction()
+        {
+            if (!completionInteractionOwned || completionLockSystem == null)
+                return;
+
+            completionLockSystem.Unlock(this,
+                PlayerLockSystem.LockType.Movement,
+                PlayerLockSystem.LockType.Camera,
+                PlayerLockSystem.LockType.Interaction,
+                PlayerLockSystem.LockType.Cursor,
+                PlayerLockSystem.LockType.GameplayInput);
+
+            completionInteractionOwned = false;
+            completionLockSystem = null;
+        }
+
+        private bool TryResolveCompletionLockSystem(out IPlayerLockSystem lockSystem)
+        {
+            if (ServiceLocator.For(this)?.TryGet(out lockSystem) == true && lockSystem != null)
+                return true;
+
+            foreach (PlayerInteraction interaction in FindObjectsByType<PlayerInteraction>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                if (interaction == null || !interaction.isActiveAndEnabled)
+                    continue;
+
+                if (ServiceLocator.For(interaction)?.TryGet(out lockSystem) == true && lockSystem != null)
+                    return true;
+            }
+
+            lockSystem = null;
+            return false;
         }
 
         private static Button CreateActionButton(Transform parent, string label, UnityEngine.Events.UnityAction onClick)

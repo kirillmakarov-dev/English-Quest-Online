@@ -49,9 +49,18 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             _onCompleted = onCompleted;
             _onClosed = onClosed;
 
+            if (!gameObject.activeSelf)
+                gameObject.SetActive(true);
+
             InitializeGame(mode);
+            if (_presenter == null)
+            {
+                ReleaseInteractionLock();
+                return;
+            }
+
             AcquireInteractionLock(interactor);
-            _presenter?.Show();
+            _presenter.Show();
         }
 
         /// <summary>Closes the panel and releases the player lock without invoking callbacks.</summary>

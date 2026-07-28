@@ -5954,6 +5954,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4795108427}
   - component: {fileID: 4795108426}
+  - component: {fileID: 4795108428}
   m_Layer: 0
   m_Name: Quest Manager
   m_TagString: Untagged
@@ -5992,6 +5993,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4795108428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4795108425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c1f6d2f8e2e4a7e92dfd4d7dfda5b21, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: _Project::EnglishQuest.PortfolioDemo.PortfolioQuestProgressController
+  applySelectionOnPlay: 0
+  clearSavedProgressBeforeApply: 1
+  applyMode: 0
+  selectedQuestIndex: 0
+  selectedStepIndex: 0
+  completePreviousQuests: 1
+  forceStartSelectedQuest: 1
+  logQuestStatesAfterApply: 1
+  questManager: {fileID: 4795108426}
 --- !u!1 &5795108425
 GameObject:
   m_ObjectHideFlags: 0

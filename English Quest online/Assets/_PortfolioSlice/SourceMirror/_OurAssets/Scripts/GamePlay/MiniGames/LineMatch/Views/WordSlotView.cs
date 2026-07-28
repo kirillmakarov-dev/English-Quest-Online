@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Puzzle.Gameplay.MiniGames.LetterConnection
 {
-    public class WordSlotView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class WordSlotView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
         [SerializeField] private TMP_Text wordText;
         [SerializeField] private Image illustrationImage;
@@ -27,6 +27,20 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
 
         public event Action<WordSlotView> PointerEntered;
         public event Action<WordSlotView> PointerExited;
+        public event Action<WordSlotView> Clicked;
+
+        private void Awake()
+        {
+            if (wordText != null)
+            {
+                wordText.raycastTarget = false;
+            }
+
+            if (illustrationImage != null)
+            {
+                illustrationImage.raycastTarget = false;
+            }
+        }
 
         public void Bind(string id, string maskedWord, Sprite image)
         {
@@ -94,6 +108,11 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
         public void OnPointerExit(PointerEventData eventData)
         {
             PointerExited?.Invoke(this);
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            Clicked?.Invoke(this);
         }
 
         private IEnumerator PlayWrongFeedbackRoutine()

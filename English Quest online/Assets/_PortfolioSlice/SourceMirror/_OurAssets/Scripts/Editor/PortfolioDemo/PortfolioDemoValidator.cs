@@ -145,10 +145,17 @@ namespace EnglishQuest.Editor.PortfolioDemo
 
                                 if (objective.miniGameConfig == null)
                                     errors.Add($"Quest '{definition.id}' objective {i} is missing QuestMiniGameConfigSO.");
-                                else if (objective.miniGameConfig.GameId != objective.targetId)
-                                    errors.Add(
-                                        $"Quest '{definition.id}' objective {i} targetId '{objective.targetId}' " +
-                                        $"does not match config GameId '{objective.miniGameConfig.GameId}'.");
+                                else
+                                {
+                                    if (objective.miniGameConfig.GameId != objective.targetId)
+                                    {
+                                        errors.Add(
+                                            $"Quest '{definition.id}' objective {i} targetId '{objective.targetId}' " +
+                                            $"does not match config GameId '{objective.miniGameConfig.GameId}'.");
+                                    }
+
+                                    ValidateMiniGameConfig(definition.id, i, objective.miniGameConfig, errors);
+                                }
                             }
                         }
                     }
@@ -180,6 +187,26 @@ namespace EnglishQuest.Editor.PortfolioDemo
 
             if (profile.ResolveInitialSceneBuildIndex() < 0)
                 errors.Add("Network session profile does not resolve a valid initial scene from Build Settings.");
+        }
+
+        private static void ValidateMiniGameConfig(
+            string questId,
+            int objectiveIndex,
+            QuestMiniGameConfigSO config,
+            List<string> errors)
+        {
+            switch (config)
+            {
+                case LineMatchQuestConfigSO lineMatchConfig when lineMatchConfig.LevelConfig == null:
+                    errors.Add($"Quest '{questId}' objective {objectiveIndex} line-match config is missing LevelConfig.");
+                    break;
+                case LetterOrderingQuestConfigSO letterOrderingConfig when letterOrderingConfig.Data == null:
+                    errors.Add($"Quest '{questId}' objective {objectiveIndex} letter-ordering config is missing Data.");
+                    break;
+                case WordOrderingQuestConfigSO wordOrderingConfig when wordOrderingConfig.Data == null:
+                    errors.Add($"Quest '{questId}' objective {objectiveIndex} word-ordering config is missing Data.");
+                    break;
+            }
         }
 
         private static void EmitMessages(

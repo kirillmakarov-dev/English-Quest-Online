@@ -18,6 +18,9 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
         [SerializeField] private Transform _slotContainer;
         [SerializeField] private Transform _tileContainer;
         [SerializeField] private Button _closeButton;
+        [SerializeField] private Canvas _screenCanvas;
+        [SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField] private int _openSortingOrder = 100;
 
         /// <summary>Raised when the player presses the close button.</summary>
         public event Action CloseRequested;
@@ -27,9 +30,18 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 
         private void Awake()
         {
+            if (_screenCanvas == null)
+                _screenCanvas = GetComponentInParent<Canvas>(true);
+
+            ApplyOpenState(gameObject.activeInHierarchy);
+
             if (_closeButton != null)
                 _closeButton.onClick.AddListener(() => CloseRequested?.Invoke());
         }
+
+        private void OnEnable() => ApplyOpenState(true);
+
+        private void OnDisable() => ApplyOpenState(false);
 
         public IReadOnlyList<SlotView> SlotViews => _slotViews;
         public IReadOnlyList<TileView> TileViews => _tileViews;
@@ -70,9 +82,59 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             _promptLabel.GetComponent<WordRevealSetup>()?.SetDatabase(database);
         }
 
-        public void Open() => gameObject.SetActive(true);
+        public void Open()
+        {
+            EnsureHierarchyActive();
+            EnsureCanvasReady(true);
+            gameObject.SetActive(true);
+            ApplyOpenState(true);
+        }
 
-        public void Close() => gameObject.SetActive(false);
+        public void Close()
+        {
+            EnsureCanvasReady(false);
+            ApplyOpenState(false);
+            gameObject.SetActive(false);
+        }
+
+        private void ApplyOpenState(bool isOpen)
+        {
+            if (_canvasGroup == null)
+                return;
+
+            _canvasGroup.alpha = isOpen ? 1f : 0f;
+            _canvasGroup.interactable = isOpen;
+            _canvasGroup.blocksRaycasts = isOpen;
+        }
+
+        private void EnsureHierarchyActive()
+        {
+            Transform current = transform;
+            while (current != null)
+            {
+                if (!current.gameObject.activeSelf)
+                    current.gameObject.SetActive(true);
+
+                current = current.parent;
+            }
+        }
+
+        private void EnsureCanvasReady(bool isOpen)
+        {
+            if (_screenCanvas == null)
+                _screenCanvas = GetComponentInParent<Canvas>(true);
+
+            if (_screenCanvas == null)
+                return;
+
+            _screenCanvas.enabled = true;
+            _screenCanvas.overrideSorting = true;
+            _screenCanvas.sortingOrder = _openSortingOrder;
+
+            GraphicRaycaster raycaster = _screenCanvas.GetComponent<GraphicRaycaster>();
+            if (raycaster != null)
+                raycaster.enabled = isOpen;
+        }
 
         private void ClearChildren()
         {

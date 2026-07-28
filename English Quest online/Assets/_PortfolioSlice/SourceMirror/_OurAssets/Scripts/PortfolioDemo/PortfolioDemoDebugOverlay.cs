@@ -3,6 +3,9 @@ using EnglishQuest.QuestSystem;
 using Fusion;
 using TMPro;
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace EnglishQuest.PortfolioDemo
 {
@@ -29,7 +32,7 @@ namespace EnglishQuest.PortfolioDemo
 
         private void Update()
         {
-            if (Input.GetKeyDown(toggleKey))
+            if (WasTogglePressed())
                 SetVisible(!isVisible);
 
             if (!isVisible || Time.unscaledTime < nextRefreshTime)
@@ -126,6 +129,23 @@ namespace EnglishQuest.PortfolioDemo
             builder.AppendLine();
             builder.AppendLine("F3 - Toggle overlay");
             bodyText.text = builder.ToString();
+        }
+
+        private bool WasTogglePressed()
+        {
+#if ENABLE_INPUT_SYSTEM
+            if (Keyboard.current != null &&
+                System.Enum.TryParse(toggleKey.ToString(), out Key inputSystemKey))
+            {
+                return Keyboard.current[inputSystemKey].wasPressedThisFrame;
+            }
+#endif
+
+#if ENABLE_LEGACY_INPUT_MANAGER
+            return Input.GetKeyDown(toggleKey);
+#else
+            return false;
+#endif
         }
 
         private static NetworkRunner ResolveRunner()

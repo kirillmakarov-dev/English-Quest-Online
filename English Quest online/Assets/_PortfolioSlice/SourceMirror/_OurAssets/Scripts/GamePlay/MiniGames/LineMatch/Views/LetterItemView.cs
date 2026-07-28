@@ -2,10 +2,11 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Puzzle.Gameplay.MiniGames.LetterConnection
 {
-    public class LetterItemView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
+    public class LetterItemView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IInitializePotentialDragHandler
     {
         [SerializeField] private TMP_Text valueText;
         [SerializeField] private CanvasGroup canvasGroup;
@@ -20,6 +21,14 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
         public event Action<LetterItemView, PointerEventData> DragStarted;
         public event Action<LetterItemView, PointerEventData> Dragged;
         public event Action<LetterItemView, PointerEventData> DragEnded;
+
+        private void Awake()
+        {
+            if (valueText != null)
+            {
+                valueText.raycastTarget = false;
+            }
+        }
 
         public void Bind(string id, string value, bool isUsed)
         {
@@ -44,6 +53,16 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             canvasGroup.alpha = isUsed ? 0.45f : 1f;
             canvasGroup.interactable = !isUsed;
             canvasGroup.blocksRaycasts = !isUsed;
+        }
+
+        public void OnInitializePotentialDrag(PointerEventData eventData)
+        {
+            if (eventData == null)
+            {
+                return;
+            }
+
+            eventData.useDragThreshold = false;
         }
 
         public void OnPointerDown(PointerEventData eventData)

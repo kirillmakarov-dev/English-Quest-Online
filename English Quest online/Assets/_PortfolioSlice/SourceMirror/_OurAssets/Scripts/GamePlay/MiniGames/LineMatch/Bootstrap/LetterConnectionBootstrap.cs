@@ -40,7 +40,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             Session = null;
         }
 
-        public void InitializeMiniGame()
+        public bool InitializeMiniGame()
         {
             if (Presenter != null)
             {
@@ -51,7 +51,13 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
 
             if (screenView == null || levelConfig == null || viewFactory == null)
             {
-                return;
+                AppLog.Warning(
+                    $"[LetterConnectionBootstrap] Cannot initialize mini-game. " +
+                    $"screenView={(screenView != null)}, levelConfig={(levelConfig != null)}, viewFactory={(viewFactory != null)}.",
+                    this);
+                Presenter = null;
+                Session = null;
+                return false;
             }
 
             Session = new LevelSession(levelConfig);
@@ -71,17 +77,31 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             Presenter.LevelCompleted += HandleLevelCompleted;
             Presenter.Initialize();
             screenView.Close();
+            return true;
         }
 
-        public void OpenMiniGame(PlayerInteraction interactor = null)
+        public bool OpenMiniGame(PlayerInteraction interactor = null)
         {
-            if (Presenter == null)
+            if (!gameObject.activeSelf)
             {
-                InitializeMiniGame();
+                gameObject.SetActive(true);
+            }
+
+            if (Presenter == null && !InitializeMiniGame())
+            {
+                ReleaseInteractionLock();
+                return false;
             }
 
             AcquireInteractionLock(interactor);
-            Presenter?.Show();
+            if (Presenter == null)
+            {
+                ReleaseInteractionLock();
+                return false;
+            }
+
+            Presenter.Show();
+            return true;
         }
 
         public void CloseMiniGame()
@@ -102,11 +122,17 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             OpenMiniGame(interactor);
         }
 
-        public void Open(LetterConnectionLevelConfigSO config, PlayerInteraction interactor, Action onCompleted, Action onClosed)
+        public bool Open(LetterConnectionLevelConfigSO config, PlayerInteraction interactor, Action onCompleted, Action onClosed)
         {
             _onCompleted = onCompleted;
             _onClosed = onClosed;
-            SetLevelConfig(config, interactor);
+            bool levelChanged = levelConfig != config;
+            levelConfig = config;
+
+            if (levelChanged)
+                InitializeMiniGame();
+
+            return OpenMiniGame(interactor);
         }
 
         private void AcquireInteractionLock(PlayerInteraction interactor)

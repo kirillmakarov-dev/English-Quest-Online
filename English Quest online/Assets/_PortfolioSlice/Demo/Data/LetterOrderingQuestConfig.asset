@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: LetterOrderingQuestConfig
   m_EditorClassIdentifier: _Project::EnglishQuest.QuestSystem.LetterOrderingQuestConfigSO
   gameId: letter_ordering
-  data: {fileID: 0}
+  data: {fileID: 11400000, guid: ed94f3ea0cc384640905424bf356f0c3, type: 2}

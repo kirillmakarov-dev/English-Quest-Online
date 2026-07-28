@@ -31,8 +31,7 @@ namespace EnglishQuest.QuestSystem
         return false;
       }
 
-      bootstrap.Open(levelConfig, interactor, () => onCompleted?.Invoke(0), onClosed);
-      return true;
+      return bootstrap.Open(levelConfig, interactor, () => onCompleted?.Invoke(0), onClosed);
     }
   }
 }
