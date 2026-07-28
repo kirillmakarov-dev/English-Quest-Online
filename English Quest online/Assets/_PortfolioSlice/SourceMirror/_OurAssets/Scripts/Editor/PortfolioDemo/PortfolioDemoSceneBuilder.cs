@@ -288,7 +288,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
             TextMeshProUGUI title = CreateUiText(
                 canvas.transform,
                 "Title",
-                "ENGLISH QUEST MVP - OPEN WORLD + QUEST CHAINS",
+                "ENGLISH QUEST MVP - OPEN WORLD + QUEST CHAINS + MULTIPLAYER",
                 28f,
                 TextAlignmentOptions.TopLeft,
                 new Vector2(24f, -20f),
@@ -299,7 +299,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
             TextMeshProUGUI help = CreateUiText(
                 canvas.transform,
                 "Controls",
-                "WASD - Move    E - Interact    3 NPCs - 3 learning stages",
+                "WASD - Move    Mouse - Look    Space - Jump    E - Interact    2 Players via Photon Fusion",
                 20f,
                 TextAlignmentOptions.TopLeft,
                 new Vector2(26f, -68f),
@@ -528,6 +528,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
             if (component == null)
                 Debug.LogError($"[PortfolioDemo] Prefab '{path}' has no {typeof(T).Name}.");
 
+            instance.SetActive(false);
             return component;
         }
 

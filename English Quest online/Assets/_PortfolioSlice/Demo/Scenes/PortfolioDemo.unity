@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ENGLISH QUEST MVP - OPEN WORLD + QUEST CHAINS
+  m_text: ENGLISH QUEST MVP - OPEN WORLD + QUEST CHAINS + MULTIPLAYER
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2133,7 +2133,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5306945057554825187, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5870767072946562032, guid: 54f066cad51cbd042bbc18dccd7a40f1, type: 3}
       propertyPath: Flags
@@ -3179,7 +3179,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5958216977741896, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 68680586431174526, guid: c7a7c64b5ff2f9d48adfc318f5cf864e, type: 3}
       propertyPath: m_AnchorMax.y
@@ -4344,7 +4344,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: WASD - Move    E - Interact    3 NPCs - 3 learning stages
+  m_text: WASD - Move    Mouse - Look    Space - Jump    E - Interact    2 Players via Photon Fusion
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4944,7 +4944,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5958216977741896, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 191262804255541926, guid: c1ad09eec84126d47a41abeef5e0c8f5, type: 3}
       propertyPath: m_AnchorMax.y

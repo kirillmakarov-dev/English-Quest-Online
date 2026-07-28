@@ -1,5 +1,7 @@
 using EnglishQuest.QuestSystem;
 using Fusion;
+using Puzzle.Gameplay.MiniGames.DuolingoWordGame;
+using Puzzle.Gameplay.MiniGames.LetterConnection;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -15,21 +17,32 @@ namespace EnglishQuest.PortfolioDemo
         [SerializeField] private DialogueManager dialogueManager;
 
         private const float PlayerPanelRefreshInterval = 0.5f;
-
+        private readonly List<GameObject> openWorldHudRoots = new();
         private readonly List<TextMeshProUGUI> playerRows = new();
 
+        private RectTransform demoBriefingRoot;
         private RectTransform playerPanelRoot;
         private RectTransform playerListRoot;
         private float nextPlayerPanelRefreshTime;
         private string lastPlayerPanelHash = "";
+        private bool isOpenWorldHudVisible = true;
 
         private void Awake()
         {
+            EnsureDemoBriefingPanel();
             EnsurePlayerPanel();
+            CacheOpenWorldHudRoots();
+            ApplyOpenWorldHudVisibility(!IsAnyMiniGameOpen());
         }
 
         private void Update()
         {
+            bool isMiniGameOpen = IsAnyMiniGameOpen();
+            ApplyOpenWorldHudVisibility(!isMiniGameOpen);
+
+            if (isMiniGameOpen)
+                return;
+
             if (Time.unscaledTime < nextPlayerPanelRefreshTime)
                 return;
 
@@ -67,7 +80,7 @@ namespace EnglishQuest.PortfolioDemo
                 return;
 
             interactionPrompt.text = message;
-            interactionPrompt.gameObject.SetActive(!string.IsNullOrEmpty(message));
+            interactionPrompt.gameObject.SetActive(isOpenWorldHudVisible && !string.IsNullOrEmpty(message));
         }
 
         private void HandleMiniGameCompleted(QuestObjectiveEvents.MiniGameCompleted e)
@@ -149,9 +162,104 @@ namespace EnglishQuest.PortfolioDemo
             RefreshPlayerPanel(force: true);
         }
 
+        private void CacheOpenWorldHudRoots()
+        {
+            openWorldHudRoots.Clear();
+
+            AddRoot("Title");
+            AddRoot("Controls");
+
+            if (interactionPrompt != null)
+                AddRoot(interactionPrompt.gameObject);
+
+            if (statusText != null)
+                AddRoot(statusText.gameObject);
+
+            if (demoBriefingRoot != null)
+                AddRoot(demoBriefingRoot.gameObject);
+
+            if (playerPanelRoot != null)
+                AddRoot(playerPanelRoot.gameObject);
+        }
+
+        private void AddRoot(string childName)
+        {
+            Transform root = transform.Find(childName);
+            if (root == null)
+                root = FindChildByName(transform, childName);
+
+            if (root != null)
+                AddRoot(root.gameObject);
+        }
+
+        private void AddRoot(GameObject root)
+        {
+            if (root != null && root != gameObject && !openWorldHudRoots.Contains(root))
+                openWorldHudRoots.Add(root);
+        }
+
+        private void EnsureDemoBriefingPanel()
+        {
+            if (demoBriefingRoot != null)
+                return;
+
+            Transform host = transform;
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas != null)
+                host = canvas.transform;
+
+            GameObject panel = new GameObject("Demo Briefing Panel", typeof(RectTransform));
+            panel.transform.SetParent(host, false);
+
+            demoBriefingRoot = panel.GetComponent<RectTransform>();
+            demoBriefingRoot.anchorMin = new Vector2(1f, 1f);
+            demoBriefingRoot.anchorMax = new Vector2(1f, 1f);
+            demoBriefingRoot.pivot = new Vector2(1f, 1f);
+            demoBriefingRoot.anchoredPosition = new Vector2(-24f, -24f);
+            demoBriefingRoot.sizeDelta = new Vector2(470f, 178f);
+
+            Image panelBackground = panel.AddComponent<Image>();
+            panelBackground.color = new Color(0.02f, 0.05f, 0.06f, 0.78f);
+            panelBackground.raycastTarget = false;
+
+            VerticalLayoutGroup layout = panel.AddComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(16, 16, 12, 14);
+            layout.spacing = 8f;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+
+            CreateText(
+                "Title",
+                panel.transform,
+                "English Quest Portfolio Demo",
+                18f,
+                FontStyles.Bold,
+                new Color(0.96f, 0.84f, 0.38f, 1f),
+                TextAlignmentOptions.Left);
+
+            TextMeshProUGUI body = CreateText(
+                "Body",
+                panel.transform,
+                "Open-world English quest slice: talk to NPCs, complete 3 learning mini-games in order, and test 2-player Photon Fusion multiplayer.\nControls: WASD move, Mouse look, Space jump, E interact.",
+                15f,
+                FontStyles.Normal,
+                Color.white,
+                TextAlignmentOptions.Left,
+                wrap: true);
+            body.lineSpacing = 8f;
+        }
+
         private void RefreshPlayerPanel(bool force = false)
         {
             EnsurePlayerPanel();
+
+            if (!isOpenWorldHudVisible)
+            {
+                SetPlayerPanelVisible(false);
+                return;
+            }
 
             NetworkRunner runner = ResolveRunner();
             if (runner == null || !runner.IsRunning)
@@ -230,7 +338,8 @@ namespace EnglishQuest.PortfolioDemo
             float fontSize,
             FontStyles style,
             Color color,
-            TextAlignmentOptions alignment)
+            TextAlignmentOptions alignment,
+            bool wrap = false)
         {
             GameObject textObject = new GameObject(name, typeof(RectTransform));
             textObject.transform.SetParent(parent, false);
@@ -242,7 +351,7 @@ namespace EnglishQuest.PortfolioDemo
             label.color = color;
             label.alignment = alignment;
             label.raycastTarget = false;
-            label.textWrappingMode = TextWrappingModes.NoWrap;
+            label.textWrappingMode = wrap ? TextWrappingModes.Normal : TextWrappingModes.NoWrap;
             return label;
         }
 
@@ -276,10 +385,82 @@ namespace EnglishQuest.PortfolioDemo
             return $"Player {player.PlayerId}";
         }
 
+        private bool IsAnyMiniGameOpen()
+        {
+            foreach (LetterConnectionScreenView view in FindObjectsByType<LetterConnectionScreenView>(
+                         FindObjectsInactive.Include,
+                         FindObjectsSortMode.None))
+            {
+                if (view != null && view.gameObject.activeInHierarchy)
+                    return true;
+            }
+
+            foreach (WordGamePanelView view in FindObjectsByType<WordGamePanelView>(
+                         FindObjectsInactive.Include,
+                         FindObjectsSortMode.None))
+            {
+                if (view != null && view.gameObject.activeInHierarchy)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private void ApplyOpenWorldHudVisibility(bool isVisible)
+        {
+            if (isOpenWorldHudVisible == isVisible)
+                return;
+
+            isOpenWorldHudVisible = isVisible;
+
+            if (openWorldHudRoots.Count == 0)
+                CacheOpenWorldHudRoots();
+
+            foreach (GameObject root in openWorldHudRoots)
+            {
+                if (root == null)
+                    continue;
+
+                bool targetVisible = isVisible;
+                if (interactionPrompt != null && root == interactionPrompt.gameObject)
+                    targetVisible = isVisible && !string.IsNullOrEmpty(interactionPrompt.text);
+
+                if (root.activeSelf != targetVisible)
+                    root.SetActive(targetVisible);
+            }
+
+            if (!isVisible && interactionPrompt != null)
+                interactionPrompt.gameObject.SetActive(false);
+
+            if (isVisible)
+                RefreshPlayerPanel(force: true);
+        }
+
         private void SetPlayerPanelVisible(bool isVisible)
         {
+            isVisible &= isOpenWorldHudVisible;
+
             if (playerPanelRoot != null && playerPanelRoot.gameObject.activeSelf != isVisible)
                 playerPanelRoot.gameObject.SetActive(isVisible);
+        }
+
+        private static Transform FindChildByName(Transform root, string childName)
+        {
+            if (root == null)
+                return null;
+
+            for (int i = 0; i < root.childCount; i++)
+            {
+                Transform child = root.GetChild(i);
+                if (child.name == childName)
+                    return child;
+
+                Transform nested = FindChildByName(child, childName);
+                if (nested != null)
+                    return nested;
+            }
+
+            return null;
         }
     }
 }
