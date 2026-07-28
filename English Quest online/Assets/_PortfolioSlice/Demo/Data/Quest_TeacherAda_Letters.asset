@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61de27adc580b3c40a0c18714975db13, type: 3}
+  m_Name: Quest_TeacherAda_Letters
+  m_EditorClassIdentifier: _Project::QuestDefinitionSO
+  id: quest_teacher_ada_letters
+  displayName: Lesson 1 - Two letters
+  description: Complete the first mini-game to learn the opening letters and unlock
+    the second NPC.
+  levelRequired: 0
+  giverNpcId: teacher_ada
+  prerequisiteQuest: {fileID: 0}
+  prerequisiteQuestId: 
+  waitForNpcTurnIn: 0
+  rewards:
+    xp: 100
+    items: []
+  rewardDefinition: {fileID: 0}
+  startDialogue: {fileID: 11400000, guid: 3d0185fb316909f45b2aab134e294ec3, type: 2}
+  inProgressDialogue: {fileID: 11400000, guid: 3d0185fb316909f45b2aab134e294ec3, type: 2}
+  turnInDialogue: {fileID: 11400000, guid: 3d0185fb316909f45b2aab134e294ec3, type: 2}
+  cannotStartDialogue: {fileID: 0}
+  alreadyFinishedDialogue: {fileID: 11400000, guid: 3d0185fb316909f45b2aab134e294ec3, type: 2}
+  objectives:
+  - type: 3
+    targetId: line_match
+    count: 1
+    displayText: Match the first two letters.
+    parameters: []
+    miniGameConfig: {fileID: 11400000, guid: 08e6ab6bdc3aeeb43b6be3ae782f1d59, type: 2}
+    requiredItemId: 0
+    dialogue: {fileID: 0}
+    dialogueAfterFinished: {fileID: 0}
+    stepReward: {fileID: 0}
+    showStepRewardPopup: 1
+  authoringCatalogSet: {fileID: 0}

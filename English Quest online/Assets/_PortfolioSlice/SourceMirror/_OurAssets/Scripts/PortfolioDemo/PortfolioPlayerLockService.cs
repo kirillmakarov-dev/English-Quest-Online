@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Fusion;
 using UnityEngine;
 using UnityServiceLocator;
 
@@ -14,6 +15,8 @@ namespace EnglishQuest.PortfolioDemo
         [SerializeField] private PlayerInteraction playerInteraction;
 
         private readonly Dictionary<PlayerLockSystem.LockType, HashSet<object>> locks = new();
+        private bool isLocalPlayer = true;
+        private bool isRegistered;
 
         private void Awake()
         {
@@ -32,14 +35,47 @@ namespace EnglishQuest.PortfolioDemo
             if (playerInteraction == null)
                 playerInteraction = GetComponent<PlayerInteraction>();
 
-            ServiceLocator.For(this).Register<IPlayerLockSystem>(this);
+        }
+
+        private void Start()
+        {
+            NetworkObject networkObject = GetComponent<NetworkObject>();
+            if (networkObject != null && networkObject.IsValid)
+                isLocalPlayer = NetworkPlayerOwnership.IsLocal(networkObject);
+
+            RefreshRegistration();
         }
 
         private void OnDestroy()
         {
-            ServiceLocator.DeregisterFor<IPlayerLockSystem>(this);
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            if (isRegistered)
+                ServiceLocator.DeregisterFor<IPlayerLockSystem>(this);
+
+            if (isLocalPlayer)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        }
+
+        public void SetLocalPlayer(bool value)
+        {
+            isLocalPlayer = value;
+            RefreshRegistration();
+        }
+
+        private void RefreshRegistration()
+        {
+            if (isLocalPlayer && !isRegistered)
+            {
+                ServiceLocator.For(this).Register<IPlayerLockSystem>(this);
+                isRegistered = true;
+            }
+            else if (!isLocalPlayer && isRegistered)
+            {
+                ServiceLocator.DeregisterFor<IPlayerLockSystem>(this);
+                isRegistered = false;
+            }
         }
 
         public void Lock(PlayerLockSystem.LockType type, object source)

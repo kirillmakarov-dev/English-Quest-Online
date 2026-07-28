@@ -42,6 +42,7 @@ public static class PlayerArrivalUtility
 
     public static bool TryResolveSpawnTransform(
         NetworkRunner runner,
+        PlayerRef player,
         Scene scene,
         bool consumePendingTravel,
         out Vector3 position,
@@ -51,6 +52,7 @@ public static class PlayerArrivalUtility
             && PlayerTravelArrival.TryConsumeForScene(runner, scene, out PlayerTravelArrival.PendingArrival arrival)
             && PlayerTravelArrival.TryResolveTransform(arrival, scene, out position, out rotation))
         {
+            position = NormalizeSpawnPosition(scene, position);
             return true;
         }
 
@@ -58,19 +60,26 @@ public static class PlayerArrivalUtility
             && PlayerTravelArrival.TryPeekForScene(runner, scene, out PlayerTravelArrival.PendingArrival peekedArrival)
             && PlayerTravelArrival.TryResolveTransform(peekedArrival, scene, out position, out rotation))
         {
+            position = NormalizeSpawnPosition(scene, position);
             return true;
         }
 
-        return PlayerSpawnPoint.TryGetRandomSpawnPoint(scene, out position, out rotation);
+        if (!PlayerSpawnPoint.TryGetSpawnPointForPlayer(
+            scene,
+            player.PlayerId,
+            out position,
+            out rotation))
+        {
+            return false;
+        }
+
+        position = NormalizeSpawnPosition(scene, position);
+        return true;
     }
 
     public static bool TryApplyArrival(NetworkObject playerObject, Scene scene, in WorldMapNodeData destination)
     {
         if (playerObject == null || !playerObject.IsValid)
-            return false;
-
-        NetworkCharacterController controller = playerObject.GetComponent<NetworkCharacterController>();
-        if (controller == null)
             return false;
 
         if (playerObject.HasStateAuthority == false)
@@ -80,7 +89,8 @@ public static class PlayerArrivalUtility
         if (!TryResolveTransform(spawnId, scene, destination, out Vector3 position, out Quaternion rotation))
             return false;
 
-        ApplyTransform(controller, playerObject, position, rotation);
+        position = NormalizeSpawnPosition(scene, position);
+        ApplyTransform(playerObject, position, rotation);
         AppLog.Info($"[PlayerArrivalUtility] Placed player at '{spawnId}' ({position}).");
         return true;
     }
@@ -90,17 +100,14 @@ public static class PlayerArrivalUtility
         if (playerObject == null || !playerObject.IsValid)
             return false;
 
-        NetworkCharacterController controller = playerObject.GetComponent<NetworkCharacterController>();
-        if (controller == null)
-            return false;
-
         if (playerObject.HasStateAuthority == false)
             return false;
 
         if (!PlayerTravelArrival.TryResolveTransform(arrival, scene, out Vector3 position, out Quaternion rotation))
             return false;
 
-        ApplyTransform(controller, playerObject, position, rotation);
+        position = NormalizeSpawnPosition(scene, position);
+        ApplyTransform(playerObject, position, rotation);
         AppLog.Info($"[PlayerArrivalUtility] Placed player for travel node '{arrival.SpawnNodeId}' ({position}).");
         return true;
     }
@@ -110,14 +117,11 @@ public static class PlayerArrivalUtility
         if (playerObject == null || !playerObject.IsValid || !playerObject.HasStateAuthority)
             return false;
 
-        NetworkCharacterController controller = playerObject.GetComponent<NetworkCharacterController>();
-        if (controller == null)
-            return false;
-
         if (!PlayerSpawnPoint.TryGetRandomSpawnPoint(scene, out Vector3 position, out Quaternion rotation))
             return false;
 
-        ApplyTransform(controller, playerObject, position, rotation);
+        position = NormalizeSpawnPosition(scene, position);
+        ApplyTransform(playerObject, position, rotation);
         AppLog.Info($"[PlayerArrivalUtility] Placed player at scene spawn ({position}).");
         return true;
     }
@@ -144,20 +148,54 @@ public static class PlayerArrivalUtility
         return false;
     }
 
-    private static void ApplyTransform(
-        NetworkCharacterController controller,
-        NetworkObject playerObject,
-        Vector3 position,
-        Quaternion rotation)
+    private static Vector3 NormalizeSpawnPosition(Scene scene, Vector3 position)
     {
-        controller.Teleport(position, rotation);
-        controller.Velocity = Vector3.zero;
+        PhysicsScene physicsScene = PhysicsSceneQueries.Resolve(scene);
+        Vector3 origin = position + Vector3.up * 3f;
+        if (physicsScene.Raycast(
+                origin,
+                Vector3.down,
+                out RaycastHit hit,
+                8f,
+                Physics.DefaultRaycastLayers,
+                QueryTriggerInteraction.Ignore))
+        {
+            position.y = hit.point.y + 0.03f;
+        }
 
-        if (playerObject.HasInputAuthority)
+        return position;
+    }
+
+    private static void ApplyTransform(NetworkObject playerObject, Vector3 position, Quaternion rotation)
+    {
+        NetworkCharacterController networkController = playerObject.GetComponent<NetworkCharacterController>();
+        if (networkController != null)
+        {
+            networkController.Teleport(position, rotation);
+            networkController.Velocity = Vector3.zero;
+        }
+        else
+        {
+            CharacterController characterController = playerObject.GetComponent<CharacterController>();
+            bool wasEnabled = characterController != null && characterController.enabled;
+            if (characterController != null)
+                characterController.enabled = false;
+
+            playerObject.transform.SetPositionAndRotation(position, rotation);
+
+            if (characterController != null)
+                characterController.enabled = wasEnabled;
+        }
+
+        if (NetworkPlayerOwnership.ShouldDriveLocalView(playerObject))
         {
             Scene scene = playerObject.gameObject.scene;
-            CinemachineCamera followCamera = PlayerSceneContext.ResolveFollowCamera(scene);
-            PlayerSceneCamera.AssignFollow(followCamera, playerObject.transform, rotation);
+            CinemachineCamera followCamera = PlayerSceneCamera.ResolveFollowCamera(scene, playerObject.transform);
+            Transform cameraTarget = playerObject.transform.Find("PlayerCameraRoot");
+            PlayerSceneCamera.AssignFollow(
+                followCamera,
+                cameraTarget != null ? cameraTarget : playerObject.transform,
+                rotation);
             PlayerSceneCamera.AlignOrbit(followCamera, rotation);
         }
     }

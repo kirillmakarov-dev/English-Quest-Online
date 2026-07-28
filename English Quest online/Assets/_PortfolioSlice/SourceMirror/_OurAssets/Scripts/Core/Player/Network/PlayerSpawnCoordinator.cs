@@ -307,7 +307,6 @@ public class PlayerSpawnCoordinator : MonoBehaviour
 
         Scene runnerScene = ResolveRunnerScene(runner);
         HarnessTravelSpawnUtility.TryEnsureDestinationSpawn(runner, runnerScene);
-        PlayerSceneCamera.ConfigureRunnerChannelIsolation(runnerScene, runner);
         ServiceLocator.RefreshForScene(runnerScene);
         PlayerSceneContext.RefreshForScene(runnerScene);
 
@@ -439,7 +438,13 @@ public class PlayerSpawnCoordinator : MonoBehaviour
             yield break;
         }
 
-        if (!PlayerArrivalUtility.TryResolveSpawnTransform(runner, scene, consumePendingTravel: true, out Vector3 spawnPos, out Quaternion spawnRot))
+        if (!PlayerArrivalUtility.TryResolveSpawnTransform(
+                runner,
+                player,
+                scene,
+                consumePendingTravel: true,
+                out Vector3 spawnPos,
+                out Quaternion spawnRot))
         {
             AppLog.Warning("[PlayerSpawnCoordinator] No spawn point found. Spawning at origin.");
             spawnPos = Vector3.zero;
@@ -538,12 +543,23 @@ public class PlayerSpawnCoordinator : MonoBehaviour
         Scene scene,
         Quaternion facing)
     {
-        PlayerSceneCamera.ConfigureRunnerChannelIsolation(scene, runner);
+        bool isLocalPlayer = NetworkPlayerOwnership.ShouldDriveLocalView(playerObject);
+        CinemachineCamera followCamera = isLocalPlayer
+            ? PlayerSceneCamera.ResolveFollowCamera(scene, playerObject.transform)
+            : null;
 
-        CinemachineCamera followCamera = PlayerSceneContext.ResolveFollowCamera(scene);
-        PlayerSceneCamera.AssignFollow(followCamera, playerObject.transform, facing);
+        if (isLocalPlayer)
+        {
+            PlayerSceneCamera.ConfigureRunnerChannelIsolation(scene, runner);
 
-        if (playerObject.HasInputAuthority)
+            Transform cameraTarget = playerObject.transform.Find("PlayerCameraRoot");
+            PlayerSceneCamera.AssignFollow(
+                followCamera,
+                cameraTarget != null ? cameraTarget : playerObject.transform,
+                facing);
+        }
+
+        if (isLocalPlayer)
         {
             Scene lifecycleScene = ResolveLifecycleScene(runner, scene);
 

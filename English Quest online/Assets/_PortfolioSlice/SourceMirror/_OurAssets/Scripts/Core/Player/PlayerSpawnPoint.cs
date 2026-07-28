@@ -112,6 +112,28 @@ public class PlayerSpawnPoint : MonoBehaviour
         return true;
     }
 
+    public static bool TryGetSpawnPointForPlayer(
+        Scene scene,
+        int playerId,
+        out Vector3 position,
+        out Quaternion rotation)
+    {
+        position = Vector3.zero;
+        rotation = Quaternion.identity;
+
+        List<PlayerSpawnPoint> scenePoints = GetPointsInScene(scene);
+        if (scenePoints.Count == 0)
+            return false;
+
+        scenePoints.Sort((left, right) =>
+            string.CompareOrdinal(left.gameObject.name, right.gameObject.name));
+
+        int zeroBasedPlayerIndex = Mathf.Max(0, playerId - 1);
+        PlayerSpawnPoint point = scenePoints[zeroBasedPlayerIndex % scenePoints.Count];
+        point.transform.GetPositionAndRotation(out position, out rotation);
+        return true;
+    }
+
     /// <summary>
     /// Resolves a travel arrival position: tagged travel spawn first, then any spawn in the scene.
     /// </summary>

@@ -49,7 +49,7 @@ public class DialogueLockListener : NetworkBehaviour
 
     private void HandleDialogueStart()
     {
-        if (Object != null && !Object.HasInputAuthority) return;
+        if (NetworkPlayerOwnership.IsRemote(this)) return;
 
         if (_lockSystem != null)
         {
@@ -61,7 +61,7 @@ public class DialogueLockListener : NetworkBehaviour
 
     private void HandleDialogueEnd()
     {
-        if (Object != null && !Object.HasInputAuthority) return;
+        if (NetworkPlayerOwnership.IsRemote(this)) return;
 
         if (_lockSystem != null)
         {

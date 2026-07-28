@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61de27adc580b3c40a0c18714975db13, type: 3}
+  m_Name: Quest_CoachBen_MissingLetter
+  m_EditorClassIdentifier: _Project::QuestDefinitionSO
+  id: quest_coach_ben_missing_letter
+  displayName: Lesson 2 - Missing letter
+  description: Fill the missing letter and learn a new word before the next NPC unlocks.
+  levelRequired: 0
+  giverNpcId: coach_ben
+  prerequisiteQuest: {fileID: 0}
+  prerequisiteQuestId: 
+  waitForNpcTurnIn: 0
+  rewards:
+    xp: 125
+    items: []
+  rewardDefinition: {fileID: 0}
+  startDialogue: {fileID: 11400000, guid: 6dbb1612c7f5f7c49bc029949f3d8bad, type: 2}
+  inProgressDialogue: {fileID: 11400000, guid: 6dbb1612c7f5f7c49bc029949f3d8bad, type: 2}
+  turnInDialogue: {fileID: 11400000, guid: 6dbb1612c7f5f7c49bc029949f3d8bad, type: 2}
+  cannotStartDialogue: {fileID: 0}
+  alreadyFinishedDialogue: {fileID: 11400000, guid: 6dbb1612c7f5f7c49bc029949f3d8bad, type: 2}
+  objectives:
+  - type: 3
+    targetId: letter_ordering
+    count: 1
+    displayText: Complete the missing-letter mini-game.
+    parameters: []
+    miniGameConfig: {fileID: 11400000, guid: 671db0d68203d864f94c4dd9076a835b, type: 2}
+    requiredItemId: 0
+    dialogue: {fileID: 0}
+    dialogueAfterFinished: {fileID: 0}
+    stepReward: {fileID: 0}
+    showStepRewardPopup: 1
+  authoringCatalogSet: {fileID: 0}

@@ -30,10 +30,12 @@ namespace EnglishQuest.Editor.PortfolioDemo
             "Assets/_PortfolioSlice/Art/Prefabs/UI/GamePlay/MiniGame/WordOrderingGame/LetterOrderGame.prefab";
         private const string WordOrderPrefabPath =
             "Assets/_PortfolioSlice/Art/Prefabs/UI/GamePlay/MiniGame/WordOrderingGame/WordOrderGame.prefab";
-        private const string StarterPlayerPrefabPath =
-            "Assets/StarterAssets/ThirdPersonController/Prefabs/PlayerArmature.prefab";
+        private const string NetworkPlayerPrefabPath =
+            "Assets/_PortfolioSlice/Art/Prefabs/Player.prefab";
         private const string StarterFollowCameraPrefabPath =
             "Assets/StarterAssets/ThirdPersonController/Prefabs/PlayerFollowCamera.prefab";
+        private const string NetworkSessionProfilePath =
+            DataRoot + "/QuestLines/Shared_MVP_Catalogs/OpenWorldNetworkSessionProfile.asset";
         private const string InteractionZoneName = "Interaction Zone";
         private const string LineMatchDataPath =
             "Assets/_PortfolioSlice/Data/MiniGames/LineMatch/Letters_A_B.asset";
@@ -90,7 +92,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
             scene.name = "PortfolioDemo";
 
             CreateEnvironment();
-            Camera camera = CreateCamera();
+            CreateCamera();
             CreateEventSystem();
             new GameObject("Service Locator Global").AddComponent<ServiceLocatorGlobal>();
 
@@ -98,8 +100,8 @@ namespace EnglishQuest.Editor.PortfolioDemo
                 .AddComponent<QuestObjectiveEventBus>();
 
             DialogueManager dialogueManager = CreateDialogueUi();
-            PortfolioDemoHud hud = CreateHud(eventBus, dialogueManager);
-            CreatePlayer(hud);
+            CreateHud(eventBus, dialogueManager);
+            CreateNetwork();
             CreateQuestSystems(questRegistry);
             CreateNpc(
                 "NPC - Teacher Ada",
@@ -222,35 +224,60 @@ namespace EnglishQuest.Editor.PortfolioDemo
             eventSystem.AddComponent<InputSystemUIInputModule>();
         }
 
-        private static void CreatePlayer(PortfolioDemoHud hud)
+        private static void CreateNetwork()
         {
-            GameObject player = InstantiatePrefabRoot(StarterPlayerPrefabPath, "PlayerArmature");
-            if (player == null)
-                return;
+            GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(NetworkPlayerPrefabPath);
+            NetworkSessionProfile profile =
+                AssetDatabase.LoadAssetAtPath<NetworkSessionProfile>(NetworkSessionProfilePath);
 
-            player.transform.position = new Vector3(0f, 0f, -5f);
-
-            PlayerInteraction interaction = player.GetComponent<PlayerInteraction>();
-            if (interaction == null)
-                interaction = player.AddComponent<PlayerInteraction>();
-
-            if (player.GetComponent<PlayerInteractionController>() == null)
-                player.AddComponent<PlayerInteractionController>();
-
-            Transform holdPoint = player.transform.Find("Hold Point");
-            if (holdPoint == null)
+            if (playerPrefab == null || profile == null)
             {
-                holdPoint = new GameObject("Hold Point").transform;
-                holdPoint.SetParent(player.transform);
-                holdPoint.localPosition = new Vector3(0f, 0.6f, 0.8f);
+                Debug.LogError("[PortfolioDemo] Network player prefab or session profile is missing.");
+                return;
             }
-            interaction.itemHolderPos = holdPoint;
 
-            EnsureInteractionZone(player);
-            if (player.GetComponent<PortfolioPlayerLockService>() == null)
-                player.AddComponent<PortfolioPlayerLockService>();
+            GameObject network = new("Network");
+            GameNetworkManager manager = network.AddComponent<GameNetworkManager>();
+            Component sceneManager = AddComponentByTypeName(
+                network,
+                "EnglishQuestNetworkSceneManager, _Project");
+            PlayerSpawnCoordinator spawnCoordinator =
+                network.AddComponent<PlayerSpawnCoordinator>();
+            PortfolioNetworkAutoStart autoStart =
+                network.AddComponent<PortfolioNetworkAutoStart>();
 
-            SetupStarterAssetsCamera(player.transform);
+            if (sceneManager == null)
+            {
+                Debug.LogError("[PortfolioDemo] EnglishQuestNetworkSceneManager type is unavailable.");
+                UnityEngine.Object.DestroyImmediate(network);
+                return;
+            }
+
+            SerializedObject managerData = new(manager);
+            managerData.FindProperty("_sceneManager").objectReferenceValue = sceneManager;
+            managerData.FindProperty("_openWorldProfile").objectReferenceValue = profile;
+            managerData.ApplyModifiedPropertiesWithoutUndo();
+
+            SetNetworkPrefabReference(
+                spawnCoordinator,
+                "_defaultPlayerPrefab",
+                AssetDatabase.AssetPathToGUID(NetworkPlayerPrefabPath));
+
+            SerializedObject autoStartData = new(autoStart);
+            autoStartData.FindProperty("sessionProfile").objectReferenceValue = profile;
+            autoStartData.FindProperty("autoStart").boolValue = true;
+            autoStartData.ApplyModifiedPropertiesWithoutUndo();
+
+            CreateSpawnPoint("Spawn Point - Player One", new Vector3(-1.5f, 0.03f, -3.53f));
+            CreateSpawnPoint("Spawn Point - Player Two", new Vector3(1.5f, 0.03f, -3.53f));
+            SetupStarterAssetsCamera(null);
+        }
+
+        private static void CreateSpawnPoint(string objectName, Vector3 position)
+        {
+            GameObject spawnPoint = new(objectName);
+            spawnPoint.transform.position = position;
+            spawnPoint.AddComponent<PlayerSpawnPoint>();
         }
 
         private static PortfolioDemoHud CreateHud(
@@ -520,11 +547,10 @@ namespace EnglishQuest.Editor.PortfolioDemo
 
         private static void SetupStarterAssetsCamera(Transform playerRoot)
         {
-            if (playerRoot == null)
-                return;
-
-            Transform target = playerRoot.Find("CinemachineCameraTarget");
-            if (target == null)
+            Transform target = playerRoot != null
+                ? playerRoot.Find("CinemachineCameraTarget")
+                : null;
+            if (playerRoot != null && target == null)
             {
                 Debug.LogWarning("[PortfolioDemo] Starter Assets player is missing CinemachineCameraTarget.");
                 return;
@@ -551,8 +577,11 @@ namespace EnglishQuest.Editor.PortfolioDemo
             }
 
             SetIntMember(followCamera, "Priority", 10);
-            SetObjectMember(followCamera, "Follow", target);
-            SetObjectMember(followCamera, "LookAt", target);
+            if (target != null)
+            {
+                SetObjectMember(followCamera, "Follow", target);
+                SetObjectMember(followCamera, "LookAt", target);
+            }
         }
 
         private static void RepairMissingWordGameLayouts(GameObject root)
@@ -1102,6 +1131,37 @@ namespace EnglishQuest.Editor.PortfolioDemo
             System.Reflection.FieldInfo field = type.GetField(memberName, flags);
             if (field != null)
                 field.SetValue(target, value);
+        }
+
+        private static void SetNetworkPrefabReference(
+            Component target,
+            string fieldName,
+            string assetGuid)
+        {
+            if (target == null || string.IsNullOrEmpty(assetGuid))
+                return;
+
+            const System.Reflection.BindingFlags fieldFlags =
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.NonPublic;
+            System.Reflection.FieldInfo field = target.GetType().GetField(fieldName, fieldFlags);
+            if (field == null)
+                return;
+
+            const System.Reflection.BindingFlags methodFlags =
+                System.Reflection.BindingFlags.Static |
+                System.Reflection.BindingFlags.Public;
+            System.Reflection.MethodInfo parse = field.FieldType.GetMethod(
+                "Parse",
+                methodFlags,
+                binder: null,
+                types: new[] { typeof(string) },
+                modifiers: null);
+
+            if (parse == null)
+                return;
+
+            field.SetValue(target, parse.Invoke(null, new object[] { assetGuid }));
         }
 
         private static void SetAsFirstBuildScene()

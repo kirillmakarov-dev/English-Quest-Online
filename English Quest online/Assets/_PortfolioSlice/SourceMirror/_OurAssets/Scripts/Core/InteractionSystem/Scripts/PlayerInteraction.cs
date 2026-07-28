@@ -33,11 +33,10 @@ public class PlayerInteraction : NetworkBehaviour
     /// True when this local player should read keyboard input.
     /// In Fusion Multi-Peer mode only the focused runner has <see cref="NetworkRunner.ProvideInput"/>.
     /// </summary>
-    public bool CanProcessLocalInput => HasNetworkInputAuthority || HasLocalDemoInputFallback;
+    public bool CanProcessLocalInput => HasNetworkLocalAuthority || HasLocalDemoInputFallback;
 
-    private bool HasNetworkInputAuthority =>
-        Object != null && Object.IsValid && Object.HasInputAuthority
-        && Runner != null && Runner.IsRunning && Runner.ProvideInput;
+    private bool HasNetworkLocalAuthority =>
+        NetworkPlayerOwnership.CanProvideFocusedInput(this);
 
     // The portfolio scene can use a scene-authored Starter Assets player before Fusion owns it.
     private bool HasLocalDemoInputFallback =>
@@ -190,7 +189,7 @@ public class PlayerInteraction : NetworkBehaviour
     /// </summary>
     public void ForceReleaseInteractable(IInteractable interactable)
     {
-        if (Object != null && !Object.HasInputAuthority) return;
+        if (NetworkPlayerOwnership.IsRemote(this)) return;
 
         if (ActiveInteraction == interactable)
         {
@@ -206,14 +205,14 @@ public class PlayerInteraction : NetworkBehaviour
 
     public void LockInteraction(IInteractable interactable)
     {
-        if (Object != null && !Object.HasInputAuthority) return;
+        if (NetworkPlayerOwnership.IsRemote(this)) return;
         ActiveInteraction = interactable;
         OnActiveInteractionChanged?.Invoke(ActiveInteraction);
     }
 
     public void UnlockInteraction(IInteractable interactable)
     {
-        if (Object != null && !Object.HasInputAuthority) return;
+        if (NetworkPlayerOwnership.IsRemote(this)) return;
         if (ActiveInteraction == interactable)
         {
             ActiveInteraction = null;
@@ -223,7 +222,7 @@ public class PlayerInteraction : NetworkBehaviour
 
     public void ReleaseAllInteractableBindings()
     {
-        if (Object != null && !Object.HasInputAuthority) return;
+        if (NetworkPlayerOwnership.IsRemote(this)) return;
 
         if (ActiveInteraction != null)
         {
@@ -241,7 +240,7 @@ public class PlayerInteraction : NetworkBehaviour
     // Called by the InteractionZoneTrigger
     public void SetCurrentInteractable(IInteractable interactable)
     {
-        if (Object != null && !Object.HasInputAuthority) return;
+        if (NetworkPlayerOwnership.IsRemote(this)) return;
         
         // Prevent redundant calls
         if (CurrentInteractable == interactable) return;

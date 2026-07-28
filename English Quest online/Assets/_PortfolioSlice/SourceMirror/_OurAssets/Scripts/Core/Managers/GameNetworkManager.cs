@@ -46,6 +46,11 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
             _lifecycleHandler.UnexpectedShutdown += HandleUnexpectedShutdown;
             _authorityService = GetComponent<NetworkAuthorityService>();
         }
+        else
+        {
+            // The manager is persistent. Remove the whole duplicate scene root after a Fusion reload.
+            Destroy(gameObject);
+        }
     }
 
     private void OnDestroy()
@@ -130,7 +135,11 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
             return UniTask.CompletedTask;
         }
 
-        return StartSharedSession(profile.SessionName, sceneBuildIndex);
+        return StartSharedSession(
+            profile.SessionName,
+            sceneBuildIndex,
+            profile.MaxPlayers,
+            enableClientSessionCreation: true);
     }
     
     public async UniTask JoinSharedSession(string sessionName)
@@ -264,6 +273,7 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
         bool enableClientSessionCreation = true)
     {
         int sceneLoadVersionBefore = PlayerSpawnCoordinator.SceneLoadDoneVersion;
+        PrepareRunnerCallbacks(_runner);
 
         var result = await _runner.StartGame(new StartGameArgs()
         {
@@ -291,6 +301,7 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
         NetworkSessionProfile profile)
     {
         int sceneLoadVersionBefore = PlayerSpawnCoordinator.SceneLoadDoneVersion;
+        PrepareRunnerCallbacks(_runner);
 
         string openWorldSessionName = WorldTravelSessionNaming.ResolveOpenWorldSessionName();
         StartGameArgs startArgs = profile != null
@@ -331,6 +342,7 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
 
     private async UniTask JoinGameAsync(string sessionName)
     {
+        PrepareRunnerCallbacks(_runner);
         var result = await _runner.StartGame(new StartGameArgs()
         {
             GameMode = GameMode.Shared,
@@ -364,6 +376,12 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
         NetworkRunnerCallbackHub.BindRunner(runner);
         PlayerSpawnCoordinator.BindRunner(runner);
         NetworkSessionBridgeSpawner.TrySpawn(runner, _sessionBridgePrefab);
+    }
+
+    private static void PrepareRunnerCallbacks(NetworkRunner runner)
+    {
+        // Scene-load and player-join callbacks can fire before StartGame completes.
+        NetworkRunnerCallbackHub.BindRunner(runner);
     }
 
     private NetworkSessionProfile ResolveOpenWorldProfile() => _openWorldProfile;

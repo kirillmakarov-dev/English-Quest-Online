@@ -51,7 +51,7 @@ public class PlayerLockSystem : NetworkBehaviour, IPlayerLockSystem
     public override void Spawned()
     {
         // Hide cursor by default for the local player when they spawn
-        if (Object.HasInputAuthority)
+        if (NetworkPlayerOwnership.IsLocal(this))
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -153,7 +153,7 @@ public class PlayerLockSystem : NetworkBehaviour, IPlayerLockSystem
 
             case LockType.Cursor:
                 // Cursor should only be controlled for the local player.
-                if (Object != null && Object.HasInputAuthority)
+                if (NetworkPlayerOwnership.IsLocal(this))
                 {
                     if (isLocked)
                     {
@@ -201,7 +201,7 @@ public class PlayerLockSystem : NetworkBehaviour, IPlayerLockSystem
 
     public override void Despawned(NetworkRunner runner, bool hasState)
     {
-        if (Object != null && Object.HasInputAuthority)
+        if (NetworkPlayerOwnership.IsLocal(this))
         {
             ServiceLocator.ForSceneOf(this).DeregisterIfRegistered<IPlayerLockSystem>();
         }

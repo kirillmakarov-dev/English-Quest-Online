@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb32559ad2320ff479ee839a983e59e6, type: 3}
+  m_Name: QuestLine_CoachBen
+  m_EditorClassIdentifier: _Project::QuestLineSO
+  lineId: line_coach_ben
+  npcId: coach_ben
+  prerequisiteLineId: line_teacher_ada
+  displayName: Coach Ben
+  theme: Fill the missing letter and learn a new word.
+  quests:
+  - {fileID: 11400000, guid: 308864c79d499244dae19621c88e683a, type: 2}
+  worldCatalogSet: {fileID: 0}

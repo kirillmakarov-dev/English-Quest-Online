@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -108,6 +109,7 @@ namespace StarterAssets
         private CharacterController _controller;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
+        private readonly Collider[] _groundedHits = new Collider[1];
 
         private const float _threshold = 0.01f;
 
@@ -183,8 +185,15 @@ namespace StarterAssets
             // set sphere position, with offset
             Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
                 transform.position.z);
-            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
-                QueryTriggerInteraction.Ignore);
+            PhysicsScene physicsScene = gameObject.scene.IsValid()
+                ? gameObject.scene.GetPhysicsScene()
+                : Physics.defaultPhysicsScene;
+            Grounded = physicsScene.OverlapSphere(
+                spherePosition,
+                GroundedRadius,
+                _groundedHits,
+                GroundLayers,
+                QueryTriggerInteraction.Ignore) > 0;
 
             // update animator if using character
             if (_hasAnimator)

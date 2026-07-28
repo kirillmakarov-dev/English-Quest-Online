@@ -24,7 +24,7 @@ public class NetworkRunnerCallbackHub : INetworkRunnerCallbacks
 
     public static void BindRunner(NetworkRunner runner)
     {
-        if (runner == null || !runner.IsRunning)
+        if (runner == null)
             return;
 
         Instance.RegisterRunner(runner);

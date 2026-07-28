@@ -18,6 +18,27 @@ public static class PlayerSceneCamera
         return PlayerSceneContext.ResolveFollowCamera(scene);
     }
 
+    public static CinemachineCamera ResolveFollowCamera(Scene scene, Transform preferredOwner)
+    {
+        if (preferredOwner != null)
+        {
+            CinemachineCamera[] ownedCameras = preferredOwner.GetComponentsInChildren<CinemachineCamera>(true);
+            for (int i = 0; i < ownedCameras.Length; i++)
+            {
+                if (ownedCameras[i] != null && ownedCameras[i].GetComponent<CinemachineOrbitalFollow>() != null)
+                    return ownedCameras[i];
+            }
+
+            for (int i = 0; i < ownedCameras.Length; i++)
+            {
+                if (ownedCameras[i] != null)
+                    return ownedCameras[i];
+            }
+        }
+
+        return ResolveFollowCamera(scene);
+    }
+
     /// <summary>
     /// Gives each Fusion Multi-Peer runner its own Cinemachine output channel so brains
     /// do not all drive from the same highest-priority virtual camera.
