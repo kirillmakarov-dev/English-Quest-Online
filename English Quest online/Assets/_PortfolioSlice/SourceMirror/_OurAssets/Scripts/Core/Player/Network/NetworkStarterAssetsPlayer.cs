@@ -27,6 +27,11 @@ public sealed class NetworkStarterAssetsPlayer : NetworkBehaviour
     [SerializeField] private float _remotePredictionTime = 0.08f;
     [SerializeField] private float _remoteSnapDistance = 3f;
 
+    [Header("Remote Player Collision")]
+    [SerializeField] private float _remoteCollisionHeight = 1.8f;
+    [SerializeField] private float _remoteCollisionRadius = 0.32f;
+    [SerializeField] private Vector3 _remoteCollisionCenter = new(0f, 0.93f, 0f);
+
     private static readonly int SpeedId = Animator.StringToHash("Speed");
     private static readonly int MotionSpeedId = Animator.StringToHash("MotionSpeed");
     private static readonly int GroundedId = Animator.StringToHash("Grounded");
@@ -43,6 +48,7 @@ public sealed class NetworkStarterAssetsPlayer : NetworkBehaviour
     private UnityBehaviour _playerInput;
     private Transform _cameraTarget;
     private CinemachineCamera[] _playerVirtualCameras;
+    private CapsuleCollider _remoteCollisionBlocker;
     private Vector3 _lastCapturedPosition;
     private bool _lastOwnsPlayer;
     private bool _lastOwnsLocalView;
@@ -103,6 +109,7 @@ public sealed class NetworkStarterAssetsPlayer : NetworkBehaviour
         _playerInput = FindBehaviour("PlayerInput");
         _cameraTarget = transform.Find("PlayerCameraRoot");
         _playerVirtualCameras = GetComponentsInChildren<CinemachineCamera>(true);
+        _remoteCollisionBlocker = EnsureRemoteCollisionBlocker();
     }
 
     private void RefreshLocalState(bool force)
@@ -156,6 +163,8 @@ public sealed class NetworkStarterAssetsPlayer : NetworkBehaviour
         if (_characterController != null)
             _characterController.enabled = ownsPlayer;
 
+        SetRemoteCollisionBlocker(!ownsPlayer);
+
         if (_interaction != null)
             _interaction.enabled = ownsLocalView;
 
@@ -163,6 +172,39 @@ public sealed class NetworkStarterAssetsPlayer : NetworkBehaviour
             _interactionController.enabled = ownsLocalView;
 
         _lockService?.SetLocalPlayer(ownsLocalView);
+    }
+
+    private CapsuleCollider EnsureRemoteCollisionBlocker()
+    {
+        const string blockerName = "Remote Player Collision Blocker";
+
+        Transform blockerTransform = transform.Find(blockerName);
+        if (blockerTransform == null)
+        {
+            GameObject blockerObject = new GameObject(blockerName);
+            blockerTransform = blockerObject.transform;
+            blockerTransform.SetParent(transform, false);
+        }
+
+        if (!blockerTransform.TryGetComponent(out CapsuleCollider blocker))
+            blocker = blockerTransform.gameObject.AddComponent<CapsuleCollider>();
+
+        blocker.isTrigger = false;
+        blocker.height = _remoteCollisionHeight;
+        blocker.radius = _remoteCollisionRadius;
+        blocker.center = _remoteCollisionCenter;
+        blocker.direction = 1;
+        blocker.enabled = false;
+        blockerTransform.gameObject.layer = gameObject.layer;
+        return blocker;
+    }
+
+    private void SetRemoteCollisionBlocker(bool enabled)
+    {
+        if (_remoteCollisionBlocker == null)
+            _remoteCollisionBlocker = EnsureRemoteCollisionBlocker();
+
+        _remoteCollisionBlocker.enabled = enabled;
     }
 
     private void SetPlayerVirtualCameras(bool isLocal)
