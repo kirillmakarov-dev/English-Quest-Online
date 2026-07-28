@@ -124,6 +124,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
                 "NPC: Guide Nora\nLesson 3 - Choose the word",
                 "guide_nora",
                 questRegistry.questLines[2]);
+            CreateOptionalCoopStudyCircle();
 
             LetterConnectionBootstrap lineBootstrap =
                 InstantiatePrefabComponent<LetterConnectionBootstrap>(LineMatchPrefabPath, "UI - Line Match");
@@ -280,6 +281,29 @@ namespace EnglishQuest.Editor.PortfolioDemo
             spawnPoint.AddComponent<PlayerSpawnPoint>();
         }
 
+        private static void CreateOptionalCoopStudyCircle()
+        {
+            GameObject studyCircle = new("Optional Co-op Study Circle");
+            studyCircle.transform.position = new Vector3(0f, 0.03f, 2.2f);
+            studyCircle.AddComponent<PortfolioOptionalCoopStudyCircle>();
+
+            GameObject ring = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            ring.name = "Ring";
+            ring.transform.SetParent(studyCircle.transform, false);
+            ring.transform.localPosition = Vector3.zero;
+            ring.transform.localScale = new Vector3(4.5f, 0.02f, 4.5f);
+
+            Collider ringCollider = ring.GetComponent<Collider>();
+            if (ringCollider != null)
+                UnityEngine.Object.DestroyImmediate(ringCollider);
+
+            ApplyColor(ring, new Color(0.18f, 0.5f, 0.55f));
+            CreateWorldLabel(
+                studyCircle.transform,
+                "Optional Co-op\nStudy Circle\n(Not Required)",
+                new Vector3(0f, 1.35f, 0f));
+        }
+
         private static PortfolioDemoHud CreateHud(
             QuestObjectiveEventBus eventBus,
             DialogueManager dialogueManager)
@@ -288,7 +312,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
             TextMeshProUGUI title = CreateUiText(
                 canvas.transform,
                 "Title",
-                "ENGLISH QUEST MVP - OPEN WORLD + QUEST CHAINS + MULTIPLAYER",
+                "ENGLISH QUEST MVP - OPEN WORLD + QUEST CHAINS + OPTIONAL MULTIPLAYER",
                 28f,
                 TextAlignmentOptions.TopLeft,
                 new Vector2(24f, -20f),
@@ -299,7 +323,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
             TextMeshProUGUI help = CreateUiText(
                 canvas.transform,
                 "Controls",
-                "WASD - Move    Mouse - Look    Space - Jump    E - Interact    2 Players via Photon Fusion",
+                "WASD - Move    Mouse - Look    Space - Jump    E - Interact    Optional 2 Players via Photon Fusion",
                 20f,
                 TextAlignmentOptions.TopLeft,
                 new Vector2(26f, -68f),

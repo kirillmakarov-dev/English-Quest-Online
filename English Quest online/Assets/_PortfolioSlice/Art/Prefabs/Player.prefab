@@ -721,6 +721,7 @@ GameObject:
   - component: {fileID: 5742809099420544199}
   - component: {fileID: 6440739404303264795}
   - component: {fileID: 911000000000000001}
+  - component: {fileID: 911000000000000002}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -1041,6 +1042,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 8537925092215101117}
   - {fileID: 911000000000000001}
+  - {fileID: 911000000000000002}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &911000000000000001
 MonoBehaviour:
@@ -1054,6 +1056,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6db1b1713454f97910f36e822456ddb, type: 3}
   m_Name: Network Starter Assets Player
   m_EditorClassIdentifier: _Project::NetworkStarterAssetsPlayer
+--- !u!114 &911000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2016340262569510194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ad714fb2f8140149bf239bfe28d11f1, type: 3}
+  m_Name: Player Quest Status Sync
+  m_EditorClassIdentifier: _Project::EnglishQuest.PortfolioDemo.PlayerQuestStatusSync
 --- !u!1 &2383363321689607988
 GameObject:
   m_ObjectHideFlags: 0

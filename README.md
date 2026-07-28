@@ -4,6 +4,8 @@ A small multiplayer learning prototype built in Unity to demonstrate how an open
 
 This is a portfolio project, not a finished commercial game. The scope is intentionally narrow: one map, three NPCs, three learning stages, and a two-player Shared Mode session. The goal was to build and present the underlying systems clearly rather than hide them behind a large amount of content.
 
+The primary MVP rule is simple: one player must be able to enter the scene and complete the full lesson chain alone. Multiplayer is included to demonstrate ownership, presence, and optional shared beats on top of that solo-first path, not to gate mission activation.
+
 ## The idea
 
 The player moves through a compact open world and learns through a sequence of NPC-led lessons:
@@ -16,6 +18,10 @@ Each NPC owns a separate quest line. A line can declare another line as its prer
 
 Two players can join the same Photon Fusion room, spawn at separate points, see each other move, and collide in the world. Quest and lesson progress remains individual for each player by design: one player can start or finish a lesson without advancing the other player's learning state.
 
+If two players are present, they can also activate an optional shared world moment by standing together inside the Study Circle. This does not unlock quests or gate progression. It exists only to show an intentional co-op touch on top of the solo-first learning flow.
+
+That solo-first rule is treated as a real slice constraint, not just a presentation note: optional co-op activities are not allowed to become required quest objectives for the MVP learning path.
+
 ## What this prototype demonstrates
 
 - a data-driven quest system built with ScriptableObjects;
@@ -26,7 +32,9 @@ Two players can join the same Photon Fusion room, spawn at separate points, see 
 - three mini-games integrated through a shared launch boundary;
 - scoped dependency resolution through a custom Service Locator;
 - two-player networking with Photon Fusion Shared Mode;
+- explicit ownership rules: dialogues and mini-games are local, quest progression is per-player, and optional co-op remains non-blocking;
 - network spawning, input authority, camera ownership, movement smoothing, and player collision;
+- an optional shared Study Circle moment that activates only when both players gather in the same world space without affecting quest progress;
 - editor tooling for rebuilding the integration scene;
 - Edit Mode and runtime tests around quests, networking, services, player lifecycle, and UI.
 
@@ -146,9 +154,18 @@ Networking uses **Photon Fusion 2** in **Shared Mode** with a maximum of two pla
 - `LocalPlayerReadiness` publishes a reliable hand-off once the network object, local camera, interaction components, and scene services are ready.
 - Remote movement is synchronized and visually smoothed, while local movement remains responsive.
 - Each editor instance keeps its own Cinemachine follow camera; remote players cannot take control of the local view.
-- A small player panel displays the connected players and identifies the local one.
+- A small player panel displays the connected players, identifies the local one, and explicitly distinguishes solo versus shared session presence.
 
 The first player in the room becomes the Shared Mode Master Client. The prototype does not run a dedicated game server and does not contain production matchmaking, reconnect UI, account management, or authoritative shared quest progression.
+
+The social presence layer intentionally stays lightweight:
+
+- each player keeps their own quest progression;
+- each player can finish the full lesson chain solo;
+- the shared HUD shows who is in the room and what lesson/activity each player is currently in;
+- the shared HUD and debug overlay explicitly label solo versus shared session presence so optional multiplayer does not read like a mission requirement;
+- the briefing card in the HUD updates the current lesson and the next meaningful action for the local player;
+- the prototype does not require a second player to activate any mission.
 
 ## Technology
 
@@ -194,11 +211,32 @@ For the current implementation roadmap and the technical map of the slice, start
 
 - `English Quest online/Assets/_PortfolioSlice/Docs/MVP_SENIOR_ROADMAP.md`
 - `English Quest online/Assets/_PortfolioSlice/Docs/PROJECT_MAP.md`
+- `English Quest online/Assets/_PortfolioSlice/Docs/Architecture.md`
+- `English Quest online/Assets/_PortfolioSlice/Docs/QuestFlow.md`
+- `English Quest online/Assets/_PortfolioSlice/Docs/Multiplayer.md`
+- `English Quest online/Assets/_PortfolioSlice/Docs/ContentAuthoring.md`
+- `English Quest online/Assets/_PortfolioSlice/Docs/ShowcaseFlow.md`
+- `English Quest online/Assets/_PortfolioSlice/Docs/ManualVerificationChecklist.md`
+- `English Quest online/Assets/_PortfolioSlice/Docs/SoloFirstVerification.md`
+- `English Quest online/Assets/_PortfolioSlice/Docs/SoloFirst_Status.md`
+- `English Quest online/Assets/_PortfolioSlice/Docs/SoloRuntimeSignoff.md`
+- `English Quest online/Assets/_PortfolioSlice/Docs/SoloRuntimeSignoff_Record_Template.md`
+- `English Quest online/Assets/_PortfolioSlice/Docs/SoloRuntimeSignoff.md`
+
+If you only need the fastest proof of the MVP contract, start with `SoloFirstVerification.md`.
+Then run `SoloRuntimeSignoff.md` for the live one-player scene pass.
+Only after that move to `ManualVerificationChecklist.md` for the broader shared-session and presentation check.
 
 The scene can also be regenerated from:
 
 ```text
 Tools > Portfolio Demo > Rebuild Test Scene
+```
+
+Key slice documents can be opened directly inside the Unity editor from:
+
+```text
+Tools > English Quest > Docs
 ```
 
 The builder creates the scene hierarchy, service registration, quest data wiring, networking setup, spawn points, camera, NPCs, and mini-game stations. Changes that must survive a rebuild should be made in the builder or in referenced prefabs and ScriptableObjects.
@@ -222,6 +260,15 @@ The App ID identifies the Photon application used by the client. If you fork thi
 1. Open `Assets/_PortfolioSlice/Demo/Scenes/PortfolioDemo.unity`.
 2. Enter Play Mode.
 3. Wait for the Shared Mode session to start and for the local player to spawn.
+4. Verify that the full Ada -> Ben -> Nora lesson chain is playable without a second player joining.
+
+Optional automated solo-first guardrail before opening Unity:
+
+```text
+powershell -ExecutionPolicy Bypass -File .\scripts\Run-SoloFirstUnityEditMode.ps1
+```
+
+This targeted batchmode pass checks the committed MVP registry, the committed `PortfolioDemo` scene wiring, and the required reviewer-facing solo-first documentation. It is meant to support the final one-player proof path, not replace the live runtime sign-off.
 
 ### Two editor instances
 
@@ -231,6 +278,7 @@ The App ID identifies the Photon application used by the client. If you fork thi
 4. Use `PortfolioDemo` as the initial scene.
 5. Start Play Mode from the scenario.
 6. Confirm that both instances join the same room and spawn at different points.
+7. Confirm that the second instance adds presence only and does not become required for mission activation or completion.
 
 ### Controls
 

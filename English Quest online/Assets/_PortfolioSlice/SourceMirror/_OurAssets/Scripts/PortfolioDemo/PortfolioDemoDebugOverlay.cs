@@ -20,12 +20,14 @@ namespace EnglishQuest.PortfolioDemo
         private TextMeshProUGUI bodyText;
         private float nextRefreshTime;
         private bool isVisible;
+        private PortfolioOptionalCoopStudyCircle optionalCoopStudyCircle;
 
         private void Awake()
         {
             if (flowCoordinator == null)
                 flowCoordinator = GetComponent<PortfolioGameFlowCoordinator>();
 
+            optionalCoopStudyCircle = PortfolioOptionalCoopStudyCircle.FindOrCreateRuntimeInstance();
             EnsureOverlay();
             SetVisible(false);
         }
@@ -97,12 +99,17 @@ namespace EnglishQuest.PortfolioDemo
             {
                 builder.AppendLine($"Room: {runner.SessionInfo.Name}");
                 int playerCount = 0;
-                foreach (PlayerRef _ in runner.ActivePlayers)
+                foreach (PlayerRef _ in FusionCoSessionRunners.EnumeratePlayers(runner))
                     playerCount++;
 
+                builder.AppendLine($"Session: {PortfolioPlayerStatusFormatter.GetSessionTopologyLabel(playerCount)}");
                 builder.AppendLine($"Players: {playerCount}");
                 builder.AppendLine($"Local Player: {runner.LocalPlayer.PlayerId}");
                 builder.AppendLine($"Shared Master: {runner.IsSharedModeMasterClient}");
+                AppendOptionalCoopDiagnostics(builder, runner);
+                AppendLocalPlayerDiagnostics(builder, runner);
+                AppendSessionPlayerDiagnostics(builder, runner);
+                builder.AppendLine(PortfolioDemoDebugOverlayFormatter.FormatOwnershipRulesSection());
             }
             else
             {
@@ -129,6 +136,80 @@ namespace EnglishQuest.PortfolioDemo
             builder.AppendLine();
             builder.AppendLine("F3 - Toggle overlay");
             bodyText.text = builder.ToString();
+        }
+
+        private static void AppendLocalPlayerDiagnostics(StringBuilder builder, NetworkRunner runner)
+        {
+            NetworkObject localPlayerObject = runner.GetPlayerObject(runner.LocalPlayer);
+            if (localPlayerObject == null)
+            {
+                builder.AppendLine(PortfolioDemoDebugOverlayFormatter.FormatLocalPlayerSection(
+                    new PortfolioDebugLocalPlayerSnapshot(
+                        objectName: string.Empty,
+                        ownsPlayer: false,
+                        drivesView: false,
+                        stateAuthorityPlayerId: 0,
+                        inputAuthorityPlayerId: 0,
+                        isMissing: true)));
+                return;
+            }
+
+            builder.AppendLine(PortfolioDemoDebugOverlayFormatter.FormatLocalPlayerSection(
+                new PortfolioDebugLocalPlayerSnapshot(
+                    localPlayerObject.name,
+                    NetworkPlayerOwnership.OwnsPlayer(localPlayerObject),
+                    NetworkPlayerOwnership.ShouldDriveLocalView(localPlayerObject),
+                    localPlayerObject.StateAuthority.PlayerId,
+                    localPlayerObject.InputAuthority.PlayerId)));
+        }
+
+        private static void AppendSessionPlayerDiagnostics(StringBuilder builder, NetworkRunner runner)
+        {
+            var players = new System.Collections.Generic.List<PortfolioDebugSessionPlayerSnapshot>();
+
+            foreach (PlayerRef player in FusionCoSessionRunners.EnumeratePlayers(runner))
+            {
+                string playerName = ResolvePlayerName(runner, player);
+                string activity = ResolvePlayerActivity(runner, player);
+                players.Add(new PortfolioDebugSessionPlayerSnapshot(playerName, activity));
+            }
+
+            builder.AppendLine(PortfolioDemoDebugOverlayFormatter.FormatSessionPlayersSection(
+                players,
+                isSoloSession: players.Count <= 1));
+        }
+
+        private void AppendOptionalCoopDiagnostics(StringBuilder builder, NetworkRunner runner)
+        {
+            if (optionalCoopStudyCircle == null)
+                optionalCoopStudyCircle = PortfolioOptionalCoopStudyCircle.FindOrCreateRuntimeInstance();
+
+            if (optionalCoopStudyCircle == null ||
+                !optionalCoopStudyCircle.TryGetSnapshot(runner, runner.LocalPlayer, out PortfolioOptionalCoopActivitySnapshot snapshot))
+            {
+                builder.AppendLine("Optional Co-op: unavailable");
+                return;
+            }
+
+            builder.AppendLine(PortfolioOptionalCoopActivityFormatter.BuildDebugLine(snapshot));
+        }
+
+        private static string ResolvePlayerName(NetworkRunner runner, PlayerRef player)
+        {
+            return PortfolioSessionPlayerUtility.ResolveDisplayName(runner, player);
+        }
+
+        private static string ResolvePlayerActivity(NetworkRunner runner, PlayerRef player)
+        {
+            NetworkObject playerObject = PortfolioSessionPlayerUtility.ResolvePlayerObject(runner, player);
+            if (playerObject != null && playerObject.TryGetComponent(out PlayerQuestStatusSync statusSync))
+            {
+                string status = statusSync.StatusText.ToString();
+                if (!string.IsNullOrWhiteSpace(status))
+                    return PortfolioDemoDebugOverlayFormatter.AppendFlowState(status, statusSync.FlowState);
+            }
+
+            return PortfolioSessionPlayerUtility.ResolveActivityStatus(runner, player);
         }
 
         private bool WasTogglePressed()

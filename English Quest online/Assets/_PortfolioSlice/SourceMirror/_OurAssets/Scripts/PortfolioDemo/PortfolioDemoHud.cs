@@ -20,13 +20,19 @@ namespace EnglishQuest.PortfolioDemo
         private const float PlayerPanelRefreshInterval = 0.5f;
         private readonly List<GameObject> openWorldHudRoots = new();
         private readonly List<TextMeshProUGUI> playerRows = new();
+        private readonly List<Image> playerRowBackgrounds = new();
 
         private RectTransform demoBriefingRoot;
+        private TextMeshProUGUI demoBriefingTitleText;
+        private TextMeshProUGUI demoBriefingBodyText;
         private RectTransform playerPanelRoot;
         private RectTransform playerListRoot;
+        private TextMeshProUGUI playerPanelTitleText;
+        private TextMeshProUGUI playerPanelSupportText;
         private RectTransform completionPanelRoot;
         private float nextPlayerPanelRefreshTime;
         private string lastPlayerPanelHash = "";
+        private string lastBriefingHash = "";
         private bool isOpenWorldHudVisible = true;
         private PortfolioGameFlowCoordinator flowCoordinator;
         private PortfolioDemoDebugOverlay debugOverlay;
@@ -38,14 +44,31 @@ namespace EnglishQuest.PortfolioDemo
         private CanvasGroup completionCanvasGroup;
         private IPlayerLockSystem completionLockSystem;
         private bool completionInteractionOwned;
+        private PortfolioOptionalCoopStudyCircle optionalCoopStudyCircle;
+
+        private readonly struct PlayerPanelEntry
+        {
+            public PlayerPanelEntry(string displayName, string status, bool isLocalPlayer)
+            {
+                DisplayName = displayName;
+                Status = status;
+                IsLocalPlayer = isLocalPlayer;
+            }
+
+            public string DisplayName { get; }
+            public string Status { get; }
+            public bool IsLocalPlayer { get; }
+        }
 
         private void Awake()
         {
+            ResolveSceneBindings();
             EnsureFlowCoordinator();
             EnsureDemoBriefingPanel();
             EnsurePlayerPanel();
             EnsureCompletionPanel();
             EnsureDebugOverlay();
+            EnsureOptionalCoopStudyCircle();
             CacheOpenWorldHudRoots();
             ApplyState(CurrentStateOrFallback());
         }
@@ -61,11 +84,14 @@ namespace EnglishQuest.PortfolioDemo
                 return;
 
             nextPlayerPanelRefreshTime = Time.unscaledTime + PlayerPanelRefreshInterval;
+            RefreshDemoBriefing();
             RefreshPlayerPanel();
         }
 
         private void OnEnable()
         {
+            ResolveSceneBindings();
+
             if (objectiveEventBus != null)
                 objectiveEventBus.OnMiniGameCompleted += HandleMiniGameCompleted;
 
@@ -152,6 +178,12 @@ namespace EnglishQuest.PortfolioDemo
                 debugOverlay = gameObject.AddComponent<PortfolioDemoDebugOverlay>();
         }
 
+        private void EnsureOptionalCoopStudyCircle()
+        {
+            if (optionalCoopStudyCircle == null)
+                optionalCoopStudyCircle = PortfolioOptionalCoopStudyCircle.FindOrCreateRuntimeInstance();
+        }
+
         private void EnsurePlayerPanel()
         {
             if (playerPanelRoot != null)
@@ -170,7 +202,7 @@ namespace EnglishQuest.PortfolioDemo
             playerPanelRoot.anchorMax = new Vector2(0f, 1f);
             playerPanelRoot.pivot = new Vector2(0f, 1f);
             playerPanelRoot.anchoredPosition = new Vector2(24f, -118f);
-            playerPanelRoot.sizeDelta = new Vector2(280f, 132f);
+            playerPanelRoot.sizeDelta = new Vector2(320f, 156f);
 
             Image panelBackground = panel.AddComponent<Image>();
             panelBackground.color = new Color(0.02f, 0.05f, 0.06f, 0.72f);
@@ -183,14 +215,24 @@ namespace EnglishQuest.PortfolioDemo
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = false;
 
-            CreateText(
+            playerPanelTitleText = CreateText(
                 "Title",
                 panel.transform,
-                "Players",
+                PortfolioPlayerStatusFormatter.SoloPlayerPanelTitle,
                 17f,
                 FontStyles.Bold,
                 new Color(0.86f, 0.97f, 1f, 1f),
                 TextAlignmentOptions.Left);
+
+            playerPanelSupportText = CreateText(
+                "Support",
+                panel.transform,
+                PortfolioPlayerStatusFormatter.GetPlayerPanelSupportText(connectedPlayerCount: 1),
+                12f,
+                FontStyles.Normal,
+                new Color(0.78f, 0.87f, 0.9f, 0.92f),
+                TextAlignmentOptions.Left,
+                wrap: true);
 
             GameObject list = new GameObject("Rows", typeof(RectTransform));
             list.transform.SetParent(panel.transform, false);
@@ -283,16 +325,28 @@ namespace EnglishQuest.PortfolioDemo
                 new Color(0.96f, 0.84f, 0.38f, 1f),
                 TextAlignmentOptions.Left);
 
-            TextMeshProUGUI body = CreateText(
+            demoBriefingTitleText = CreateText(
+                "Current Step",
+                panel.transform,
+                "Next Step",
+                16f,
+                FontStyles.Bold,
+                new Color(0.55f, 0.95f, 0.8f, 1f),
+                TextAlignmentOptions.Left,
+                wrap: true);
+
+            demoBriefingBodyText = CreateText(
                 "Body",
                 panel.transform,
-                "Open-world English quest slice: talk to NPCs, complete 3 learning mini-games in order, and test 2-player Photon Fusion multiplayer.\nControls: WASD move, Mouse look, Space jump, E interact.",
+                "Open-world English quest slice. Talk to the active NPC, complete the unlocked lesson, and move through the chain from letters to words to a full sentence.\nSolo play is fully supported. A second player is optional and only adds shared presence.",
                 15f,
                 FontStyles.Normal,
                 Color.white,
                 TextAlignmentOptions.Left,
                 wrap: true);
-            body.lineSpacing = 8f;
+            demoBriefingBodyText.lineSpacing = 8f;
+
+            RefreshDemoBriefing(force: true);
         }
 
         private void EnsureCompletionPanel()
@@ -388,33 +442,84 @@ namespace EnglishQuest.PortfolioDemo
 
             SetPlayerPanelVisible(true);
 
-            var displayNames = new List<string>();
+            var sessionPlayers = new List<PlayerRef>();
             foreach (PlayerRef player in FusionCoSessionRunners.EnumeratePlayers(runner))
+                sessionPlayers.Add(player);
+
+            if (playerPanelTitleText != null)
+                playerPanelTitleText.text = PortfolioPlayerStatusFormatter.GetPlayerPanelTitle(sessionPlayers.Count);
+
+            if (playerPanelSupportText != null)
+                playerPanelSupportText.text = PortfolioPlayerStatusFormatter.GetPlayerPanelSupportText(sessionPlayers.Count);
+
+            var entries = new List<PlayerPanelEntry>();
+            for (int index = 0; index < sessionPlayers.Count; index++)
             {
+                PlayerRef player = sessionPlayers[index];
                 string displayName = ResolvePlayerDisplayName(runner, player);
-                if (player == runner.LocalPlayer)
+                bool isLocalPlayer = player == runner.LocalPlayer;
+                if (isLocalPlayer)
                     displayName += "  (You)";
 
-                displayNames.Add(displayName);
+                string rawStatus = ResolvePlayerStatus(runner, player);
+                entries.Add(new PlayerPanelEntry(
+                    displayName,
+                    PortfolioPlayerStatusFormatter.DecorateSessionStatus(
+                        rawStatus,
+                        connectedPlayerCount: sessionPlayers.Count,
+                        isLocalPlayer: isLocalPlayer),
+                    isLocalPlayer));
             }
 
-            if (displayNames.Count == 0)
-                displayNames.Add("Waiting for players...");
+            if (entries.Count == 0)
+            {
+                entries.Add(new PlayerPanelEntry(
+                    "Local player",
+                    PortfolioPlayerStatusFormatter.PreparingLocalPlayerStatus,
+                    true));
+            }
 
-            string panelHash = string.Join("|", displayNames);
+            var hashParts = new List<string>(entries.Count);
+            for (int i = 0; i < entries.Count; i++)
+                hashParts.Add($"{entries[i].DisplayName}|{entries[i].Status}|{entries[i].IsLocalPlayer}");
+
+            string panelHash = string.Join("||", hashParts);
             if (!force && panelHash == lastPlayerPanelHash)
                 return;
 
             lastPlayerPanelHash = panelHash;
-            EnsurePlayerRows(displayNames.Count);
+            EnsurePlayerRows(entries.Count);
 
             for (int i = 0; i < playerRows.Count; i++)
             {
-                bool isActive = i < displayNames.Count;
+                bool isActive = i < entries.Count;
                 playerRows[i].transform.parent.gameObject.SetActive(isActive);
                 if (isActive)
-                    playerRows[i].text = displayNames[i];
+                {
+                    PlayerPanelEntry entry = entries[i];
+                    playerRows[i].text = $"<b>{entry.DisplayName}</b>\n<size=80%>{entry.Status}</size>";
+                    playerRowBackgrounds[i].color = entry.IsLocalPlayer
+                        ? new Color(0.13f, 0.55f, 0.48f, 0.52f)
+                        : new Color(1f, 1f, 1f, 0.08f);
+                }
             }
+        }
+
+        private void RefreshDemoBriefing(bool force = false)
+        {
+            EnsureDemoBriefingPanel();
+
+            if (!isOpenWorldHudVisible || demoBriefingTitleText == null || demoBriefingBodyText == null)
+                return;
+
+            (string title, string body) = BuildDemoBriefingContent();
+            string nextHash = $"{title}|{body}";
+            if (!force && nextHash == lastBriefingHash)
+                return;
+
+            lastBriefingHash = nextHash;
+            demoBriefingTitleText.text = title;
+            demoBriefingBodyText.text = body;
         }
 
         private void EnsurePlayerRows(int count)
@@ -426,12 +531,11 @@ namespace EnglishQuest.PortfolioDemo
                 row.transform.SetParent(playerListRoot, false);
 
                 Image rowBackground = row.AddComponent<Image>();
-                rowBackground.color = rowIndex == 0
-                    ? new Color(0.13f, 0.55f, 0.48f, 0.52f)
-                    : new Color(1f, 1f, 1f, 0.08f);
+                rowBackground.color = new Color(1f, 1f, 1f, 0.08f);
+                playerRowBackgrounds.Add(rowBackground);
 
                 HorizontalLayoutGroup rowLayout = row.AddComponent<HorizontalLayoutGroup>();
-                rowLayout.padding = new RectOffset(8, 8, 4, 4);
+                rowLayout.padding = new RectOffset(8, 8, 6, 6);
                 rowLayout.childControlWidth = true;
                 rowLayout.childControlHeight = true;
                 rowLayout.childForceExpandWidth = true;
@@ -444,7 +548,8 @@ namespace EnglishQuest.PortfolioDemo
                     15f,
                     FontStyles.Normal,
                     Color.white,
-                    TextAlignmentOptions.Left);
+                    TextAlignmentOptions.Left,
+                    wrap: true);
                 playerRows.Add(label);
             }
         }
@@ -492,15 +597,140 @@ namespace EnglishQuest.PortfolioDemo
 
         private static string ResolvePlayerDisplayName(NetworkRunner runner, PlayerRef player)
         {
-            NetworkObject playerObject = runner.GetPlayerObject(player);
-            if (playerObject != null && playerObject.TryGetComponent(out PlayerNameSync nameSync))
+            return PortfolioSessionPlayerUtility.ResolveDisplayName(runner, player);
+        }
+
+        private static string ResolvePlayerStatus(NetworkRunner runner, PlayerRef player)
+        {
+            return PortfolioSessionPlayerUtility.ResolveActivityStatus(runner, player);
+        }
+
+        private (string Title, string Body) BuildDemoBriefingContent()
+        {
+            if (questService == null)
+                ResolveQuestService();
+
+            NetworkRunner runner = ResolveRunner();
+            int connectedPlayerCount = runner != null && runner.IsRunning
+                ? CountSessionPlayers(runner)
+                : 0;
+            QuestInfo highlightedQuest = FindFirstQuest(QuestState.IN_PROGRESS, QuestState.CAN_FINISH) ??
+                                        FindFirstQuest(QuestState.CAN_START) ??
+                                        FindFirstQuest(QuestState.REQUIREMENTS_NOT_MET);
+
+            PortfolioDemoBriefingContent content = PortfolioDemoBriefingFormatter.Build(
+                isSessionReady: runner != null && runner.IsRunning,
+                isLevelCompleted: questService != null && questService.IsLevelCompleted,
+                connectedPlayerCount: connectedPlayerCount,
+                highlightedQuestState: highlightedQuest?.state,
+                questHeadline: GetQuestHeadline(highlightedQuest),
+                npcDisplayName: GetNpcDisplayName(highlightedQuest),
+                objectiveSummary: BuildQuestObjectiveSummary(highlightedQuest),
+                optionalCoopLine: BuildOptionalCoopBriefingLine(runner));
+
+            return (content.Title, content.Body);
+        }
+
+        private string BuildOptionalCoopBriefingLine(NetworkRunner runner)
+        {
+            EnsureOptionalCoopStudyCircle();
+            if (optionalCoopStudyCircle == null)
+                return null;
+
+            if (!optionalCoopStudyCircle.TryGetSnapshot(
+                    runner,
+                    runner != null ? runner.LocalPlayer : default,
+                    out PortfolioOptionalCoopActivitySnapshot snapshot))
             {
-                string syncedName = nameSync.PlayerName.ToString();
-                if (!string.IsNullOrWhiteSpace(syncedName))
-                    return syncedName;
+                snapshot = new PortfolioOptionalCoopActivitySnapshot(
+                    optionalCoopStudyCircle.ActivityName,
+                    connectedPlayers: 0,
+                    playersInside: 0,
+                    requiredPlayers: 2,
+                    isLocalPlayerInside: false,
+                    isGroupActive: false);
             }
 
-            return $"Player {player.PlayerId}";
+            return PortfolioOptionalCoopActivityFormatter.BuildBriefingLine(snapshot);
+        }
+
+        private static int CountSessionPlayers(NetworkRunner runner)
+        {
+            if (runner == null || !runner.IsRunning)
+                return 0;
+
+            int count = 0;
+            foreach (PlayerRef _ in FusionCoSessionRunners.EnumeratePlayers(runner))
+                count++;
+
+            return count;
+        }
+
+        private QuestInfo FindFirstQuest(params QuestState[] states)
+        {
+            if (questService == null)
+                return null;
+
+            IReadOnlyList<QuestInfo> quests = questService.AllQuests;
+            if (quests == null)
+                return null;
+
+            for (int i = 0; i < quests.Count; i++)
+            {
+                QuestInfo quest = quests[i];
+                if (quest == null || !quest.UsesObjectives())
+                    continue;
+
+                for (int s = 0; s < states.Length; s++)
+                {
+                    if (quest.state == states[s])
+                        return quest;
+                }
+            }
+
+            return null;
+        }
+
+        private static string GetQuestHeadline(QuestInfo quest)
+        {
+            if (quest == null)
+                return "Lesson";
+
+            return !string.IsNullOrWhiteSpace(quest.displayName)
+                ? quest.displayName.Trim()
+                : "Lesson";
+        }
+
+        private static string GetNpcDisplayName(QuestInfo quest)
+        {
+            if (quest != null &&
+                quest.TryGetDefinition(out QuestDefinitionSO definition) &&
+                !string.IsNullOrWhiteSpace(definition.giverNpcId))
+            {
+                return definition.giverNpcId switch
+                {
+                    "teacher_ada" => "Teacher Ada",
+                    "coach_ben" => "Coach Ben",
+                    "guide_nora" => "Guide Nora",
+                    _ => definition.giverNpcId
+                };
+            }
+
+            return "the active NPC";
+        }
+
+        private string BuildQuestObjectiveSummary(QuestInfo quest)
+        {
+            if (quest == null || questService == null)
+                return "Complete the active lesson objective.";
+
+            string objectiveText = ActiveQuestDisplayHelper.BuildObjectiveText(quest, questService);
+            string progressText = ActiveQuestDisplayHelper.BuildProgressText(quest, questService);
+
+            if (!string.IsNullOrWhiteSpace(progressText))
+                return $"{objectiveText} ({progressText})";
+
+            return objectiveText;
         }
 
         private bool IsAnyMiniGameOpen()
@@ -551,7 +781,10 @@ namespace EnglishQuest.PortfolioDemo
                 interactionPrompt.gameObject.SetActive(false);
 
             if (isVisible)
+            {
+                RefreshDemoBriefing(force: true);
                 RefreshPlayerPanel(force: true);
+            }
         }
 
         private void ApplyState(PortfolioGameFlowState state)
@@ -610,6 +843,29 @@ namespace EnglishQuest.PortfolioDemo
                 questService = QuestManager.Instance;
         }
 
+        private void ResolveSceneBindings()
+        {
+            if (interactionPrompt == null)
+            {
+                Transform promptTransform = FindChildByName(transform, "Interaction Prompt");
+                if (promptTransform != null)
+                    interactionPrompt = promptTransform.GetComponent<TextMeshProUGUI>();
+            }
+
+            if (statusText == null)
+            {
+                Transform statusTransform = FindChildByName(transform, "System Status");
+                if (statusTransform != null)
+                    statusText = statusTransform.GetComponent<TextMeshProUGUI>();
+            }
+
+            if (objectiveEventBus == null)
+                objectiveEventBus = FindFirstObjectByType<QuestObjectiveEventBus>(FindObjectsInactive.Include);
+
+            if (dialogueManager == null)
+                dialogueManager = FindFirstObjectByType<DialogueManager>(FindObjectsInactive.Include);
+        }
+
         private void UpdateCompletionPanelContent()
         {
             if (completionBodyText == null)
@@ -620,6 +876,7 @@ namespace EnglishQuest.PortfolioDemo
                 "Teacher Ada introduced the first letters.\n" +
                 "Coach Ben reinforced vocabulary through missing letters.\n" +
                 "Guide Nora completed the flow with the final lesson.\n\n" +
+                "This prototype remains solo-first: one player can complete the whole chain alone, and any second player is optional.\n\n" +
                 "You can now restart the prototype from the beginning.";
         }
 
