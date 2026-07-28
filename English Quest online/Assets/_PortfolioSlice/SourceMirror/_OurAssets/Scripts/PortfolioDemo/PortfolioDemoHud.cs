@@ -1,6 +1,9 @@
 using EnglishQuest.QuestSystem;
+using Fusion;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace EnglishQuest.PortfolioDemo
 {
@@ -10,6 +13,29 @@ namespace EnglishQuest.PortfolioDemo
         [SerializeField] private TextMeshProUGUI statusText;
         [SerializeField] private QuestObjectiveEventBus objectiveEventBus;
         [SerializeField] private DialogueManager dialogueManager;
+
+        private const float PlayerPanelRefreshInterval = 0.5f;
+
+        private readonly List<TextMeshProUGUI> playerRows = new();
+
+        private RectTransform playerPanelRoot;
+        private RectTransform playerListRoot;
+        private float nextPlayerPanelRefreshTime;
+        private string lastPlayerPanelHash = "";
+
+        private void Awake()
+        {
+            EnsurePlayerPanel();
+        }
+
+        private void Update()
+        {
+            if (Time.unscaledTime < nextPlayerPanelRefreshTime)
+                return;
+
+            nextPlayerPanelRefreshTime = Time.unscaledTime + PlayerPanelRefreshInterval;
+            RefreshPlayerPanel();
+        }
 
         private void OnEnable()
         {
@@ -67,6 +93,193 @@ namespace EnglishQuest.PortfolioDemo
                 "word_ordering" => "Word Ordering completed. MVP quest chain finished.",
                 _ => $"Completed: {gameId}"
             };
+        }
+
+        private void EnsurePlayerPanel()
+        {
+            if (playerPanelRoot != null)
+                return;
+
+            Transform host = transform;
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas != null)
+                host = canvas.transform;
+
+            GameObject panel = new GameObject("Multiplayer Players Panel", typeof(RectTransform));
+            panel.transform.SetParent(host, false);
+
+            playerPanelRoot = panel.GetComponent<RectTransform>();
+            playerPanelRoot.anchorMin = new Vector2(0f, 1f);
+            playerPanelRoot.anchorMax = new Vector2(0f, 1f);
+            playerPanelRoot.pivot = new Vector2(0f, 1f);
+            playerPanelRoot.anchoredPosition = new Vector2(24f, -118f);
+            playerPanelRoot.sizeDelta = new Vector2(280f, 132f);
+
+            Image panelBackground = panel.AddComponent<Image>();
+            panelBackground.color = new Color(0.02f, 0.05f, 0.06f, 0.72f);
+
+            VerticalLayoutGroup layout = panel.AddComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(14, 14, 10, 12);
+            layout.spacing = 7f;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+
+            CreateText(
+                "Title",
+                panel.transform,
+                "Players",
+                17f,
+                FontStyles.Bold,
+                new Color(0.86f, 0.97f, 1f, 1f),
+                TextAlignmentOptions.Left);
+
+            GameObject list = new GameObject("Rows", typeof(RectTransform));
+            list.transform.SetParent(panel.transform, false);
+            playerListRoot = list.GetComponent<RectTransform>();
+
+            VerticalLayoutGroup listLayout = list.AddComponent<VerticalLayoutGroup>();
+            listLayout.spacing = 4f;
+            listLayout.childControlWidth = true;
+            listLayout.childControlHeight = true;
+            listLayout.childForceExpandWidth = true;
+            listLayout.childForceExpandHeight = false;
+
+            RefreshPlayerPanel(force: true);
+        }
+
+        private void RefreshPlayerPanel(bool force = false)
+        {
+            EnsurePlayerPanel();
+
+            NetworkRunner runner = ResolveRunner();
+            if (runner == null || !runner.IsRunning)
+            {
+                SetPlayerPanelVisible(false);
+                return;
+            }
+
+            SetPlayerPanelVisible(true);
+
+            var displayNames = new List<string>();
+            foreach (PlayerRef player in FusionCoSessionRunners.EnumeratePlayers(runner))
+            {
+                string displayName = ResolvePlayerDisplayName(runner, player);
+                if (player == runner.LocalPlayer)
+                    displayName += "  (You)";
+
+                displayNames.Add(displayName);
+            }
+
+            if (displayNames.Count == 0)
+                displayNames.Add("Waiting for players...");
+
+            string panelHash = string.Join("|", displayNames);
+            if (!force && panelHash == lastPlayerPanelHash)
+                return;
+
+            lastPlayerPanelHash = panelHash;
+            EnsurePlayerRows(displayNames.Count);
+
+            for (int i = 0; i < playerRows.Count; i++)
+            {
+                bool isActive = i < displayNames.Count;
+                playerRows[i].transform.parent.gameObject.SetActive(isActive);
+                if (isActive)
+                    playerRows[i].text = displayNames[i];
+            }
+        }
+
+        private void EnsurePlayerRows(int count)
+        {
+            while (playerRows.Count < count)
+            {
+                int rowIndex = playerRows.Count;
+                GameObject row = new GameObject($"Player Row {rowIndex + 1}", typeof(RectTransform));
+                row.transform.SetParent(playerListRoot, false);
+
+                Image rowBackground = row.AddComponent<Image>();
+                rowBackground.color = rowIndex == 0
+                    ? new Color(0.13f, 0.55f, 0.48f, 0.52f)
+                    : new Color(1f, 1f, 1f, 0.08f);
+
+                HorizontalLayoutGroup rowLayout = row.AddComponent<HorizontalLayoutGroup>();
+                rowLayout.padding = new RectOffset(8, 8, 4, 4);
+                rowLayout.childControlWidth = true;
+                rowLayout.childControlHeight = true;
+                rowLayout.childForceExpandWidth = true;
+                rowLayout.childForceExpandHeight = false;
+
+                TextMeshProUGUI label = CreateText(
+                    "Name",
+                    row.transform,
+                    "",
+                    15f,
+                    FontStyles.Normal,
+                    Color.white,
+                    TextAlignmentOptions.Left);
+                playerRows.Add(label);
+            }
+        }
+
+        private static TextMeshProUGUI CreateText(
+            string name,
+            Transform parent,
+            string value,
+            float fontSize,
+            FontStyles style,
+            Color color,
+            TextAlignmentOptions alignment)
+        {
+            GameObject textObject = new GameObject(name, typeof(RectTransform));
+            textObject.transform.SetParent(parent, false);
+
+            TextMeshProUGUI label = textObject.AddComponent<TextMeshProUGUI>();
+            label.text = value;
+            label.fontSize = fontSize;
+            label.fontStyle = style;
+            label.color = color;
+            label.alignment = alignment;
+            label.raycastTarget = false;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
+            return label;
+        }
+
+        private static NetworkRunner ResolveRunner()
+        {
+            foreach (NetworkRunner runner in NetworkRunner.Instances)
+            {
+                if (runner != null && runner.IsRunning && runner.ProvideInput)
+                    return runner;
+            }
+
+            foreach (NetworkRunner runner in NetworkRunner.Instances)
+            {
+                if (runner != null && runner.IsRunning)
+                    return runner;
+            }
+
+            return null;
+        }
+
+        private static string ResolvePlayerDisplayName(NetworkRunner runner, PlayerRef player)
+        {
+            NetworkObject playerObject = runner.GetPlayerObject(player);
+            if (playerObject != null && playerObject.TryGetComponent(out PlayerNameSync nameSync))
+            {
+                string syncedName = nameSync.PlayerName.ToString();
+                if (!string.IsNullOrWhiteSpace(syncedName))
+                    return syncedName;
+            }
+
+            return $"Player {player.PlayerId}";
+        }
+
+        private void SetPlayerPanelVisible(bool isVisible)
+        {
+            if (playerPanelRoot != null && playerPanelRoot.gameObject.activeSelf != isVisible)
+                playerPanelRoot.gameObject.SetActive(isVisible);
         }
     }
 }
