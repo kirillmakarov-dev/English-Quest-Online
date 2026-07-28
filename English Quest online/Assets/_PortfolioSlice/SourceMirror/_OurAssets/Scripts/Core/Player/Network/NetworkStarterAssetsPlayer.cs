@@ -14,11 +14,18 @@ public sealed class NetworkStarterAssetsPlayer : NetworkBehaviour
 {
     [Networked] private Vector3 NetworkPosition { get; set; }
     [Networked] private Quaternion NetworkRotation { get; set; }
+    [Networked] private Vector3 NetworkVelocity { get; set; }
     [Networked] private float NetworkAnimationSpeed { get; set; }
     [Networked] private float NetworkMotionSpeed { get; set; }
     [Networked] private NetworkBool NetworkGrounded { get; set; }
     [Networked] private NetworkBool NetworkJumping { get; set; }
     [Networked] private NetworkBool NetworkFreeFalling { get; set; }
+
+    [Header("Remote Visual Smoothing")]
+    [SerializeField] private float _remotePositionSharpness = 18f;
+    [SerializeField] private float _remoteRotationSharpness = 20f;
+    [SerializeField] private float _remotePredictionTime = 0.08f;
+    [SerializeField] private float _remoteSnapDistance = 3f;
 
     private static readonly int SpeedId = Animator.StringToHash("Speed");
     private static readonly int MotionSpeedId = Animator.StringToHash("MotionSpeed");
@@ -36,8 +43,11 @@ public sealed class NetworkStarterAssetsPlayer : NetworkBehaviour
     private UnityBehaviour _playerInput;
     private Transform _cameraTarget;
     private CinemachineCamera[] _playerVirtualCameras;
+    private Vector3 _lastCapturedPosition;
     private bool _lastOwnsPlayer;
     private bool _lastOwnsLocalView;
+    private bool _hasCapturedState;
+    private bool _hasRemoteVisualState;
 
     public override void Spawned()
     {
@@ -77,7 +87,7 @@ public sealed class NetworkStarterAssetsPlayer : NetworkBehaviour
         if (_characterController != null && _characterController.enabled)
             _characterController.enabled = false;
 
-        transform.SetPositionAndRotation(NetworkPosition, NetworkRotation);
+        ApplyRemoteTransform();
         ApplyRemoteAnimation();
     }
 
@@ -175,8 +185,12 @@ public sealed class NetworkStarterAssetsPlayer : NetworkBehaviour
 
     private void CaptureState()
     {
+        Vector3 currentPosition = transform.position;
         NetworkPosition = transform.position;
         NetworkRotation = transform.rotation;
+        NetworkVelocity = CalculateNetworkVelocity(currentPosition);
+        _lastCapturedPosition = currentPosition;
+        _hasCapturedState = true;
 
         if (_animator == null)
             return;
@@ -186,6 +200,38 @@ public sealed class NetworkStarterAssetsPlayer : NetworkBehaviour
         NetworkGrounded = _animator.GetBool(GroundedId);
         NetworkJumping = _animator.GetBool(JumpId);
         NetworkFreeFalling = _animator.GetBool(FreeFallId);
+    }
+
+    private Vector3 CalculateNetworkVelocity(Vector3 currentPosition)
+    {
+        if (!_hasCapturedState || Runner == null)
+            return Vector3.zero;
+
+        float deltaTime = Runner.DeltaTime;
+        if (deltaTime <= 0f)
+            return Vector3.zero;
+
+        return (currentPosition - _lastCapturedPosition) / deltaTime;
+    }
+
+    private void ApplyRemoteTransform()
+    {
+        Vector3 predictedPosition = NetworkPosition + NetworkVelocity * _remotePredictionTime;
+
+        if (!_hasRemoteVisualState
+            || Vector3.Distance(transform.position, predictedPosition) > _remoteSnapDistance)
+        {
+            transform.SetPositionAndRotation(predictedPosition, NetworkRotation);
+            _hasRemoteVisualState = true;
+            return;
+        }
+
+        float positionBlend = 1f - Mathf.Exp(-_remotePositionSharpness * Time.deltaTime);
+        float rotationBlend = 1f - Mathf.Exp(-_remoteRotationSharpness * Time.deltaTime);
+
+        transform.SetPositionAndRotation(
+            Vector3.Lerp(transform.position, predictedPosition, positionBlend),
+            Quaternion.Slerp(transform.rotation, NetworkRotation, rotationBlend));
     }
 
     private void ApplyRemoteAnimation()
