@@ -25,6 +25,21 @@ That makes the project useful in two ways:
 - a portfolio-ready technical slice;
 - a safe foundation for future expansion into a larger educational experience.
 
+## My role
+
+This prototype is a good representation of how I work as a gameplay and systems-focused Unity developer.
+
+My contribution in this slice covers:
+
+- gameplay architecture and system integration;
+- quest flow structure and prerequisite gating;
+- mini-game runtime integration and lifecycle unification;
+- Photon Fusion multiplayer slice setup and player ownership flow;
+- scene-authored UI pipeline and prefab materialization tooling;
+- validation/editor tooling to keep the slice safer to extend.
+
+This is not just a content sample. It is a systems sample built to show decision-making, integration work, and maintainable structure.
+
 ## MVP scope
 
 The current MVP is intentionally narrow:
@@ -48,6 +63,18 @@ The prototype presents one short lesson chain:
 
 Quest lines are authored as data, so unlock order is not hardcoded into the scene. Each line can declare a prerequisite, which keeps the educational flow explicit and reviewable.
 
+## What problems this prototype solves
+
+This slice exists to solve a few real production-style problems in a small, reviewable form:
+
+- quest progression stays data-driven instead of collapsing into hardcoded scene logic;
+- mini-games plug into one shared progression pipeline instead of each inventing their own completion rules;
+- UI stays editable in the hierarchy instead of being rebuilt invisibly at runtime;
+- multiplayer adds shared presence without destabilizing solo-first lesson progression;
+- scene/runtime validation reduces the chance of broken inspector wiring as the slice grows.
+
+That is the part I most wanted to make visible: not only what the player sees, but also what becomes easier to maintain because of the structure behind it.
+
 ## What this project demonstrates technically
 
 - data-driven quest lines with ScriptableObjects;
@@ -61,6 +88,25 @@ Quest lines are authored as data, so unlock order is not hardcoded into the scen
 - player spawning, authority separation, and per-instance camera ownership;
 - optional multiplayer presence that does not break solo-first quest progression;
 - editor tooling for validation, scene rebuilds, HUD prefab materialization, and content checks.
+
+## Key engineering decisions
+
+These are the decisions that shape the slice more than any individual feature:
+
+- **Solo-first quest ownership**  
+  Each player progresses independently. That keeps the educational flow deterministic, easier to test, and easier to explain.
+
+- **Multiplayer as an additive layer**  
+  Photon Fusion is here to prove shared world presence, ownership, spawning, and authority separation. It supports the core lesson loop instead of redefining it.
+
+- **Scene-authored UI over runtime-generated structure**  
+  Important HUD and dialogue structure lives in the scene, where it can be tuned visually. Runtime code binds state, but does not secretly rebuild the interface.
+
+- **Shared lifecycle contract for mini-games**  
+  The mini-games do different things, but they open, lock the player, report completion, and return control through the same integration path.
+
+- **Service resolution only at the right boundary**  
+  The Service Locator exists to support decoupled runtime contracts, not to become the default dependency path for the whole project.
 
 ## Production context
 
