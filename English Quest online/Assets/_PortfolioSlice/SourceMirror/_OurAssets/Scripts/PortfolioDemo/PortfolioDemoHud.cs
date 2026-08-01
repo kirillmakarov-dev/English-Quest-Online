@@ -1,5 +1,6 @@
 using EnglishQuest.QuestSystem;
 using Fusion;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -32,6 +33,15 @@ namespace EnglishQuest.PortfolioDemo
         private TextMeshProUGUI playerPanelTitleText;
         private TextMeshProUGUI playerPanelSupportText;
         private RectTransform completionPanelRoot;
+        private TextMeshProUGUI completionEyebrowText;
+        private TextMeshProUGUI completionTitleText;
+        private TextMeshProUGUI completionSupportText;
+        private TextMeshProUGUI completionFooterText;
+        private RectTransform transitionOverlayRoot;
+        private CanvasGroup transitionOverlayCanvasGroup;
+        private TextMeshProUGUI transitionOverlayEyebrowText;
+        private TextMeshProUGUI transitionOverlayTitleText;
+        private TextMeshProUGUI transitionOverlayBodyText;
         private float nextPlayerPanelRefreshTime;
         private string lastPlayerPanelHash = "";
         private string lastBriefingHash = "";
@@ -47,6 +57,9 @@ namespace EnglishQuest.PortfolioDemo
         private IPlayerLockSystem completionLockSystem;
         private bool completionInteractionOwned;
         private PortfolioOptionalCoopStudyCircle optionalCoopStudyCircle;
+        private Coroutine completionPanelRoutine;
+        private Coroutine transitionOverlayRoutine;
+        private PortfolioGameFlowState lastAppliedState = (PortfolioGameFlowState)(-1);
 
         private readonly struct PlayerPanelEntry
         {
@@ -71,6 +84,7 @@ namespace EnglishQuest.PortfolioDemo
             EnsureDemoBriefingPanel();
             EnsurePlayerPanel();
             EnsureCompletionPanel();
+            EnsureTransitionOverlay();
             EnsureDebugOverlay();
             EnsureOptionalCoopStudyCircle();
             CacheOpenWorldHudRoots();
@@ -125,6 +139,12 @@ namespace EnglishQuest.PortfolioDemo
                 questService.OnLevelCompleted -= HandleLevelCompleted;
 
             ReleaseCompletionInteraction();
+
+            if (completionPanelRoutine != null)
+                StopCoroutine(completionPanelRoutine);
+
+            if (transitionOverlayRoutine != null)
+                StopCoroutine(transitionOverlayRoutine);
         }
 
         public void SetInteractionPrompt(string message)
@@ -504,7 +524,7 @@ namespace EnglishQuest.PortfolioDemo
             completionPanelRoot.anchorMax = new Vector2(0.5f, 0.5f);
             completionPanelRoot.pivot = new Vector2(0.5f, 0.5f);
             completionPanelRoot.anchoredPosition = Vector2.zero;
-            completionPanelRoot.sizeDelta = new Vector2(900f, 420f);
+            completionPanelRoot.sizeDelta = new Vector2(960f, 500f);
 
             Image background = panel.AddComponent<Image>();
             background.color = new Color(0.02f, 0.05f, 0.07f, 0.96f);
@@ -524,25 +544,55 @@ namespace EnglishQuest.PortfolioDemo
             layout.childForceExpandHeight = false;
             layout.childForceExpandWidth = true;
 
-            CreateText(
+            completionEyebrowText = CreateText(
+                "Eyebrow",
+                panel.transform,
+                "PORTFOLIO DEMO COMPLETE",
+                14f,
+                FontStyles.Bold,
+                new Color(0.98f, 0.82f, 0.36f, 1f),
+                TextAlignmentOptions.Center);
+
+            completionTitleText = CreateText(
                 "Title",
                 panel.transform,
-                "Level Complete",
+                "English Quest MVP Finished",
                 34f,
                 FontStyles.Bold,
-                new Color(1f, 0.84f, 0.36f, 1f),
+                new Color(0.98f, 0.99f, 1f, 1f),
+                TextAlignmentOptions.Center,
+                wrap: true);
+
+            completionSupportText = CreateText(
+                "Support",
+                panel.transform,
+                "",
+                18f,
+                FontStyles.Normal,
+                new Color(0.56f, 0.95f, 0.82f, 1f),
                 TextAlignmentOptions.Center);
 
             completionBodyText = CreateText(
                 "Body",
                 panel.transform,
                 "",
-                22f,
+                21f,
                 FontStyles.Normal,
                 Color.white,
                 TextAlignmentOptions.Center,
                 wrap: true);
             completionBodyText.lineSpacing = 8f;
+
+            completionFooterText = CreateText(
+                "Footer",
+                panel.transform,
+                "",
+                15f,
+                FontStyles.Italic,
+                new Color(0.79f, 0.88f, 0.93f, 0.95f),
+                TextAlignmentOptions.Center,
+                wrap: true);
+            completionFooterText.lineSpacing = 5f;
 
             GameObject buttons = new("Buttons", typeof(RectTransform), typeof(HorizontalLayoutGroup));
             buttons.transform.SetParent(panel.transform, false);
@@ -557,10 +607,93 @@ namespace EnglishQuest.PortfolioDemo
 
             replayButton = CreateActionButton(buttons.transform, "Replay From Start", ReplayFromStart);
             closeCompletionButton = CreateActionButton(buttons.transform, "Close", HideCompletionPanel);
+            replayButton.GetComponent<RectTransform>().sizeDelta = new Vector2(300f, 72f);
+            closeCompletionButton.GetComponent<RectTransform>().sizeDelta = new Vector2(250f, 72f);
             PortfolioThemeResources.ApplyPrimaryButtonStyle(replayButton);
             PortfolioThemeResources.ApplySecondaryButtonStyle(closeCompletionButton);
 
             panel.SetActive(false);
+        }
+
+        private void EnsureTransitionOverlay()
+        {
+            if (transitionOverlayRoot != null)
+                return;
+
+            Transform host = transform;
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas != null)
+                host = canvas.transform;
+
+            GameObject overlay = new GameObject("MiniGame Transition Overlay", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
+            overlay.transform.SetParent(host, false);
+
+            transitionOverlayRoot = overlay.GetComponent<RectTransform>();
+            transitionOverlayRoot.StretchToParent();
+            transitionOverlayRoot.SetAsLastSibling();
+
+            Image background = overlay.GetComponent<Image>();
+            background.color = new Color(0.03f, 0.06f, 0.08f, 0.86f);
+            background.raycastTarget = false;
+
+            transitionOverlayCanvasGroup = overlay.GetComponent<CanvasGroup>();
+            transitionOverlayCanvasGroup.alpha = 0f;
+            transitionOverlayCanvasGroup.interactable = false;
+            transitionOverlayCanvasGroup.blocksRaycasts = false;
+
+            GameObject card = new GameObject("Transition Card", typeof(RectTransform), typeof(Image));
+            card.transform.SetParent(overlay.transform, false);
+
+            RectTransform cardRect = card.GetComponent<RectTransform>();
+            cardRect.anchorMin = new Vector2(0.5f, 0.5f);
+            cardRect.anchorMax = new Vector2(0.5f, 0.5f);
+            cardRect.pivot = new Vector2(0.5f, 0.5f);
+            cardRect.sizeDelta = new Vector2(760f, 240f);
+
+            Image cardImage = card.GetComponent<Image>();
+            cardImage.color = new Color(0.02f, 0.05f, 0.07f, 0.94f);
+            PortfolioThemeResources.ApplyPanelSprite(cardImage, PortfolioThemeResources.DialogueCardSprite);
+
+            VerticalLayoutGroup layout = card.AddComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(32, 32, 30, 30);
+            layout.spacing = 10f;
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+
+            transitionOverlayEyebrowText = CreateText(
+                "Eyebrow",
+                card.transform,
+                "LESSON TRANSITION",
+                14f,
+                FontStyles.Bold,
+                new Color(0.98f, 0.82f, 0.36f, 1f),
+                TextAlignmentOptions.Center);
+
+            transitionOverlayTitleText = CreateText(
+                "Title",
+                card.transform,
+                "Preparing Lesson",
+                34f,
+                FontStyles.Bold,
+                new Color(0.98f, 0.99f, 1f, 1f),
+                TextAlignmentOptions.Center,
+                wrap: true);
+
+            transitionOverlayBodyText = CreateText(
+                "Body",
+                card.transform,
+                "",
+                18f,
+                FontStyles.Normal,
+                new Color(0.78f, 0.9f, 0.95f, 0.98f),
+                TextAlignmentOptions.Center,
+                wrap: true);
+            transitionOverlayBodyText.lineSpacing = 6f;
+
+            overlay.SetActive(false);
         }
 
         private void RefreshPlayerPanel(bool force = false)
@@ -921,6 +1054,12 @@ namespace EnglishQuest.PortfolioDemo
 
         private void ApplyState(PortfolioGameFlowState state)
         {
+            if (state != lastAppliedState)
+            {
+                HandleStateTransition(lastAppliedState, state);
+                lastAppliedState = state;
+            }
+
             bool showOpenWorldHud = state != PortfolioGameFlowState.Dialogue &&
                                     state != PortfolioGameFlowState.MiniGame &&
                                     (state != PortfolioGameFlowState.LevelCompleted || completionDismissed);
@@ -963,6 +1102,16 @@ namespace EnglishQuest.PortfolioDemo
             return flowCoordinator != null
                 ? flowCoordinator.CurrentState
                 : PortfolioGameFlowState.OpenWorld;
+        }
+
+        private void HandleStateTransition(PortfolioGameFlowState previousState, PortfolioGameFlowState currentState)
+        {
+            if (currentState == PortfolioGameFlowState.MiniGame &&
+                previousState != PortfolioGameFlowState.MiniGame)
+            {
+                (string title, string body) = BuildMiniGameTransitionContent();
+                ShowTransitionOverlay(title, body);
+            }
         }
 
         private void ResolveQuestService()
@@ -1014,16 +1163,17 @@ namespace EnglishQuest.PortfolioDemo
 
         private void UpdateCompletionPanelContent()
         {
-            if (completionBodyText == null)
+            if (completionBodyText == null || completionTitleText == null || completionSupportText == null || completionFooterText == null)
                 return;
 
+            completionTitleText.text = "English Quest MVP Finished";
+            completionSupportText.text = "Three connected learning beats are now fully playable in one clean open-world slice.";
             completionBodyText.text =
-                "You finished the full English Quest MVP slice.\n\n" +
                 "Teacher Ada introduced the first letters.\n" +
                 "Coach Ben reinforced vocabulary through missing letters.\n" +
-                "Guide Nora completed the flow with the final lesson.\n\n" +
-                "This prototype remains solo-first: one player can complete the whole chain alone, and any second player is optional.\n\n" +
-                "You can now restart the prototype from the beginning.";
+                "Guide Nora completed the flow with the final lesson.";
+            completionFooterText.text =
+                "This is a portfolio prototype: solo completion remains valid, multiplayer stays optional, and you can restart from the beginning to replay the full flow.";
         }
 
         private void ReplayFromStart()
@@ -1056,32 +1206,118 @@ namespace EnglishQuest.PortfolioDemo
             if (completionPanelRoot == null)
                 return;
 
+            if (completionPanelRoutine != null)
+                StopCoroutine(completionPanelRoutine);
+
             if (isVisible)
             {
                 completionPanelRoot.SetAsLastSibling();
                 completionPanelRoot.gameObject.SetActive(true);
-
-                if (completionCanvasGroup != null)
-                {
-                    completionCanvasGroup.alpha = 1f;
-                    completionCanvasGroup.interactable = true;
-                    completionCanvasGroup.blocksRaycasts = true;
-                }
-
                 AcquireCompletionInteraction();
+                completionPanelRoutine = StartCoroutine(FadeCanvasGroup(completionCanvasGroup, 1f, 0.24f, deactivateOnComplete: false));
                 return;
             }
 
             ReleaseCompletionInteraction();
+            completionPanelRoutine = StartCoroutine(FadeCanvasGroup(completionCanvasGroup, 0f, 0.18f, deactivateOnComplete: true, completionPanelRoot.gameObject));
+        }
 
-            if (completionCanvasGroup != null)
+        private IEnumerator FadeCanvasGroup(CanvasGroup canvasGroup, float targetAlpha, float duration, bool deactivateOnComplete, GameObject deactivateTarget = null)
+        {
+            if (canvasGroup == null)
             {
-                completionCanvasGroup.alpha = 0f;
-                completionCanvasGroup.interactable = false;
-                completionCanvasGroup.blocksRaycasts = false;
+                if (deactivateOnComplete && deactivateTarget != null)
+                    deactivateTarget.SetActive(false);
+                yield break;
             }
 
-            completionPanelRoot.gameObject.SetActive(false);
+            float startAlpha = canvasGroup.alpha;
+            float elapsed = 0f;
+
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = duration <= 0f ? 1f : Mathf.Clamp01(elapsed / duration);
+                canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
+                yield return null;
+            }
+
+            canvasGroup.alpha = targetAlpha;
+            bool isVisible = targetAlpha > 0.99f;
+            canvasGroup.interactable = isVisible;
+            canvasGroup.blocksRaycasts = isVisible;
+
+            if (deactivateOnComplete && deactivateTarget != null)
+                deactivateTarget.SetActive(false);
+
+            if (canvasGroup == completionCanvasGroup)
+                completionPanelRoutine = null;
+        }
+
+        private (string Title, string Body) BuildMiniGameTransitionContent()
+        {
+            QuestInfo quest = FindFirstQuest(QuestState.IN_PROGRESS, QuestState.CAN_FINISH) ??
+                             FindFirstQuest(QuestState.CAN_START) ??
+                             FindFirstQuest(QuestState.REQUIREMENTS_NOT_MET);
+
+            string npcName = GetNpcDisplayName(quest);
+            string headline = GetQuestHeadline(quest);
+            string objective = BuildQuestObjectiveSummary(quest);
+
+            return ($"{npcName} - {headline}", objective);
+        }
+
+        private void ShowTransitionOverlay(string title, string body)
+        {
+            EnsureTransitionOverlay();
+            if (transitionOverlayRoot == null || transitionOverlayCanvasGroup == null)
+                return;
+
+            transitionOverlayTitleText.text = title;
+            transitionOverlayBodyText.text = body;
+
+            if (transitionOverlayRoutine != null)
+                StopCoroutine(transitionOverlayRoutine);
+
+            transitionOverlayRoutine = StartCoroutine(PlayTransitionOverlayRoutine());
+        }
+
+        private IEnumerator PlayTransitionOverlayRoutine()
+        {
+            transitionOverlayRoot.gameObject.SetActive(true);
+            transitionOverlayRoot.SetAsLastSibling();
+            transitionOverlayCanvasGroup.alpha = 0f;
+
+            float inDuration = 0.16f;
+            float holdDuration = 0.42f;
+            float outDuration = 0.2f;
+
+            yield return LerpCanvasAlpha(transitionOverlayCanvasGroup, 0f, 1f, inDuration);
+            yield return new WaitForSecondsRealtime(holdDuration);
+            yield return LerpCanvasAlpha(transitionOverlayCanvasGroup, 1f, 0f, outDuration);
+
+            transitionOverlayRoot.gameObject.SetActive(false);
+            transitionOverlayRoutine = null;
+        }
+
+        private static IEnumerator LerpCanvasAlpha(CanvasGroup canvasGroup, float start, float target, float duration)
+        {
+            if (canvasGroup == null)
+                yield break;
+
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = duration <= 0f ? 1f : Mathf.Clamp01(elapsed / duration);
+                canvasGroup.alpha = Mathf.Lerp(start, target, t);
+                yield return null;
+            }
+
+            canvasGroup.alpha = target;
         }
 
         private void AcquireCompletionInteraction()
@@ -1176,24 +1412,53 @@ namespace EnglishQuest.PortfolioDemo
         [SerializeField] private DialogueManager dialogueManager;
 
         private int styledChoiceCount = -1;
+        private CanvasGroup dialogueCanvasGroup;
+        private RectTransform dialoguePanelRect;
+        private Vector2 dialoguePanelBasePosition;
+        private TextMeshProUGUI subtitleText;
+        private Coroutine panelRevealRoutine;
+        private bool wasDialogueVisible;
+        private string lastSpeakerName = string.Empty;
 
         private void Awake()
         {
             if (dialogueManager == null)
                 dialogueManager = FindFirstObjectByType<DialogueManager>(FindObjectsInactive.Include);
 
+            EnsureDialoguePresentation();
             ApplyDialogueTheme();
+            SyncDialogueVisibilityInstant();
         }
 
         private void OnEnable()
         {
+            EnsureDialoguePresentation();
             ApplyDialogueTheme();
+            SyncDialogueVisibilityInstant();
         }
 
         private void Update()
         {
+            bool isVisible = dialogueManager != null &&
+                             dialogueManager.dialoguePanel != null &&
+                             dialogueManager.dialoguePanel.activeInHierarchy;
+
+            if (isVisible != wasDialogueVisible)
+            {
+                wasDialogueVisible = isVisible;
+                if (isVisible)
+                    StartDialogueReveal();
+            }
+
             if (dialogueManager == null || dialogueManager.choiceContainer == null)
                 return;
+
+            string currentSpeakerName = dialogueManager.nameText != null ? dialogueManager.nameText.text : string.Empty;
+            if (currentSpeakerName != lastSpeakerName)
+            {
+                lastSpeakerName = currentSpeakerName;
+                UpdateSubtitle(currentSpeakerName);
+            }
 
             int currentCount = dialogueManager.choiceContainer.childCount;
             if (currentCount == styledChoiceCount)
@@ -1214,7 +1479,129 @@ namespace EnglishQuest.PortfolioDemo
                 dialogueManager.nameText,
                 dialogueManager.dialogueText);
 
+            if (dialogueManager.nameText != null)
+            {
+                dialogueManager.nameText.fontSize = 28f;
+                dialogueManager.nameText.alignment = TextAlignmentOptions.TopLeft;
+            }
+
+            if (dialogueManager.dialogueText != null)
+            {
+                dialogueManager.dialogueText.fontSize = 24f;
+                dialogueManager.dialogueText.lineSpacing = 6f;
+                dialogueManager.dialogueText.color = new Color(0.96f, 0.98f, 1f, 1f);
+                dialogueManager.dialogueText.rectTransform.anchoredPosition = new Vector2(40f, -118f);
+                dialogueManager.dialogueText.rectTransform.sizeDelta = new Vector2(920f, 116f);
+            }
+
+            UpdateSubtitle(dialogueManager.nameText != null ? dialogueManager.nameText.text : string.Empty);
+
             StyleChoiceButtons();
+        }
+
+        private void EnsureDialoguePresentation()
+        {
+            if (dialogueManager == null || dialogueManager.dialoguePanel == null)
+                return;
+
+            dialoguePanelRect = dialogueManager.dialoguePanel.GetComponent<RectTransform>();
+            if (dialoguePanelRect == null)
+                return;
+
+            dialoguePanelBasePosition = dialoguePanelRect.anchoredPosition;
+
+            dialogueCanvasGroup = dialogueManager.dialoguePanel.GetComponent<CanvasGroup>();
+            if (dialogueCanvasGroup == null)
+                dialogueCanvasGroup = dialogueManager.dialoguePanel.AddComponent<CanvasGroup>();
+
+            if (subtitleText == null)
+            {
+                GameObject subtitleObject = new GameObject("Portfolio Subtitle", typeof(RectTransform));
+                subtitleObject.transform.SetParent(dialogueManager.dialoguePanel.transform, false);
+                subtitleText = subtitleObject.AddComponent<TextMeshProUGUI>();
+                subtitleText.fontSize = 14f;
+                subtitleText.fontStyle = FontStyles.Bold;
+                subtitleText.color = new Color(0.56f, 0.95f, 0.82f, 0.98f);
+                subtitleText.alignment = TextAlignmentOptions.TopLeft;
+                subtitleText.raycastTarget = false;
+                subtitleText.textWrappingMode = TextWrappingModes.NoWrap;
+
+                RectTransform rect = subtitleText.rectTransform;
+                rect.anchorMin = new Vector2(0f, 1f);
+                rect.anchorMax = new Vector2(0f, 1f);
+                rect.pivot = new Vector2(0f, 1f);
+                rect.anchoredPosition = new Vector2(40f, -66f);
+                rect.sizeDelta = new Vector2(900f, 24f);
+            }
+        }
+
+        private void UpdateSubtitle(string speakerName)
+        {
+            if (subtitleText == null)
+                return;
+
+            subtitleText.text = ResolveDialogueSubtitle(speakerName);
+        }
+
+        private static string ResolveDialogueSubtitle(string speakerName)
+        {
+            return speakerName switch
+            {
+                "Teacher Ada" => "Lesson 1 - Learn the first two letters",
+                "Coach Ben" => "Lesson 2 - Fill the missing letter and grow vocabulary",
+                "Guide Nora" => "Lesson 3 - Build the final answer with confidence",
+                _ when !string.IsNullOrWhiteSpace(speakerName) => "Active lesson briefing",
+                _ => "Quest dialogue"
+            };
+        }
+
+        private void SyncDialogueVisibilityInstant()
+        {
+            bool isVisible = dialogueManager != null &&
+                             dialogueManager.dialoguePanel != null &&
+                             dialogueManager.dialoguePanel.activeInHierarchy;
+
+            wasDialogueVisible = isVisible;
+
+            if (dialogueCanvasGroup != null)
+                dialogueCanvasGroup.alpha = isVisible ? 1f : 0f;
+
+            if (dialoguePanelRect != null)
+                dialoguePanelRect.anchoredPosition = dialoguePanelBasePosition;
+        }
+
+        private void StartDialogueReveal()
+        {
+            if (dialogueCanvasGroup == null || dialoguePanelRect == null)
+                return;
+
+            if (panelRevealRoutine != null)
+                StopCoroutine(panelRevealRoutine);
+
+            panelRevealRoutine = StartCoroutine(PlayDialogueRevealRoutine());
+        }
+
+        private IEnumerator PlayDialogueRevealRoutine()
+        {
+            float duration = 0.22f;
+            float elapsed = 0f;
+            Vector2 startPosition = dialoguePanelBasePosition + new Vector2(0f, -18f);
+            dialoguePanelRect.anchoredPosition = startPosition;
+            dialogueCanvasGroup.alpha = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float eased = 1f - Mathf.Pow(1f - t, 3f);
+                dialogueCanvasGroup.alpha = Mathf.Lerp(0f, 1f, eased);
+                dialoguePanelRect.anchoredPosition = Vector2.Lerp(startPosition, dialoguePanelBasePosition, eased);
+                yield return null;
+            }
+
+            dialogueCanvasGroup.alpha = 1f;
+            dialoguePanelRect.anchoredPosition = dialoguePanelBasePosition;
+            panelRevealRoutine = null;
         }
 
         private void StyleChoiceButtons()
