@@ -59,29 +59,46 @@ These objects form the composition root of the slice. Player objects, NPCs, mini
 ## Runtime flow at a glance
 
 ```mermaid
-flowchart LR
+flowchart TD
+    Registry["QuestLineRegistrySO"] --> Registrar["QuestLineRegistrar"]
+    Registrar --> Quests["QuestManager / IQuestService"]
+    Registrar --> Availability["Quest availability and prerequisite resolution"]
+
     Input["Player Input"] --> Interaction["PlayerInteraction"]
     Interaction --> Interactable["IInteractable"]
     Interactable --> NPC["NpcQuestGiver"]
     Interactable --> Station["MiniGameWorldInteractable"]
 
     NPC --> Dialogue["DialogueManager / IDialogueService"]
-    NPC --> Quests["QuestManager / IQuestService"]
-
-    Registry["QuestLineRegistrySO"] --> Registrar["QuestLineRegistrar"]
-    Registrar --> Quests
+    NPC --> Quests
+    Quests --> Indicator["QuestNpcIndicator"]
 
     Station --> LaunchHost["MiniGameWorldLaunchHost"]
     LaunchHost --> Config["QuestMiniGameConfigSO"]
     Config --> Bootstrap["Mini-game Bootstrap"]
-    Bootstrap --> ObjectiveBus["IQuestObjectiveEventBus"]
+    Bootstrap --> ObjectiveBus["QuestObjectiveEventBus"]
     ObjectiveBus --> Director["QuestObjectiveDirector"]
     Director --> Quests
 
+    Dialogue --> Lock["IPlayerLockSystem"]
+    Bootstrap --> Lock
+    Lock --> Flow["PortfolioGameFlowCoordinator"]
+    Flow --> HUD["PortfolioDemoHud"]
+    Dialogue --> HUD
+    Quests --> HUD
+
+    Locator["UnityServiceLocator"] --> Dialogue
+    Locator --> Quests
+    Locator --> Lock
+    Locator --> ObjectiveBus
+
     Profile["NetworkSessionProfile"] --> Network["GameNetworkManager"]
     Network --> Fusion["Photon Fusion Shared Mode"]
-    Fusion --> Spawn["PlayerSpawnCoordinator"]
-    Spawn --> Player["Networked Local Player"]
+    Fusion --> SceneManager["EnglishQuestNetworkSceneManager"]
+    SceneManager --> Spawn["PlayerSpawnCoordinator"]
+    Spawn --> Ready["LocalPlayerReadiness"]
+    Ready --> Player["Networked Local Player"]
+    Player --> HUD
 ```
 
 ## Service boundary
@@ -106,6 +123,12 @@ Typical runtime contracts resolved through the locator:
 Important rule:
 
 The Service Locator is not the default answer for every dependency. Explicit scene references and ScriptableObject references are still preferred whenever the dependency is part of authored setup.
+
+In practice, the slice uses three dependency styles together:
+
+- ScriptableObject authoring for lessons, quests, and mini-game content
+- explicit scene references for authored UI and composition-root objects
+- service resolution for runtime contracts that must remain decoupled across scene and network contexts
 
 ## Quest architecture
 
@@ -172,6 +195,30 @@ Practical flow:
 6. closing the activity returns the player to open-world control.
 
 This avoids duplicated interaction logic for NPCs versus gameplay stations.
+
+## Flow control and player locking
+
+Core files in this area:
+
+- `Scripts/PortfolioDemo/PortfolioGameFlowCoordinator.cs`
+- `Scripts/PortfolioDemo/PortfolioDemoHud.cs`
+- player lock implementations resolved through `IPlayerLockSystem`
+
+This layer is one of the most important parts of the slice because it keeps control ownership valid across:
+
+- world movement
+- dialogue interaction
+- mini-game takeover
+- final completion state
+
+Without it, the right systems would still exist, but they would fight each other for:
+
+- movement control
+- cursor ownership
+- HUD visibility
+- completion panel priority
+
+This is why flow control is intentionally kept outside quest content and outside individual mini-games.
 
 ## Objective event model
 
@@ -257,6 +304,12 @@ For portfolio and production collaboration alike, hand-tuned UI should stay insp
 - engineers can wire logic without rebuilding visuals in code;
 - prefab outputs remain consistent with the scene source.
 
+The current presentation model is intentionally split:
+
+- the scene owns structure and visual tuning
+- prefabs store reusable outputs of that authored UI
+- runtime code binds state and behavior, but should not recreate important interface structure
+
 ## Portfolio game flow coordinator
 
 The portfolio slice uses explicit high-level flow states rather than scattered UI toggles.
@@ -275,6 +328,13 @@ The flow layer is responsible for:
 - keeping final completion flow readable;
 - preventing cursor/input conflicts between world control and UI control.
 
+It also acts as the bridge between domain progress and presentation state:
+
+- quest completion changes what the player is allowed to do next
+- dialogue can suspend movement safely
+- mini-games can temporarily take over the screen
+- level completion can present an ending state without leaving the player half-locked in gameplay
+
 ## Multiplayer architecture
 
 Core multiplayer mode:
@@ -287,6 +347,7 @@ Main files and responsibilities:
 - `EnglishQuestNetworkSceneManager` - scene/session integration
 - `PlayerSpawnCoordinator` - spawns players at authored spawn points
 - `NetworkStarterAssetsPlayer` - binds network ownership to local playable character behavior
+- `LocalPlayerReadiness` - publishes when the local player is actually ready for scene-level systems
 - `PlayerQuestStatusSync` - exposes lesson/progress state to shared HUD
 
 ### Deliberate multiplayer rule
@@ -308,6 +369,18 @@ This is not a compromise caused by missing implementation. It is the correct rul
 - remote players remain visible and collidable;
 - shared presence does not corrupt solo-first quest flow.
 
+The important architectural point is that multiplayer is not only "runner + prefab spawn".
+There is a real hand-off chain:
+
+`NetworkSessionProfile -> GameNetworkManager -> EnglishQuestNetworkSceneManager -> PlayerSpawnCoordinator -> LocalPlayerReadiness -> local player ownership -> shared HUD visibility`
+
+That hand-off is what protects the slice from common prototype failures such as:
+
+- wrong camera ownership
+- control enabling too early
+- stale local-player references
+- HUD reading the wrong instance state
+
 ## Validation and tooling layer
 
 The slice includes editor-side support so the prototype stays maintainable:
@@ -317,6 +390,13 @@ The slice includes editor-side support so the prototype stays maintainable:
 - docs menu
 - HUD materializer
 - progress/debug tools
+
+Key files:
+
+- `Scripts/Editor/PortfolioDemo/PortfolioDemoSceneBuilder.cs`
+- `Scripts/Editor/PortfolioDemo/PortfolioDemoValidationAnalyzer.cs`
+- `Scripts/Editor/PortfolioDemo/PortfolioHudPrefabMaterializer.cs`
+- `Scripts/Editor/PortfolioDemo/PortfolioDemoDocsMenu.cs`
 
 That tooling is part of the architecture, not an afterthought. The point is to make the slice easier to review, easier to reset, and safer to extend.
 

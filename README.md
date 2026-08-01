@@ -1,12 +1,18 @@
 # English Quest Online
 
-English Quest Online is a Unity portfolio slice that demonstrates how a small open-world lesson can combine quest progression, educational mini-games, scene-authored UI, and Photon Fusion multiplayer without turning into a monolithic prototype.
+English Quest Online is a small Unity portfolio project built to show how an open-world lesson, quest progression, educational mini-games, and lightweight multiplayer can work together as one clean gameplay loop.
 
-This repository is intentionally not a full game production dump. It is a focused demonstration of architecture, integration, and presentation quality extracted from a larger educational game direction. The broader production project is already moving toward real product scope, but its proprietary content, pipelines, and internal assets are not included here.
+It is intentionally small in scope. I did not want to fake a "big game" with filler content. I wanted a compact slice that still shows how I think about architecture, integration, gameplay flow, and presentation when the project needs to stay readable for the next developer.
 
 ## Why this prototype exists
 
-The goal of this project is to show how I structure gameplay systems in a readable, scalable way:
+This repository is a public-facing technical slice of a much larger educational game direction.
+
+The full production project is already moving beyond this scope, but I cannot share its proprietary content, internal pipelines, or broader implementation details publicly. So instead of hiding that behind vague language, I would rather be direct about what this repository is:
+
+it is a focused portfolio case study.
+
+The goal here was to show how I structure gameplay systems in a way that stays practical, scalable, and easy to reason about:
 
 - a player enters a world and receives lessons through NPCs;
 - each NPC owns a quest line with a clear learning purpose;
@@ -14,7 +20,7 @@ The goal of this project is to show how I structure gameplay systems in a readab
 - each completed mini-game advances the lesson chain through a shared objective pipeline;
 - two players can join the same world through Photon Fusion while keeping lesson progression stable and easy to explain.
 
-This makes the project useful as both:
+That makes the project useful in two ways:
 
 - a portfolio-ready technical slice;
 - a safe foundation for future expansion into a larger educational experience.
@@ -30,7 +36,7 @@ The current MVP is intentionally narrow:
 - individual quest progression per player;
 - scene-authored UI and prefab-backed presentation.
 
-The slice is designed to be fully completable by one player. Multiplayer exists to demonstrate network ownership, spawning, local authority, and shared world presence, not to gate the core learning flow.
+The slice is fully completable by one player. Multiplayer is here to demonstrate network ownership, spawning, local authority, and shared world presence, not to hold the core learning flow hostage.
 
 ## Learning flow
 
@@ -58,7 +64,7 @@ Quest lines are authored as data, so unlock order is not hardcoded into the scen
 
 ## Production context
 
-This repository is a small public-facing demonstration extracted from a much larger game direction.
+This repository is not meant to represent the full product.
 
 What is intentionally not shown here:
 
@@ -68,7 +74,13 @@ What is intentionally not shown here:
 - the broader live game feature set;
 - the complete commercial curriculum and progression structure.
 
-That is deliberate. The point of this repository is not volume. The point is to show how the gameplay, UI, multiplayer, and authoring systems are organized when the scope is reduced to a clean, inspectable vertical slice.
+That is deliberate. I wanted this project to be reviewable in a reasonable amount of time while still showing real engineering decisions:
+
+- where data lives;
+- how scene composition is controlled;
+- how UI is authored;
+- how multiplayer is introduced without breaking solo flow;
+- how the project stays maintainable as systems start to overlap.
 
 ## Core architecture
 
@@ -81,39 +93,66 @@ The project is built around small systems with explicit responsibilities. Runtim
 
 They do not directly reach into each other's internal UI state or hardcode cross-system dependencies.
 
+The most important thing to understand is that the slice is not only "quest + mini-game + multiplayer".
+There is also a thin control layer that keeps the whole runtime stable:
+
+- `UnityServiceLocator` resolves scene/runtime contracts without collapsing everything into singletons;
+- `PortfolioGameFlowCoordinator` keeps the project in valid states such as open world, dialogue, mini-game, and level completion;
+- `IPlayerLockSystem` centralizes input and cursor ownership when gameplay UI takes over;
+- `PortfolioDemoHud` is a presentation layer, not the owner of quest logic;
+- the Photon boot path hands off to player spawning and local readiness before gameplay starts.
+
+That control layer is what keeps the slice feeling intentional instead of stitched together.
+
 High-level runtime flow:
 
 ```mermaid
-flowchart LR
-    Input["Player Input"] --> Interaction["PlayerInteraction"]
+flowchart TD
+    Registry["QuestLineRegistrySO"] --> Registrar["QuestLineRegistrar"]
+    Registrar --> QuestService["QuestManager / IQuestService"]
+    Registrar --> Availability["Quest availability + prerequisite gating"]
+
+    Input["Player input"] --> Interaction["PlayerInteraction"]
     Interaction --> Interactable["IInteractable"]
     Interactable --> NPC["NpcQuestGiver"]
     Interactable --> Station["MiniGameWorldInteractable"]
 
-    NPC --> Dialogue["IDialogueService / DialogueManager"]
-    NPC --> QuestService["IQuestService"]
-
-    Registry["QuestLineRegistrySO"] --> Registrar["QuestLineRegistrar"]
-    Registrar --> QuestService
+    NPC --> Dialogue["DialogueManager / IDialogueService"]
+    NPC --> QuestService
+    QuestService --> Indicator["QuestNpcIndicator"]
 
     Station --> LaunchHost["MiniGameWorldLaunchHost"]
     LaunchHost --> Config["QuestMiniGameConfigSO"]
-    Config --> Bootstrap["Mini-game Bootstrap"]
-    Bootstrap --> ObjectiveBus["IQuestObjectiveEventBus"]
+    Config --> Bootstrap["Mini-game bootstrap"]
+    Bootstrap --> ObjectiveBus["QuestObjectiveEventBus"]
     ObjectiveBus --> Director["QuestObjectiveDirector"]
     Director --> QuestService
 
+    Bootstrap --> Lock["IPlayerLockSystem"]
+    Dialogue --> Lock
+    Lock --> Flow["PortfolioGameFlowCoordinator"]
+    Flow --> HUD["PortfolioDemoHud"]
+    Dialogue --> HUD
+    QuestService --> HUD
+
+    ServiceLocator["UnityServiceLocator"] --> QuestService
+    ServiceLocator --> Dialogue
+    ServiceLocator --> Lock
+
     NetworkProfile["NetworkSessionProfile"] --> Network["GameNetworkManager"]
     Network --> Fusion["Photon Fusion Shared Mode"]
-    Fusion --> Spawn["PlayerSpawnCoordinator"]
-    Spawn --> LocalPlayer["Networked Local Player"]
+    Fusion --> SceneManager["EnglishQuestNetworkSceneManager"]
+    SceneManager --> Spawn["PlayerSpawnCoordinator"]
+    Spawn --> Ready["LocalPlayerReadiness"]
+    Ready --> LocalPlayer["Networked local player"]
+    LocalPlayer --> HUD
 ```
 
 ### Main architectural principles
 
 #### 1. Scene composition stays explicit
 
-The portfolio scene is not meant to hide important dependencies behind one giant bootstrap object. The main runtime anchors are visible in the hierarchy:
+The portfolio scene is not built around one giant invisible bootstrap object. The main runtime anchors are visible in the hierarchy:
 
 - `Quest Manager`
 - `Quest Line Registrar`
@@ -147,7 +186,30 @@ The current direction of the slice is intentional:
 - visual tuning should happen in the scene or in referenced prefabs;
 - editor tooling can materialize prefab assets from the scene, but the scene remains the visual source of truth.
 
-This is especially important for portfolio work, because presentation tuning needs to remain editable by hand.
+This matters a lot in portfolio work, because presentation tuning should stay editable by hand and not disappear into runtime setup code.
+
+#### 5. Flow control is separated from content logic
+
+Quest lines define what should happen.
+Mini-games define how one learning action is played.
+The flow coordinator and player lock layer define when control can safely move between:
+
+- world navigation;
+- dialogue;
+- gameplay UI;
+- final completion state.
+
+That separation makes the project much easier to debug and extend.
+
+#### 6. Multiplayer is additive, not foundational
+
+Photon Fusion is integrated as a real system layer, but the slice is still designed to make complete sense in solo mode.
+
+That means:
+
+- multiplayer presence strengthens the prototype;
+- it does not explain or compensate for missing single-player behavior;
+- the educational quest path stays readable and testable per player.
 
 ## Multiplayer model
 
@@ -161,7 +223,7 @@ The current multiplayer slice is deliberately lightweight:
 - remote players are visible, replicated, and collide in the world;
 - quest progression remains individual per player.
 
-This is not a party-progression model yet. It is a portfolio-friendly multiplayer slice focused on:
+This is not a party-progression model yet. It is a small, intentional multiplayer slice focused on:
 
 - ownership clarity;
 - network spawning;
@@ -297,7 +359,7 @@ Out of scope for the current slice:
 
 ## Further development path
 
-The strongest next steps are not "add more content everywhere." They are about deepening the quality of the existing slice.
+The next steps are not about spraying more content across the project. They are about making the existing slice stronger, safer, and more polished.
 
 ### 1. Strengthen the authoring pipeline
 
@@ -332,7 +394,7 @@ The strongest next steps are not "add more content everywhere." They are about d
 
 ## Closing note
 
-This project is small by design, but it is not trivial by design.
+This project is small by design, but it is not meant to feel disposable.
 
 The value of the slice is that it demonstrates judgment:
 
@@ -343,4 +405,4 @@ The value of the slice is that it demonstrates judgment:
 - what to validate automatically;
 - and how to present multiplayer and quest systems in a way that remains understandable to another developer.
 
-That is the real purpose of this repository.
+That is the real purpose of this repository: not to look large, but to show solid judgment in a small, inspectable slice.
