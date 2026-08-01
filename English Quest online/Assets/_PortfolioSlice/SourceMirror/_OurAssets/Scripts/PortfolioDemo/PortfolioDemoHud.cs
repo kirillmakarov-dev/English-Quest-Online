@@ -66,6 +66,7 @@ namespace EnglishQuest.PortfolioDemo
         {
             ResolveSceneBindings();
             EnsureFlowCoordinator();
+            EnsureDialogueThemeBridge();
             EnsureHeaderPresentation();
             EnsureDemoBriefingPanel();
             EnsurePlayerPanel();
@@ -181,6 +182,18 @@ namespace EnglishQuest.PortfolioDemo
                 debugOverlay = gameObject.AddComponent<PortfolioDemoDebugOverlay>();
         }
 
+        private void EnsureDialogueThemeBridge()
+        {
+            PortfolioDialogueVisualBridge bridge = FindFirstObjectByType<PortfolioDialogueVisualBridge>(FindObjectsInactive.Include);
+            if (bridge != null)
+                return;
+
+            GameObject host = dialogueManager != null ? dialogueManager.gameObject : gameObject;
+            bridge = host.GetComponent<PortfolioDialogueVisualBridge>();
+            if (bridge == null)
+                host.AddComponent<PortfolioDialogueVisualBridge>();
+        }
+
         private void EnsureOptionalCoopStudyCircle()
         {
             if (optionalCoopStudyCircle == null)
@@ -209,6 +222,7 @@ namespace EnglishQuest.PortfolioDemo
                 Image background = card.AddComponent<Image>();
                 background.color = new Color(0.02f, 0.05f, 0.07f, 0.78f);
                 background.raycastTarget = false;
+                PortfolioThemeResources.ApplyPanelSprite(background, PortfolioThemeResources.HeaderCardSprite);
 
                 GameObject accent = new GameObject("Accent", typeof(RectTransform), typeof(Image));
                 accent.transform.SetParent(card.transform, false);
@@ -315,6 +329,7 @@ namespace EnglishQuest.PortfolioDemo
 
             Image panelBackground = panel.AddComponent<Image>();
             panelBackground.color = new Color(0.02f, 0.05f, 0.06f, 0.78f);
+            PortfolioThemeResources.ApplyPanelSprite(panelBackground, PortfolioThemeResources.PlayerCardSprite);
 
             VerticalLayoutGroup layout = panel.AddComponent<VerticalLayoutGroup>();
             layout.padding = new RectOffset(14, 14, 10, 12);
@@ -419,6 +434,7 @@ namespace EnglishQuest.PortfolioDemo
             Image panelBackground = panel.AddComponent<Image>();
             panelBackground.color = new Color(0.02f, 0.05f, 0.06f, 0.78f);
             panelBackground.raycastTarget = false;
+            PortfolioThemeResources.ApplyPanelSprite(panelBackground, PortfolioThemeResources.BriefingCardSprite);
 
             VerticalLayoutGroup layout = panel.AddComponent<VerticalLayoutGroup>();
             layout.padding = new RectOffset(16, 16, 12, 14);
@@ -492,6 +508,7 @@ namespace EnglishQuest.PortfolioDemo
 
             Image background = panel.AddComponent<Image>();
             background.color = new Color(0.02f, 0.05f, 0.07f, 0.96f);
+            PortfolioThemeResources.ApplyPanelSprite(background, PortfolioThemeResources.CompletionCardSprite);
 
             completionCanvasGroup = panel.AddComponent<CanvasGroup>();
             completionCanvasGroup.alpha = 0f;
@@ -540,6 +557,8 @@ namespace EnglishQuest.PortfolioDemo
 
             replayButton = CreateActionButton(buttons.transform, "Replay From Start", ReplayFromStart);
             closeCompletionButton = CreateActionButton(buttons.transform, "Close", HideCompletionPanel);
+            PortfolioThemeResources.ApplyPrimaryButtonStyle(replayButton);
+            PortfolioThemeResources.ApplySecondaryButtonStyle(closeCompletionButton);
 
             panel.SetActive(false);
         }
@@ -1145,6 +1164,85 @@ namespace EnglishQuest.PortfolioDemo
                 TextAlignmentOptions.Center).rectTransform.StretchToParent();
 
             return button;
+        }
+    }
+
+    /// <summary>
+    /// Runtime styling bridge for the portfolio dialogue UI.
+    /// Keeps the portfolio presentation layer outside of DialogueManager core logic.
+    /// </summary>
+    public sealed class PortfolioDialogueVisualBridge : MonoBehaviour
+    {
+        [SerializeField] private DialogueManager dialogueManager;
+
+        private int styledChoiceCount = -1;
+
+        private void Awake()
+        {
+            if (dialogueManager == null)
+                dialogueManager = FindFirstObjectByType<DialogueManager>(FindObjectsInactive.Include);
+
+            ApplyDialogueTheme();
+        }
+
+        private void OnEnable()
+        {
+            ApplyDialogueTheme();
+        }
+
+        private void Update()
+        {
+            if (dialogueManager == null || dialogueManager.choiceContainer == null)
+                return;
+
+            int currentCount = dialogueManager.choiceContainer.childCount;
+            if (currentCount == styledChoiceCount)
+                return;
+
+            styledChoiceCount = currentCount;
+            StyleChoiceButtons();
+        }
+
+        private void ApplyDialogueTheme()
+        {
+            if (dialogueManager == null || dialogueManager.dialoguePanel == null)
+                return;
+
+            Image panelImage = dialogueManager.dialoguePanel.GetComponent<Image>();
+            PortfolioThemeResources.ApplyDialogueSurface(
+                panelImage,
+                dialogueManager.nameText,
+                dialogueManager.dialogueText);
+
+            StyleChoiceButtons();
+        }
+
+        private void StyleChoiceButtons()
+        {
+            if (dialogueManager == null || dialogueManager.choiceContainer == null)
+                return;
+
+            int total = dialogueManager.choiceContainer.childCount;
+            for (int i = 0; i < total; i++)
+            {
+                Transform child = dialogueManager.choiceContainer.GetChild(i);
+                if (child == null)
+                    continue;
+
+                Button button = child.GetComponent<Button>();
+                if (button == null)
+                    continue;
+
+                bool isPrimary = i == 0 && total == 1;
+                if (isPrimary)
+                    PortfolioThemeResources.ApplyPrimaryButtonStyle(button);
+                else
+                    PortfolioThemeResources.ApplySecondaryButtonStyle(button);
+
+                TextMeshProUGUI label = child.GetComponentInChildren<TextMeshProUGUI>(true);
+                if (label != null)
+                    label.alignment = TextAlignmentOptions.Center;
+            }
         }
     }
 }

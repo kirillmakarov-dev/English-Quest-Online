@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using EnglishQuest.PortfolioDemo;
 using Puzzle.Gameplay.Features.WordReveal;
 using TMPro;
 using UnityEngine;
@@ -21,12 +23,14 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
         [SerializeField] private Canvas _screenCanvas;
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private int _openSortingOrder = 100;
+        [SerializeField] private float _fadeDuration = 0.18f;
 
         /// <summary>Raised when the player presses the close button.</summary>
         public event Action CloseRequested;
 
         private readonly List<SlotView> _slotViews = new List<SlotView>();
         private readonly List<TileView> _tileViews = new List<TileView>();
+        private Coroutine _fadeRoutine;
 
         private void Awake()
         {
@@ -34,12 +38,13 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
                 _screenCanvas = GetComponentInParent<Canvas>(true);
 
             ApplyOpenState(gameObject.activeInHierarchy);
+            ApplyTheme();
 
             if (_closeButton != null)
                 _closeButton.onClick.AddListener(() => CloseRequested?.Invoke());
         }
 
-        private void OnEnable() => ApplyOpenState(true);
+        private void OnEnable() => EnsureCanvasReady(true);
 
         private void OnDisable() => ApplyOpenState(false);
 
@@ -87,14 +92,13 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             EnsureHierarchyActive();
             EnsureCanvasReady(true);
             gameObject.SetActive(true);
-            ApplyOpenState(true);
+            StartFade(isOpen: true);
         }
 
         public void Close()
         {
             EnsureCanvasReady(false);
-            ApplyOpenState(false);
-            gameObject.SetActive(false);
+            StartFade(isOpen: false);
         }
 
         private void ApplyOpenState(bool isOpen)
@@ -105,6 +109,61 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             _canvasGroup.alpha = isOpen ? 1f : 0f;
             _canvasGroup.interactable = isOpen;
             _canvasGroup.blocksRaycasts = isOpen;
+        }
+
+        private void ApplyTheme()
+        {
+            PortfolioThemeResources.ApplyPanelSprite(GetComponent<Image>(), PortfolioThemeResources.DialogueCardSprite);
+            PortfolioThemeResources.ApplySecondaryButtonStyle(_closeButton);
+
+            if (_promptLabel != null)
+            {
+                _promptLabel.color = new Color(1f, 0.96f, 0.88f, 1f);
+                _promptLabel.fontStyle = FontStyles.Bold;
+            }
+        }
+
+        private void StartFade(bool isOpen)
+        {
+            if (_canvasGroup == null || _fadeDuration <= 0f)
+            {
+                ApplyOpenState(isOpen);
+                if (!isOpen)
+                    gameObject.SetActive(false);
+                return;
+            }
+
+            if (_fadeRoutine != null)
+                StopCoroutine(_fadeRoutine);
+
+            _fadeRoutine = StartCoroutine(FadeRoutine(isOpen));
+        }
+
+        private IEnumerator FadeRoutine(bool isOpen)
+        {
+            float start = _canvasGroup.alpha;
+            float target = isOpen ? 1f : 0f;
+            float elapsed = 0f;
+
+            _canvasGroup.interactable = false;
+            _canvasGroup.blocksRaycasts = false;
+
+            while (elapsed < _fadeDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / _fadeDuration);
+                _canvasGroup.alpha = Mathf.Lerp(start, target, t);
+                yield return null;
+            }
+
+            _canvasGroup.alpha = target;
+            _canvasGroup.interactable = isOpen;
+            _canvasGroup.blocksRaycasts = isOpen;
+
+            if (!isOpen)
+                gameObject.SetActive(false);
+
+            _fadeRoutine = null;
         }
 
         private void EnsureHierarchyActive()

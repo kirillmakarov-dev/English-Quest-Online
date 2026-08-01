@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using EnglishQuest.PortfolioDemo;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +19,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
         [SerializeField] private Button closeButton;
         [SerializeField] private Button restartButton;
         [SerializeField] private int openSortingOrder = 100;
+        [SerializeField] private float fadeDuration = 0.18f;
 
         private readonly List<LetterItemView> letterViews = new List<LetterItemView>();
         private readonly List<WordSlotView> wordSlotViews = new List<WordSlotView>();
@@ -25,6 +28,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
         private ILetterConnectionViewFactory viewFactory;
         private ConnectionLineView temporaryLine;
         private Canvas parentCanvas;
+        private Coroutine fadeRoutine;
 
         public RectTransform RootPanel => rootPanel != null ? rootPanel : transform as RectTransform;
         public RectTransform LettersContainer => lettersContainer;
@@ -46,6 +50,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             parentCanvas = GetComponentInParent<Canvas>();
             EnsureCanvasReady(gameObject.activeInHierarchy);
             ApplyCanvasGroupState(gameObject.activeInHierarchy);
+            ApplyTheme();
 
             if (closeButton != null)
             {
@@ -65,7 +70,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
 
         private void OnEnable()
         {
-            ApplyCanvasGroupState(true);
+            EnsureCanvasReady(true);
         }
 
         private void OnDisable()
@@ -91,7 +96,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             EnsureHierarchyActive();
             EnsureCanvasReady(true);
             gameObject.SetActive(true);
-            ApplyCanvasGroupState(true);
+            StartFade(isOpen: true);
 
             if (completePanel != null)
             {
@@ -103,13 +108,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
         {
             CancelTemporaryLine();
             EnsureCanvasReady(false);
-
-            if (rootCanvasGroup != null)
-            {
-                ApplyCanvasGroupState(false);
-            }
-
-            gameObject.SetActive(false);
+            StartFade(isOpen: false);
         }
 
         public void Show()
@@ -348,6 +347,61 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             rootCanvasGroup.alpha = isOpen ? 1f : 0f;
             rootCanvasGroup.interactable = isOpen;
             rootCanvasGroup.blocksRaycasts = isOpen;
+        }
+
+        private void ApplyTheme()
+        {
+            if (rootPanel != null)
+                PortfolioThemeResources.ApplyPanelSprite(rootPanel.GetComponent<Image>(), PortfolioThemeResources.DialogueCardSprite);
+
+            if (completePanel != null)
+                PortfolioThemeResources.ApplyPanelSprite(completePanel.GetComponent<Image>(), PortfolioThemeResources.CompletionCardSprite);
+
+            PortfolioThemeResources.ApplySecondaryButtonStyle(closeButton);
+            PortfolioThemeResources.ApplyPrimaryButtonStyle(restartButton);
+        }
+
+        private void StartFade(bool isOpen)
+        {
+            if (rootCanvasGroup == null || fadeDuration <= 0f)
+            {
+                ApplyCanvasGroupState(isOpen);
+                if (!isOpen)
+                    gameObject.SetActive(false);
+                return;
+            }
+
+            if (fadeRoutine != null)
+                StopCoroutine(fadeRoutine);
+
+            fadeRoutine = StartCoroutine(FadeRoutine(isOpen));
+        }
+
+        private IEnumerator FadeRoutine(bool isOpen)
+        {
+            float start = rootCanvasGroup.alpha;
+            float target = isOpen ? 1f : 0f;
+            float elapsed = 0f;
+
+            rootCanvasGroup.interactable = false;
+            rootCanvasGroup.blocksRaycasts = false;
+
+            while (elapsed < fadeDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / fadeDuration);
+                rootCanvasGroup.alpha = Mathf.Lerp(start, target, t);
+                yield return null;
+            }
+
+            rootCanvasGroup.alpha = target;
+            rootCanvasGroup.interactable = isOpen;
+            rootCanvasGroup.blocksRaycasts = isOpen;
+
+            if (!isOpen)
+                gameObject.SetActive(false);
+
+            fadeRoutine = null;
         }
 
         private void EnsureHierarchyActive()
