@@ -20,9 +20,13 @@ namespace EnglishQuest.PortfolioDemo
         private readonly List<TextMeshProUGUI> playerRows = new();
         private readonly List<Image> playerRowBackgrounds = new();
 
+        private RectTransform headerCardRoot;
         private RectTransform demoBriefingRoot;
         private TextMeshProUGUI demoBriefingTitleText;
         private TextMeshProUGUI demoBriefingBodyText;
+        private TextMeshProUGUI titleText;
+        private TextMeshProUGUI controlsText;
+        private TextMeshProUGUI headerEyebrowText;
         private RectTransform playerPanelRoot;
         private RectTransform playerListRoot;
         private TextMeshProUGUI playerPanelTitleText;
@@ -62,6 +66,7 @@ namespace EnglishQuest.PortfolioDemo
         {
             ResolveSceneBindings();
             EnsureFlowCoordinator();
+            EnsureHeaderPresentation();
             EnsureDemoBriefingPanel();
             EnsurePlayerPanel();
             EnsureCompletionPanel();
@@ -182,6 +187,112 @@ namespace EnglishQuest.PortfolioDemo
                 optionalCoopStudyCircle = PortfolioOptionalCoopStudyCircle.FindOrCreateRuntimeInstance();
         }
 
+        private void EnsureHeaderPresentation()
+        {
+            ResolveSceneBindings();
+            if (titleText == null || controlsText == null)
+                return;
+
+            Transform host = titleText.transform.parent;
+            if (headerCardRoot == null)
+            {
+                GameObject card = new GameObject("Header Presentation Card", typeof(RectTransform));
+                card.transform.SetParent(host, false);
+
+                headerCardRoot = card.GetComponent<RectTransform>();
+                headerCardRoot.anchorMin = new Vector2(0f, 1f);
+                headerCardRoot.anchorMax = new Vector2(0f, 1f);
+                headerCardRoot.pivot = new Vector2(0f, 1f);
+                headerCardRoot.anchoredPosition = new Vector2(16f, -16f);
+                headerCardRoot.sizeDelta = new Vector2(860f, 136f);
+
+                Image background = card.AddComponent<Image>();
+                background.color = new Color(0.02f, 0.05f, 0.07f, 0.78f);
+                background.raycastTarget = false;
+
+                GameObject accent = new GameObject("Accent", typeof(RectTransform), typeof(Image));
+                accent.transform.SetParent(card.transform, false);
+
+                RectTransform accentRect = accent.GetComponent<RectTransform>();
+                accentRect.anchorMin = new Vector2(0f, 1f);
+                accentRect.anchorMax = new Vector2(1f, 1f);
+                accentRect.pivot = new Vector2(0.5f, 1f);
+                accentRect.anchoredPosition = Vector2.zero;
+                accentRect.sizeDelta = new Vector2(0f, 5f);
+
+                Image accentImage = accent.GetComponent<Image>();
+                accentImage.color = new Color(0.98f, 0.82f, 0.34f, 0.95f);
+                accentImage.raycastTarget = false;
+
+                headerEyebrowText = CreateText(
+                    "Eyebrow",
+                    card.transform,
+                    "PORTFOLIO MVP SLICE",
+                    12f,
+                    FontStyles.Bold,
+                    new Color(0.94f, 0.8f, 0.35f, 1f),
+                    TextAlignmentOptions.TopLeft);
+                headerEyebrowText.rectTransform.anchorMin = new Vector2(0f, 1f);
+                headerEyebrowText.rectTransform.anchorMax = new Vector2(0f, 1f);
+                headerEyebrowText.rectTransform.pivot = new Vector2(0f, 1f);
+                headerEyebrowText.rectTransform.anchoredPosition = new Vector2(24f, -14f);
+                headerEyebrowText.rectTransform.sizeDelta = new Vector2(260f, 24f);
+            }
+
+            if (titleText.transform.parent != headerCardRoot)
+                titleText.transform.SetParent(headerCardRoot, false);
+
+            if (controlsText.transform.parent != headerCardRoot)
+                controlsText.transform.SetParent(headerCardRoot, false);
+
+            if (statusText != null && statusText.transform.parent != headerCardRoot)
+                statusText.transform.SetParent(headerCardRoot, false);
+
+            titleText.text = "ENGLISH QUEST ONLINE\nOpen-World Quest Portfolio Slice";
+            titleText.fontSize = 28f;
+            titleText.fontStyle = FontStyles.Bold;
+            titleText.color = new Color(0.97f, 0.98f, 1f, 1f);
+            titleText.alignment = TextAlignmentOptions.TopLeft;
+            titleText.textWrappingMode = TextWrappingModes.Normal;
+            titleText.rectTransform.anchorMin = new Vector2(0f, 1f);
+            titleText.rectTransform.anchorMax = new Vector2(0f, 1f);
+            titleText.rectTransform.pivot = new Vector2(0f, 1f);
+            titleText.rectTransform.anchoredPosition = new Vector2(24f, -34f);
+            titleText.rectTransform.sizeDelta = new Vector2(760f, 62f);
+
+            controlsText.text =
+                "3 learning stages · Optional 2 Players via Photon Fusion\nWASD Move · Mouse Look · Space Jump · E Interact";
+            controlsText.fontSize = 16f;
+            controlsText.fontStyle = FontStyles.Normal;
+            controlsText.color = new Color(0.8f, 0.91f, 0.95f, 0.96f);
+            controlsText.alignment = TextAlignmentOptions.TopLeft;
+            controlsText.textWrappingMode = TextWrappingModes.Normal;
+            controlsText.rectTransform.anchorMin = new Vector2(0f, 1f);
+            controlsText.rectTransform.anchorMax = new Vector2(0f, 1f);
+            controlsText.rectTransform.pivot = new Vector2(0f, 1f);
+            controlsText.rectTransform.anchoredPosition = new Vector2(24f, -92f);
+            controlsText.rectTransform.sizeDelta = new Vector2(780f, 38f);
+
+            if (statusText != null)
+            {
+                statusText.fontSize = 14f;
+                statusText.fontStyle = FontStyles.Italic;
+                statusText.color = new Color(0.56f, 0.95f, 0.82f, 0.95f);
+                statusText.alignment = TextAlignmentOptions.TopLeft;
+                statusText.textWrappingMode = TextWrappingModes.Normal;
+                statusText.rectTransform.anchorMin = new Vector2(0f, 1f);
+                statusText.rectTransform.anchorMax = new Vector2(0f, 1f);
+                statusText.rectTransform.pivot = new Vector2(0f, 1f);
+                statusText.rectTransform.anchoredPosition = new Vector2(24f, -118f);
+                statusText.rectTransform.sizeDelta = new Vector2(760f, 24f);
+            }
+
+            headerCardRoot.SetSiblingIndex(0);
+            titleText.transform.SetAsLastSibling();
+            controlsText.transform.SetAsLastSibling();
+            statusText?.transform.SetAsLastSibling();
+        }
+
         private void EnsurePlayerPanel()
         {
             if (playerPanelRoot != null)
@@ -199,11 +310,11 @@ namespace EnglishQuest.PortfolioDemo
             playerPanelRoot.anchorMin = new Vector2(0f, 1f);
             playerPanelRoot.anchorMax = new Vector2(0f, 1f);
             playerPanelRoot.pivot = new Vector2(0f, 1f);
-            playerPanelRoot.anchoredPosition = new Vector2(24f, -118f);
-            playerPanelRoot.sizeDelta = new Vector2(320f, 156f);
+            playerPanelRoot.anchoredPosition = new Vector2(24f, -164f);
+            playerPanelRoot.sizeDelta = new Vector2(340f, 172f);
 
             Image panelBackground = panel.AddComponent<Image>();
-            panelBackground.color = new Color(0.02f, 0.05f, 0.06f, 0.72f);
+            panelBackground.color = new Color(0.02f, 0.05f, 0.06f, 0.78f);
 
             VerticalLayoutGroup layout = panel.AddComponent<VerticalLayoutGroup>();
             layout.padding = new RectOffset(14, 14, 10, 12);
@@ -259,6 +370,9 @@ namespace EnglishQuest.PortfolioDemo
             if (statusText != null)
                 AddRoot(statusText.gameObject);
 
+            if (headerCardRoot != null)
+                AddRoot(headerCardRoot.gameObject);
+
             if (demoBriefingRoot != null)
                 AddRoot(demoBriefingRoot.gameObject);
 
@@ -300,7 +414,7 @@ namespace EnglishQuest.PortfolioDemo
             demoBriefingRoot.anchorMax = new Vector2(1f, 1f);
             demoBriefingRoot.pivot = new Vector2(1f, 1f);
             demoBriefingRoot.anchoredPosition = new Vector2(-24f, -24f);
-            demoBriefingRoot.sizeDelta = new Vector2(470f, 178f);
+            demoBriefingRoot.sizeDelta = new Vector2(500f, 220f);
 
             Image panelBackground = panel.AddComponent<Image>();
             panelBackground.color = new Color(0.02f, 0.05f, 0.06f, 0.78f);
@@ -315,12 +429,21 @@ namespace EnglishQuest.PortfolioDemo
             layout.childForceExpandHeight = false;
 
             CreateText(
+                "Section Label",
+                panel.transform,
+                "MISSION GUIDE",
+                12f,
+                FontStyles.Bold,
+                new Color(0.96f, 0.84f, 0.38f, 1f),
+                TextAlignmentOptions.Left);
+
+            CreateText(
                 "Title",
                 panel.transform,
                 "English Quest Portfolio Demo",
                 18f,
                 FontStyles.Bold,
-                new Color(0.96f, 0.84f, 0.38f, 1f),
+                new Color(0.97f, 0.98f, 1f, 1f),
                 TextAlignmentOptions.Left);
 
             demoBriefingTitleText = CreateText(
@@ -337,7 +460,7 @@ namespace EnglishQuest.PortfolioDemo
                 "Body",
                 panel.transform,
                 "Open-world English quest slice. Talk to the active NPC, complete the unlocked lesson, and move through the chain from letters to words to a full sentence.\nSolo play is fully supported. A second player is optional and only adds shared presence.",
-                15f,
+                14f,
                 FontStyles.Normal,
                 Color.white,
                 TextAlignmentOptions.Left,
@@ -835,6 +958,20 @@ namespace EnglishQuest.PortfolioDemo
 
         private void ResolveSceneBindings()
         {
+            if (titleText == null)
+            {
+                Transform titleTransform = FindChildByName(transform, "Title");
+                if (titleTransform != null)
+                    titleText = titleTransform.GetComponent<TextMeshProUGUI>();
+            }
+
+            if (controlsText == null)
+            {
+                Transform controlsTransform = FindChildByName(transform, "Controls");
+                if (controlsTransform != null)
+                    controlsText = controlsTransform.GetComponent<TextMeshProUGUI>();
+            }
+
             if (interactionPrompt == null)
             {
                 Transform promptTransform = FindChildByName(transform, "Interaction Prompt");

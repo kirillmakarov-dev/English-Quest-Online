@@ -34,14 +34,14 @@ namespace EnglishQuest.PortfolioDemo
             {
                 return new PortfolioDemoBriefingContent(
                     "Connecting",
-                    "Starting the session and preparing the local player. Solo play is fully supported once the player spawns, and any second player remains optional.");
+                    "Preparing the local player and starting the shared session.\nSolo play is fully supported once the player spawns, and any second player remains optional.");
             }
 
             if (isLevelCompleted)
             {
                 return new PortfolioDemoBriefingContent(
                     "Prototype Complete",
-                    "You finished the full learning slice. Solo completion remains fully valid in this MVP, and any second player stays optional.\nUse the completion panel to replay from the beginning or close it and walk the space again.");
+                    "You finished the full learning slice.\nSolo completion remains fully valid in this MVP, and any second player stays optional.\nUse the completion panel to replay from the beginning or close it and walk the space again.");
             }
 
             string headline = SanitizeHeadline(questHeadline);
@@ -55,8 +55,8 @@ namespace EnglishQuest.PortfolioDemo
                     $"Current: {headline}",
                     AppendOptionalCoopLine(
                     hasOtherPlayers
-                        ? $"{objective}\nIf another player is in the room, they can keep progressing independently on their own lesson state."
-                        : $"{objective}\nSolo play is active. A second player is optional and does not block this lesson.",
+                        ? $"Current objective: {objective}\nIf another player is in the room, they can keep progressing independently on their own lesson state."
+                        : $"Current objective: {objective}\nSolo play is active. A second player is optional and does not block this lesson.",
                     optionalCoopLine)),
 
                 QuestState.CAN_FINISH => new PortfolioDemoBriefingContent(
@@ -69,8 +69,8 @@ namespace EnglishQuest.PortfolioDemo
                     $"Next: {headline}",
                     AppendOptionalCoopLine(
                     hasOtherPlayers
-                        ? $"Talk to {npcName} to begin.\nGoal: {objective}\nOther players can stay on their own lesson state while you start this one."
-                        : $"Talk to {npcName} to begin.\nGoal: {objective}\nSolo play is fully supported for this lesson.",
+                        ? $"Talk to {npcName} to begin.\nLearning goal: {objective}\nOther players can stay on their own lesson state while you start this one."
+                        : $"Talk to {npcName} to begin.\nLearning goal: {objective}\nSolo play is fully supported for this lesson.",
                     optionalCoopLine)),
 
                 QuestState.REQUIREMENTS_NOT_MET => new PortfolioDemoBriefingContent(

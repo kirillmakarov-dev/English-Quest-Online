@@ -204,7 +204,7 @@ namespace EnglishQuest.Tests.UI
         {
             string text = PortfolioPlayerStatusFormatter.GetPlayerPanelSupportText(connectedPlayerCount: 1);
 
-            Assert.AreEqual("You can complete the entire lesson chain alone in this session.", text);
+            Assert.AreEqual("This prototype is fully completable solo. A second player only adds shared presence.", text);
         }
 
         [Test]
@@ -212,7 +212,7 @@ namespace EnglishQuest.Tests.UI
         {
             string text = PortfolioPlayerStatusFormatter.GetPlayerPanelSupportText(connectedPlayerCount: 2);
 
-            Assert.AreEqual("Each player advances their own lesson chain. No mission requires a partner.", text);
+            Assert.AreEqual("Each player keeps a separate quest state. Presence is shared, but lesson progression is not.", text);
         }
     }
 }

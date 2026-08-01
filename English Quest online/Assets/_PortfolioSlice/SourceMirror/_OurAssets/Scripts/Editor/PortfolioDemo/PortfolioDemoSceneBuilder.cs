@@ -312,7 +312,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
             TextMeshProUGUI title = CreateUiText(
                 canvas.transform,
                 "Title",
-                "ENGLISH QUEST MVP - OPEN WORLD + QUEST CHAINS + OPTIONAL MULTIPLAYER",
+                "ENGLISH QUEST ONLINE\nOpen-World Quest Portfolio Slice",
                 28f,
                 TextAlignmentOptions.TopLeft,
                 new Vector2(24f, -20f),
@@ -323,11 +323,11 @@ namespace EnglishQuest.Editor.PortfolioDemo
             TextMeshProUGUI help = CreateUiText(
                 canvas.transform,
                 "Controls",
-                "WASD - Move    Mouse - Look    Space - Jump    E - Interact    Optional 2 Players via Photon Fusion",
-                20f,
+                "3 learning stages · Optional 2 Players via Photon Fusion\nWASD Move · Mouse Look · Space Jump · E Interact",
+                16f,
                 TextAlignmentOptions.TopLeft,
                 new Vector2(26f, -68f),
-                new Vector2(820f, 45f),
+                new Vector2(820f, 55f),
                 new Vector2(0f, 1f),
                 new Vector2(0f, 1f));
 

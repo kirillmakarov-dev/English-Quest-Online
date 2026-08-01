@@ -12,8 +12,8 @@ namespace EnglishQuest.PortfolioDemo
         public const string SoloSessionSuffix = "Solo session active";
         public const string SharedSessionSuffix = "Shared session active";
         public const string PreparingLocalPlayerStatus = "Preparing the local player";
-        public const string SoloPlayerPanelTitle = "Player - Solo Progress";
-        public const string SharedPlayerPanelTitle = "Players - Independent Progress";
+        public const string SoloPlayerPanelTitle = "Lesson Progress";
+        public const string SharedPlayerPanelTitle = "Players - Separate Quest States";
 
         public static string BuildActiveLessonStatus(
             PortfolioGameFlowState flowState,
@@ -86,8 +86,8 @@ namespace EnglishQuest.PortfolioDemo
         public static string GetPlayerPanelSupportText(int connectedPlayerCount)
         {
             return connectedPlayerCount > 1
-                ? "Each player advances their own lesson chain. No mission requires a partner."
-                : "You can complete the entire lesson chain alone in this session.";
+                ? "Each player keeps a separate quest state. Presence is shared, but lesson progression is not."
+                : "This prototype is fully completable solo. A second player only adds shared presence.";
         }
 
         private static string BuildOpenWorldLessonStatus(

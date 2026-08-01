@@ -57,7 +57,7 @@ namespace EnglishQuest.Tests.UI
 
             Assert.AreEqual("Next: Lesson 1 - Letters", content.Title);
             StringAssert.Contains("Talk to Teacher Ada to begin.", content.Body);
-            StringAssert.Contains("Goal: Match A and B with the correct words.", content.Body);
+            StringAssert.Contains("Learning goal: Match A and B with the correct words.", content.Body);
             StringAssert.Contains("Solo play is fully supported", content.Body);
             StringAssert.Contains("Optional co-op: stand together in the Study Circle.", content.Body);
         }
@@ -91,7 +91,7 @@ namespace EnglishQuest.Tests.UI
                 objectiveSummary: "Fill the missing letter to complete each word.");
 
             Assert.AreEqual("Current: Lesson 2 - Missing Letter", content.Title);
-            StringAssert.Contains("Fill the missing letter", content.Body);
+            StringAssert.Contains("Current objective: Fill the missing letter", content.Body);
             StringAssert.Contains("Solo play is active", content.Body);
             StringAssert.Contains("does not block this lesson", content.Body);
         }
@@ -109,7 +109,7 @@ namespace EnglishQuest.Tests.UI
                 objectiveSummary: "Fill the missing letter to complete each word.");
 
             Assert.AreEqual("Current: Lesson 2 - Missing Letter", content.Title);
-            StringAssert.Contains("Fill the missing letter", content.Body);
+            StringAssert.Contains("Current objective: Fill the missing letter", content.Body);
             StringAssert.Contains("they can keep progressing independently", content.Body);
         }
 
