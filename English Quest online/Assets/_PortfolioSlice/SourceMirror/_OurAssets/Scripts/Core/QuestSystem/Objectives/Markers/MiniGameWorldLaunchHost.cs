@@ -1,5 +1,6 @@
 using Puzzle.Gameplay.MiniGames.DuolingoWordGame;
 using Puzzle.Gameplay.MiniGames.LetterConnection;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EnglishQuest.QuestSystem
@@ -18,6 +19,31 @@ namespace EnglishQuest.QuestSystem
     [SerializeField] private QuestMiniGameConfigSO fallbackConfig;
 
     public QuestMiniGameConfigSO FallbackConfig => fallbackConfig;
+
+    public bool TryValidateSetup(out string error)
+    {
+      error = null;
+
+      if (wordGameBootstrap == null && lineMatchBootstrap == null && fallbackConfig == null)
+      {
+        error = $"Mini-game launch host '{name}' has no bootstrap references and no fallback config.";
+        return false;
+      }
+
+      if (fallbackConfig != null && !fallbackConfig.TryValidateAuthoring(out error))
+        return false;
+
+      return true;
+    }
+
+    public void CollectConfigurationIssues(List<string> errors, List<string> warnings)
+    {
+      errors ??= new List<string>();
+      warnings ??= new List<string>();
+
+      if (!TryValidateSetup(out string error))
+        errors.Add(error);
+    }
 
     private void Awake()
     {

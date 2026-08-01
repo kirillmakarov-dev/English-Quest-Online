@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class PlayerSpawnPoint : MonoBehaviour
 {
@@ -11,6 +12,38 @@ public class PlayerSpawnPoint : MonoBehaviour
     [SerializeField] private string _travelNodeId;
 
     public string TravelNodeId => _travelNodeId;
+
+    public static void CollectSceneIssues(Scene scene, List<string> errors, List<string> warnings)
+    {
+        errors ??= new List<string>();
+        warnings ??= new List<string>();
+
+        List<PlayerSpawnPoint> scenePoints = GetPointsInScene(scene);
+        if (scenePoints.Count == 0)
+        {
+            errors.Add($"Scene '{scene.name}' has no PlayerSpawnPoint components.");
+            return;
+        }
+
+        if (scenePoints.Count < 2)
+            warnings.Add($"Scene '{scene.name}' only has {scenePoints.Count} PlayerSpawnPoint. Two-player spawn coverage may be limited.");
+
+        var duplicateNames = scenePoints
+            .Where(point => point != null && !string.IsNullOrWhiteSpace(point.gameObject.name))
+            .GroupBy(point => point.gameObject.name)
+            .Where(group => group.Count() > 1);
+
+        foreach (var duplicate in duplicateNames)
+            warnings.Add($"Scene '{scene.name}' has duplicate PlayerSpawnPoint name '{duplicate.Key}'. Player ordering may become ambiguous.");
+
+        var duplicateTravelIds = scenePoints
+            .Where(point => point != null && !string.IsNullOrWhiteSpace(point._travelNodeId))
+            .GroupBy(point => point._travelNodeId)
+            .Where(group => group.Count() > 1);
+
+        foreach (var duplicate in duplicateTravelIds)
+            warnings.Add($"Scene '{scene.name}' has duplicate travel spawn id '{duplicate.Key}'.");
+    }
 
     private void Awake()
     {

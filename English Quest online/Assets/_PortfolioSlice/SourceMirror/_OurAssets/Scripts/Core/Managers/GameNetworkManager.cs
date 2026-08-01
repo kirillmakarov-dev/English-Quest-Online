@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityServiceLocator;
 using EnglishQuest.UI.Loading;
+using System.Collections.Generic;
 
 public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSessionService
 {
@@ -20,6 +21,30 @@ public class GameNetworkManager : Singleton<GameNetworkManager>, INetworkSession
 
     private const int DefaultOpenWorldMaxPlayers = 2;
     private const string DefaultOpenWorldSceneName = "OpenWorld";
+
+    public void CollectConfigurationIssues(List<string> errors, List<string> warnings)
+    {
+        errors ??= new List<string>();
+        warnings ??= new List<string>();
+
+        if (_sceneManager == null && GetComponent<EnglishQuestNetworkSceneManager>() == null)
+            errors.Add("GameNetworkManager is missing EnglishQuestNetworkSceneManager.");
+
+        if (_openWorldProfile == null)
+            errors.Add("GameNetworkManager is missing its open-world NetworkSessionProfile binding.");
+
+        if (!_sessionBridgePrefab.IsValid)
+            warnings.Add("GameNetworkManager has no session bridge prefab assigned.");
+
+        if (GetComponent<PlayerSpawnCoordinator>() == null)
+            errors.Add("GameNetworkManager host is missing PlayerSpawnCoordinator.");
+
+        if (GetComponent<NetworkLifecycleHandler>() == null)
+            errors.Add("GameNetworkManager host is missing NetworkLifecycleHandler.");
+
+        if (GetComponent<NetworkAuthorityService>() == null)
+            errors.Add("GameNetworkManager host is missing NetworkAuthorityService.");
+    }
 
     protected override void Awake()
     {

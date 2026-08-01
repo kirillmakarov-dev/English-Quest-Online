@@ -3,6 +3,7 @@ using System.IO;
 using EnglishQuest.QuestSystem;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace EnglishQuest.Editor.PortfolioDemo
 {
@@ -35,6 +36,27 @@ namespace EnglishQuest.Editor.PortfolioDemo
                 warnings);
 
             EditorUtility.DisplayDialog("Validate Portfolio Demo", summary, "OK");
+        }
+
+        [MenuItem("Tools/English Quest/Validate Loaded Scene Runtime Bindings")]
+        public static void ValidateLoadedSceneRuntimeBindings()
+        {
+            Scene activeScene = SceneManager.GetActiveScene();
+
+            var errors = new List<string>();
+            var warnings = new List<string>();
+            var infos = new List<string>();
+
+            PortfolioDemoValidationAnalyzer.ValidateLoadedSceneRuntimeBindings(activeScene, errors, warnings, infos);
+            EmitMessages(errors, warnings, infos);
+
+            string summary = PortfolioDemoValidationSummaryFormatter.BuildSummary(
+                errors.Count,
+                warningCount: warnings.Count,
+                infoCount: infos.Count,
+                warnings);
+
+            EditorUtility.DisplayDialog("Validate Loaded Scene Runtime Bindings", summary, "OK");
         }
 
         private static void ValidateSceneFile(List<string> errors, List<string> warnings, List<string> infos)

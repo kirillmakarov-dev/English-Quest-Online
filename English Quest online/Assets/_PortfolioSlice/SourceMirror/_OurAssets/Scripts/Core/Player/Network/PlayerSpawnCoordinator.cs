@@ -7,6 +7,7 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityServiceLocator;
+using System.Linq;
 
 /// <summary>
 /// DDOL player spawn authority. Scene-local <see cref="PlayerSceneContext"/> supplies prefab and camera;
@@ -32,6 +33,24 @@ public class PlayerSpawnCoordinator : MonoBehaviour
     private int _sceneLoadDoneVersion;
 
     public static int SceneLoadDoneVersion => s_instance != null ? s_instance._sceneLoadDoneVersion : 0;
+
+    public void CollectConfigurationIssues(List<string> errors, List<string> warnings)
+    {
+        errors ??= new List<string>();
+        warnings ??= new List<string>();
+
+        if (!_defaultPlayerPrefab.IsValid)
+            errors.Add("PlayerSpawnCoordinator is missing its default player prefab binding.");
+
+        if (GetComponent<GameNetworkManager>() == null)
+            warnings.Add("PlayerSpawnCoordinator is not hosted next to GameNetworkManager.");
+
+        if (FindObjectsByType<PlayerSpawnPoint>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                .Count(point => point != null && point.gameObject.scene == gameObject.scene) == 0)
+        {
+            warnings.Add($"Scene '{gameObject.scene.name}' has no PlayerSpawnPoint components.");
+        }
+    }
 
     private void Awake()
     {

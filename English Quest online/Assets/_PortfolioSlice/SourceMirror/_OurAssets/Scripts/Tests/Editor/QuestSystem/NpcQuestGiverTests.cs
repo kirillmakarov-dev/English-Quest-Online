@@ -122,6 +122,30 @@ namespace EnglishQuest.Tests.QuestSystem
         }
 
         [Test]
+        public void TryValidateBinding_ReturnsFalse_WhenQuestLineIsMissing()
+        {
+            bool valid = _giver.TryValidateBinding(out string error);
+
+            Assert.IsFalse(valid);
+            Assert.That(error, Does.Contain("has no quest line assigned"));
+        }
+
+        [Test]
+        public void TryValidateBinding_ReturnsFalse_WhenNpcIdDoesNotMatchQuestLine()
+        {
+            var line = ScriptableObject.CreateInstance<QuestLineSO>();
+            _ownedObjects.Add(line);
+            line.npcId = "other_npc";
+
+            _giver.AssignQuestLine(line);
+
+            bool valid = _giver.TryValidateBinding(out string error);
+
+            Assert.IsFalse(valid);
+            Assert.That(error, Does.Contain("does not match quest line npcId"));
+        }
+
+        [Test]
         public void Interact_TurnInTakesPriorityOverAvailable()
         {
             QuestInfo turnIn = SetupQuest("q_turnin", QuestState.CAN_FINISH, "teacher_maya");

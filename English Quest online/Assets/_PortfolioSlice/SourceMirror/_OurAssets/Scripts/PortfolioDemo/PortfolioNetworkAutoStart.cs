@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Fusion;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EnglishQuest.PortfolioDemo
@@ -13,6 +14,21 @@ namespace EnglishQuest.PortfolioDemo
     {
         [SerializeField] private NetworkSessionProfile sessionProfile;
         [SerializeField] private bool autoStart = true;
+
+        public void CollectConfigurationIssues(List<string> errors, List<string> warnings)
+        {
+            errors ??= new List<string>();
+            warnings ??= new List<string>();
+
+            if (!autoStart)
+                warnings.Add("PortfolioNetworkAutoStart has autoStart disabled.");
+
+            if (sessionProfile == null)
+                errors.Add("PortfolioNetworkAutoStart is missing its NetworkSessionProfile binding.");
+
+            if (GetComponent<GameNetworkManager>() == null)
+                errors.Add("PortfolioNetworkAutoStart is not hosted on the GameNetworkManager object.");
+        }
 
         private void Start()
         {

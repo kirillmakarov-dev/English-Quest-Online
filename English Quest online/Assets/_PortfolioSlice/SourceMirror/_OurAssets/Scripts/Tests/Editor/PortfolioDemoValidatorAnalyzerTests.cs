@@ -775,6 +775,47 @@ fallbackConfig: {fileID: 0}
         }
 
         [Test]
+        public void ValidateLoadedSceneRuntimeBindings_ReportsMissingCriticalRuntimeComponents()
+        {
+            GameObject networkRoot = new GameObject("Network");
+            GameObject npcRoot = new GameObject("NPC - Teacher Ada");
+            GameObject stationRoot = new GameObject("Line Match Station");
+
+            try
+            {
+                networkRoot.AddComponent<GameNetworkManager>();
+                networkRoot.AddComponent<PlayerSpawnCoordinator>();
+                networkRoot.AddComponent<EnglishQuest.PortfolioDemo.PortfolioNetworkAutoStart>();
+
+                npcRoot.AddComponent<NpcQuestGiver>();
+                stationRoot.AddComponent<MiniGameWorldLaunchHost>();
+                stationRoot.AddComponent<MiniGameWorldInteractable>();
+
+                var errors = new List<string>();
+                var warnings = new List<string>();
+                var infos = new List<string>();
+
+                PortfolioDemoValidationAnalyzer.ValidateLoadedSceneRuntimeBindings(
+                    UnityEngine.SceneManagement.SceneManager.GetActiveScene(),
+                    errors,
+                    warnings,
+                    infos);
+
+                Assert.That(infos, Has.Some.Contains("Loaded runtime scene validated"));
+                Assert.That(errors, Has.Some.Contains("GameNetworkManager is missing its open-world NetworkSessionProfile binding"));
+                Assert.That(errors, Has.Some.Contains("PortfolioNetworkAutoStart is missing its NetworkSessionProfile binding"));
+                Assert.That(errors, Has.Some.Contains("Mini-game station 'Line Match Station' failed validation"));
+                Assert.That(errors, Has.Some.Contains("NPC 'NPC - Teacher Ada' has no npcId"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(stationRoot);
+                Object.DestroyImmediate(npcRoot);
+                Object.DestroyImmediate(networkRoot);
+            }
+        }
+
+        [Test]
         public void ValidateSceneText_WarnsWhenOptionalCoopStudyCircleIsMissing()
         {
             string sceneText = @"

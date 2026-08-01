@@ -99,6 +99,22 @@ namespace EnglishQuest.Tests.Player
             Assert.AreEqual(new Vector3(6f, 0f, 0f), secondPosition);
         }
 
+        [Test]
+        public void CollectSceneIssues_WarnsAboutDuplicateNamesAndTravelIds()
+        {
+            Scene scene = CreateSpawnPoint("Spawn Point - Player One", new Vector3(0f, 0f, 0f), Quaternion.identity, "hub").gameObject.scene;
+            CreateSpawnPoint("Spawn Point - Player One", new Vector3(1f, 0f, 0f), Quaternion.identity, "hub");
+
+            var errors = new List<string>();
+            var warnings = new List<string>();
+
+            PlayerSpawnPoint.CollectSceneIssues(scene, errors, warnings);
+
+            Assert.That(errors, Is.Empty);
+            Assert.That(warnings, Has.Some.Contains("duplicate PlayerSpawnPoint name 'Spawn Point - Player One'"));
+            Assert.That(warnings, Has.Some.Contains("duplicate travel spawn id 'hub'"));
+        }
+
         private PlayerSpawnPoint CreateSpawnPoint(string name, Vector3 position, Quaternion rotation, string travelNodeId = null)
         {
             var go = new GameObject(name);

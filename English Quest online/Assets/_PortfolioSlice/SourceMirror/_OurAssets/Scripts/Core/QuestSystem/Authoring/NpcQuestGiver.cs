@@ -21,6 +21,32 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
     public string NpcId => ResolveNpcId();
     public QuestLineSO QuestLine => questLine;
 
+    public bool TryValidateBinding(out string error)
+    {
+        error = null;
+
+        string resolvedNpcId = ResolveNpcId();
+        if (string.IsNullOrWhiteSpace(resolvedNpcId))
+        {
+            error = $"NPC '{name}' has no npcId and no quest line fallback.";
+            return false;
+        }
+
+        if (questLine == null)
+        {
+            error = $"NPC '{name}' has no quest line assigned.";
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(questLine.npcId) && questLine.npcId != resolvedNpcId)
+        {
+            error = $"NPC '{name}' npcId '{resolvedNpcId}' does not match quest line npcId '{questLine.npcId}'.";
+            return false;
+        }
+
+        return true;
+    }
+
     private void Awake()
     {
         if (string.IsNullOrEmpty(ResolveNpcId()))

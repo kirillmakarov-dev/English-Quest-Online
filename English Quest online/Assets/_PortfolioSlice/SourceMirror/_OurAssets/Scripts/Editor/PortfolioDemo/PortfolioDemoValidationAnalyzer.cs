@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using EnglishQuest.QuestSystem;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using EnglishQuest.PortfolioDemo;
 
 namespace EnglishQuest.Editor.PortfolioDemo
 {
@@ -586,6 +589,88 @@ namespace EnglishQuest.Editor.PortfolioDemo
             ValidateCommittedPortfolioDemoAssetBindings(scenePath, sceneText, errors);
         }
 
+        public static void ValidateLoadedSceneRuntimeBindings(
+            Scene scene,
+            List<string> errors,
+            List<string> warnings,
+            List<string> infos)
+        {
+            if (!scene.IsValid())
+            {
+                errors.Add("Loaded scene runtime validation received an invalid scene.");
+                return;
+            }
+
+            infos.Add($"Loaded runtime scene validated: {scene.name}");
+
+            GameNetworkManager[] networkManagers = FindSceneObjects<GameNetworkManager>(scene);
+            if (networkManagers.Length == 0)
+            {
+                errors.Add($"Scene '{scene.name}' is missing GameNetworkManager.");
+            }
+            else
+            {
+                if (networkManagers.Length > 1)
+                    warnings.Add($"Scene '{scene.name}' has {networkManagers.Length} GameNetworkManager components.");
+
+                networkManagers[0].CollectConfigurationIssues(errors, warnings);
+
+                PlayerSpawnCoordinator spawnCoordinator = networkManagers[0].GetComponent<PlayerSpawnCoordinator>();
+                if (spawnCoordinator == null)
+                {
+                    errors.Add("GameNetworkManager host is missing PlayerSpawnCoordinator.");
+                }
+                else
+                {
+                    spawnCoordinator.CollectConfigurationIssues(errors, warnings);
+                }
+
+                PortfolioNetworkAutoStart autoStart = networkManagers[0].GetComponent<PortfolioNetworkAutoStart>();
+                if (autoStart == null)
+                {
+                    errors.Add("GameNetworkManager host is missing PortfolioNetworkAutoStart.");
+                }
+                else
+                {
+                    autoStart.CollectConfigurationIssues(errors, warnings);
+                }
+            }
+
+            PlayerSpawnPoint.CollectSceneIssues(scene, errors, warnings);
+
+            NpcQuestGiver[] npcGivers = FindSceneObjects<NpcQuestGiver>(scene);
+            if (npcGivers.Length == 0)
+            {
+                errors.Add($"Scene '{scene.name}' has no NpcQuestGiver components.");
+            }
+            else
+            {
+                foreach (NpcQuestGiver giver in npcGivers)
+                {
+                    if (!giver.TryValidateBinding(out string error))
+                        errors.Add(error);
+                }
+            }
+
+            MiniGameWorldLaunchHost[] launchHosts = FindSceneObjects<MiniGameWorldLaunchHost>(scene);
+            foreach (MiniGameWorldLaunchHost host in launchHosts)
+                host.CollectConfigurationIssues(errors, warnings);
+
+            MiniGameWorldInteractable[] interactables = FindSceneObjects<MiniGameWorldInteractable>(scene);
+            if (interactables.Length == 0)
+            {
+                errors.Add($"Scene '{scene.name}' has no MiniGameWorldInteractable components.");
+            }
+            else
+            {
+                foreach (MiniGameWorldInteractable interactable in interactables)
+                {
+                    if (!interactable.TryValidateCurrentBinding(out string error))
+                        errors.Add($"Mini-game station '{interactable.name}' failed validation: {error}");
+                }
+            }
+        }
+
         public static void ValidateShowcaseDocs(List<string> warnings, List<string> infos)
         {
             bool hasAllRequiredDocs = true;
@@ -1154,6 +1239,13 @@ namespace EnglishQuest.Editor.PortfolioDemo
                 nextObject = sceneText.Length;
 
             return sceneText.Substring(start, nextObject - start);
+        }
+
+        private static T[] FindSceneObjects<T>(Scene scene) where T : Component
+        {
+            return Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                .Where(component => component != null && component.gameObject.scene == scene)
+                .ToArray();
         }
     }
 }
