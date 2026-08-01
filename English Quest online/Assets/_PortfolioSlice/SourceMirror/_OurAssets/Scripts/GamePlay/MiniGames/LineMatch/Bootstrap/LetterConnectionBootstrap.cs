@@ -3,17 +3,15 @@ using UnityEngine;
 
 namespace Puzzle.Gameplay.MiniGames.LetterConnection
 {
-    public class LetterConnectionBootstrap : GameplayUIBase
+    public class LetterConnectionBootstrap : QuestMiniGameRuntimeBase
     {
         [SerializeField] private LetterConnectionScreenView screenView;
         [SerializeField] private LetterConnectionViewFactory viewFactory;
         [SerializeField] private bool initializeOnAwake = true;
         private LetterConnectionLevelConfigSO levelConfig;
-        private PlayerInteraction activeInteractingPlayer;
-        private Action _onCompleted;
-        private Action _onClosed;
         public LetterConnectionPresenter Presenter { get; private set; }
         public LevelSession Session { get; private set; }
+        public override string RuntimeTypeId => "line_match";
 
         private void Awake()
         {
@@ -25,9 +23,9 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             }
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
-            ReleaseInteractionLock();
+            base.OnDestroy();
 
             if (Presenter != null)
             {
@@ -88,18 +86,9 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             }
 
             if (Presenter == null && !InitializeMiniGame())
-            {
-                ReleaseInteractionLock();
                 return false;
-            }
 
-            AcquireInteractionLock(interactor);
-            if (Presenter == null)
-            {
-                ReleaseInteractionLock();
-                return false;
-            }
-
+            BeginMiniGameSession(interactor, null, null);
             Presenter.Show();
             return true;
         }
@@ -124,59 +113,32 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
 
         public bool Open(LetterConnectionLevelConfigSO config, PlayerInteraction interactor, Action onCompleted, Action onClosed)
         {
-            _onCompleted = onCompleted;
-            _onClosed = onClosed;
             bool levelChanged = levelConfig != config;
             levelConfig = config;
 
             if (levelChanged)
                 InitializeMiniGame();
 
-            return OpenMiniGame(interactor);
-        }
+            if (!gameObject.activeSelf)
+                gameObject.SetActive(true);
 
-        private void AcquireInteractionLock(PlayerInteraction interactor)
-        {
-            PlayerInteraction resolvedInteractor = interactor != null ? interactor : activeInteractingPlayer;
-            if (resolvedInteractor == null)
-            {
-                return;
-            }
+            if (Presenter == null && !InitializeMiniGame())
+                return false;
 
-            if (activeInteractingPlayer == resolvedInteractor)
-            {
-                return;
-            }
-
-            ReleaseInteractionLock();
-            activeInteractingPlayer = resolvedInteractor;
-            BeginInteraction(resolvedInteractor);
-        }
-
-        private void ReleaseInteractionLock()
-        {
-            EndInteraction();
-            activeInteractingPlayer = null;
+            BeginMiniGameSession(interactor, onCompleted, onClosed);
+            Presenter.Show();
+            return true;
         }
 
         private void HandleMiniGameHidden()
         {
-            ReleaseInteractionLock();
-            Action closed = _onClosed;
-            _onCompleted = null;
-            _onClosed = null;
-            closed?.Invoke();
+            NotifyMiniGameClosed();
         }
 
         private void HandleLevelCompleted()
         {
-            Action completed = _onCompleted;
-            _onCompleted = null;
-            _onClosed = null;
-
             Presenter?.Hide();
-            ReleaseInteractionLock();
-            completed?.Invoke();
+            NotifyMiniGameCompleted();
         }
     }
 

@@ -1,170 +1,116 @@
 using System;
 using UnityEngine;
-using UnityServiceLocator;
 
 namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 {
     /// <summary>
-    /// Scene-level bootstrap for the word-ordering game. Inherits GameplayUIBase so it can
-    /// acquire and release the player interaction lock automatically.
-    ///
-    /// Mirrors the lifecycle of the Line Match bootstrap:
-    ///   1. Caller invokes Open(mode, interactor, onCompleted, onClosed).
-    ///   2. Bootstrap builds the session from the mode, creates the presenter, shows the panel.
-    ///   3. On correct answer → fires onCompleted callback and closes.
-    ///   4. On incorrect answer → fires onIncorrect (optional feedback hook) and stays open.
-    ///   5. On hide (player closes without finishing) → fires onClosed.
+    /// Scene-level bootstrap for the word-ordering game.
+    /// Uses the same open/close/completion runtime contract as the other quest mini-games.
     /// </summary>
-    public class WordGameBootstrap : GameplayUIBase
+    public class WordGameBootstrap : QuestMiniGameRuntimeBase
     {
-        [SerializeField] private WordGamePanelView _panelView;
-        [SerializeField] private WordGameViewFactory _viewFactory;
+        [SerializeField] private WordGamePanelView panelView;
+        [SerializeField] private WordGameViewFactory viewFactory;
 
-        private WordGamePresenter _presenter;
-        private WordGameSession _session;
-        private PlayerInteraction _wordGameInteractor;
+        private WordGamePresenter presenter;
+        private WordGameSession session;
 
-        private Action _onCompleted;
-        private Action _onClosed;
-
-        public WordGamePresenter Presenter => _presenter;
+        public WordGamePresenter Presenter => presenter;
+        public override string RuntimeTypeId => "word_game";
 
         private void Awake()
         {
-            _panelView?.Close();
+            panelView?.Close();
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
-            ReleaseInteractionLock();
+            base.OnDestroy();
             DisposePresenter();
         }
 
         /// <summary>
-        /// Opens the word-ordering game for the given mode. Rebuilds the session and presenter
-        /// if the mode has changed. Safe to call multiple times.
+        /// Opens the word game for the given mode. Safe to call multiple times.
         /// </summary>
         public void Open(IWordGameMode mode, PlayerInteraction interactor, Action onCompleted, Action onClosed)
         {
-            _onCompleted = onCompleted;
-            _onClosed = onClosed;
-
             if (!gameObject.activeSelf)
                 gameObject.SetActive(true);
 
             InitializeGame(mode);
-            if (_presenter == null)
-            {
-                ReleaseInteractionLock();
+            if (presenter == null)
                 return;
-            }
 
-            AcquireInteractionLock(interactor);
-            _presenter.Show();
+            BeginMiniGameSession(interactor, onCompleted, onClosed);
+            presenter.Show();
         }
 
-        /// <summary>Closes the panel and releases the player lock without invoking callbacks.</summary>
+        /// <summary>Closes the panel using the shared mini-game close lifecycle.</summary>
         public void Close()
         {
-            _presenter?.Hide();
+            presenter?.Hide();
         }
-
-        // ── Private: lifecycle ────────────────────────────────────────────────
 
         private void InitializeGame(IWordGameMode mode)
         {
             DisposePresenter();
 
-            if (_panelView == null || _viewFactory == null || mode == null)
+            if (panelView == null || viewFactory == null || mode == null)
             {
-                AppLog.Error("[WordOrderingBootstrap] Missing required references (panelView, viewFactory, or mode).", this);
+                AppLog.Error("[WordGameBootstrap] Missing required references (panelView, viewFactory, or mode).", this);
                 return;
             }
 
             SlotDefinition[] slots = mode.BuildSlots();
             TileDefinition[] tiles = mode.BuildTiles();
 
-            _session = new WordGameSession(slots, tiles);
+            session = new WordGameSession(slots, tiles);
 
             IAnswerValidator validator = new ExactOrderingValidator();
 
-            _presenter = new WordGamePresenter(
-                _panelView,
-                _viewFactory,
+            presenter = new WordGamePresenter(
+                panelView,
+                viewFactory,
                 validator,
-                _session,
+                session,
                 mode.Prompt,
                 slots,
                 tiles);
 
-            _presenter.GameCompleted += HandleGameCompleted;
-            _presenter.Hidden += HandlePresenterHidden;
+            presenter.GameCompleted += HandleGameCompleted;
+            presenter.Hidden += HandlePresenterHidden;
 
-            _presenter.Initialize();
-            _panelView.SetWordRevealDatabase(mode.WordRevealDatabase);
-            _panelView.Close(); // start closed; Show() is called by Open()
+            presenter.Initialize();
+            panelView.SetWordRevealDatabase(mode.WordRevealDatabase);
+            panelView.Close();
         }
 
         private void DisposePresenter()
         {
-            if (_presenter != null)
+            if (presenter != null)
             {
-                _presenter.GameCompleted -= HandleGameCompleted;
-                _presenter.Hidden -= HandlePresenterHidden;
-                _presenter.Dispose();
-                _presenter = null;
+                presenter.GameCompleted -= HandleGameCompleted;
+                presenter.Hidden -= HandlePresenterHidden;
+                presenter.Dispose();
+                presenter = null;
             }
 
-            _session?.Dispose();
-            _session = null;
+            session?.Dispose();
+            session = null;
         }
-
-        // ── Private: player lock ──────────────────────────────────────────────
-
-        private void AcquireInteractionLock(PlayerInteraction interactor)
-        {
-            if (interactor == null || interactor == _wordGameInteractor) return;
-
-            ReleaseInteractionLock();
-            _wordGameInteractor = interactor;
-            BeginInteraction(interactor);
-        }
-
-        private void ReleaseInteractionLock()
-        {
-            EndInteraction();
-            _wordGameInteractor = null;
-        }
-
-        // ── Private: event handlers ───────────────────────────────────────────
 
         private void HandleGameCompleted(bool isCorrect)
         {
             if (!isCorrect)
-            {
-                // Incorrect answer: stay open, let the player adjust tiles.
-                // Visual feedback (shake, flash) can be added here or in a separate component.
                 return;
-            }
 
-            // Correct: clear callbacks before Hide() so HandlePresenterHidden doesn't double-fire.
-            Action completed = _onCompleted;
-            _onCompleted = null;
-            _onClosed = null;
-
-            _presenter?.Hide();
-            ReleaseInteractionLock();
-            completed?.Invoke();
+            presenter?.Hide();
+            NotifyMiniGameCompleted();
         }
 
         private void HandlePresenterHidden()
         {
-            ReleaseInteractionLock();
-
-            Action closed = _onClosed;
-            _onCompleted = null;
-            _onClosed = null;
-            closed?.Invoke();
+            NotifyMiniGameClosed();
         }
     }
 }

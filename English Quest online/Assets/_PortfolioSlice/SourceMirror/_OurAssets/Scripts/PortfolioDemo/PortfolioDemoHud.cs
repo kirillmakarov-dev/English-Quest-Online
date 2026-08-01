@@ -1,7 +1,5 @@
 using EnglishQuest.QuestSystem;
 using Fusion;
-using Puzzle.Gameplay.MiniGames.DuolingoWordGame;
-using Puzzle.Gameplay.MiniGames.LetterConnection;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -735,19 +733,11 @@ namespace EnglishQuest.PortfolioDemo
 
         private bool IsAnyMiniGameOpen()
         {
-            foreach (LetterConnectionScreenView view in FindObjectsByType<LetterConnectionScreenView>(
+            foreach (QuestMiniGameRuntimeBase runtime in FindObjectsByType<QuestMiniGameRuntimeBase>(
                          FindObjectsInactive.Include,
                          FindObjectsSortMode.None))
             {
-                if (view != null && view.gameObject.activeInHierarchy)
-                    return true;
-            }
-
-            foreach (WordGamePanelView view in FindObjectsByType<WordGamePanelView>(
-                         FindObjectsInactive.Include,
-                         FindObjectsSortMode.None))
-            {
-                if (view != null && view.gameObject.activeInHierarchy)
+                if (runtime != null && runtime.IsMiniGameOpen)
                     return true;
             }
 
