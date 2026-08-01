@@ -4,6 +4,7 @@ using EnglishQuest.QuestSystem;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.TestTools;
 using UnityServiceLocator;
 
 namespace EnglishQuest.Tests.QuestSystem
@@ -134,6 +135,71 @@ namespace EnglishQuest.Tests.QuestSystem
         }
 
         [Test]
+        public void Awake_DuplicateLineIds_StopsRegistration()
+        {
+            QuestDefinitionSO q01 = QuestSystemTestSupport.CreateDefinition("q01", "teacher_maya");
+            q01.objectives = new List<QuestObjectiveDefinition>
+            {
+                new QuestObjectiveDefinition { type = QuestObjectiveType.EnterArea, targetId = "area_a" }
+            };
+            QuestDefinitionSO q02 = QuestSystemTestSupport.CreateDefinition("q02", "coach_ben");
+            q02.objectives = new List<QuestObjectiveDefinition>
+            {
+                new QuestObjectiveDefinition { type = QuestObjectiveType.EnterArea, targetId = "area_b" }
+            };
+
+            var lineA = ScriptableObject.CreateInstance<QuestLineSO>();
+            lineA.lineId = "line_duplicate";
+            lineA.quests = new List<QuestDefinitionSO> { q01 };
+            var lineB = ScriptableObject.CreateInstance<QuestLineSO>();
+            lineB.lineId = "line_duplicate";
+            lineB.quests = new List<QuestDefinitionSO> { q02 };
+            _createdAssets.Add(lineA);
+            _createdAssets.Add(lineB);
+
+            var registry = ScriptableObject.CreateInstance<QuestLineRegistrySO>();
+            registry.questLines = new List<QuestLineSO> { lineA, lineB };
+            _createdAssets.Add(registry);
+
+            QuestLineRegistrar registrar = CreateRegistrarWithRegistry(registry);
+
+            LogAssert.Expect(LogType.Error, "[QuestLineRegistrar] Duplicate line id 'line_duplicate' detected.");
+            QuestSystemTestSupport.InvokeAwake(registrar);
+
+            Assert.AreEqual(0, _manager.AllQuests.Count);
+        }
+
+        [Test]
+        public void Awake_MissingPrerequisiteLine_StopsRegistration()
+        {
+            QuestDefinitionSO q01 = QuestSystemTestSupport.CreateDefinition("q01", "coach_ben");
+            q01.objectives = new List<QuestObjectiveDefinition>
+            {
+                new QuestObjectiveDefinition { type = QuestObjectiveType.EnterArea, targetId = "area_a" }
+            };
+
+            var line = ScriptableObject.CreateInstance<QuestLineSO>();
+            line.lineId = "line_b";
+            line.npcId = "coach_ben";
+            line.prerequisiteLineId = "missing_line";
+            line.quests = new List<QuestDefinitionSO> { q01 };
+            _createdAssets.Add(line);
+
+            var registry = ScriptableObject.CreateInstance<QuestLineRegistrySO>();
+            registry.questLines = new List<QuestLineSO> { line };
+            _createdAssets.Add(registry);
+
+            QuestLineRegistrar registrar = CreateRegistrarWithRegistry(registry);
+
+            LogAssert.Expect(
+                LogType.Error,
+                "[QuestLineRegistrar] Quest line 'line_b' references missing prerequisite line 'missing_line'.");
+            QuestSystemTestSupport.InvokeAwake(registrar);
+
+            Assert.AreEqual(0, _manager.AllQuests.Count);
+        }
+
+        [Test]
         public void Awake_ChainedPrerequisite_BlocksSecondQuestUntilFirstCompletes()
         {
             QuestDefinitionSO q01 = QuestSystemTestSupport.CreateDefinition("q01", "teacher_maya");
@@ -215,6 +281,96 @@ namespace EnglishQuest.Tests.QuestSystem
             _manager.FinishQuest(first);
 
             Assert.AreEqual(QuestState.CAN_START, second.state);
+        }
+
+        [Test]
+        public void Awake_LinePrerequisite_AddsPreviousLineCompletionQuestIdToFirstQuestRequirements()
+        {
+            QuestDefinitionSO adaQuest = QuestSystemTestSupport.CreateDefinition("q01", "teacher_maya");
+            adaQuest.objectives = new List<QuestObjectiveDefinition>
+            {
+                new QuestObjectiveDefinition { type = QuestObjectiveType.EnterArea, targetId = "area_a" }
+            };
+
+            QuestDefinitionSO benQuest = QuestSystemTestSupport.CreateDefinition("q02", "coach_ben");
+            benQuest.objectives = new List<QuestObjectiveDefinition>
+            {
+                new QuestObjectiveDefinition { type = QuestObjectiveType.EnterArea, targetId = "area_b" }
+            };
+
+            var lineA = ScriptableObject.CreateInstance<QuestLineSO>();
+            lineA.lineId = "line_a";
+            lineA.npcId = "teacher_maya";
+            lineA.quests = new List<QuestDefinitionSO> { adaQuest };
+
+            var lineB = ScriptableObject.CreateInstance<QuestLineSO>();
+            lineB.lineId = "line_b";
+            lineB.npcId = "coach_ben";
+            lineB.prerequisiteLineId = "line_a";
+            lineB.quests = new List<QuestDefinitionSO> { benQuest };
+
+            var registry = ScriptableObject.CreateInstance<QuestLineRegistrySO>();
+            registry.questLines = new List<QuestLineSO> { lineA, lineB };
+            _createdAssets.Add(lineA);
+            _createdAssets.Add(lineB);
+            _createdAssets.Add(registry);
+
+            QuestLineRegistrar registrar = CreateRegistrarWithRegistry(registry);
+            QuestSystemTestSupport.InvokeAwake(registrar);
+
+            QuestInfo second = _manager.GetQuestById("q02");
+
+            Assert.IsNotNull(second);
+            Assert.IsNotNull(second.requirements);
+            Assert.IsNotEmpty(second.requirements);
+            CollectionAssert.Contains(second.requirements[0].requiredQuestIds, "q01");
+        }
+
+        [Test]
+        public void Awake_FirstQuestInLine_PreservesDirectPrerequisiteAndAddsLinePrerequisite()
+        {
+            QuestDefinitionSO adaQuest = QuestSystemTestSupport.CreateDefinition("q01", "teacher_maya");
+            adaQuest.objectives = new List<QuestObjectiveDefinition>
+            {
+                new QuestObjectiveDefinition { type = QuestObjectiveType.EnterArea, targetId = "area_a" }
+            };
+
+            QuestDefinitionSO benQuest = QuestSystemTestSupport.CreateDefinition(
+                "q02",
+                "coach_ben",
+                prerequisiteQuestId: "bonus_gate");
+            benQuest.objectives = new List<QuestObjectiveDefinition>
+            {
+                new QuestObjectiveDefinition { type = QuestObjectiveType.EnterArea, targetId = "area_b" }
+            };
+
+            var lineA = ScriptableObject.CreateInstance<QuestLineSO>();
+            lineA.lineId = "line_a";
+            lineA.npcId = "teacher_maya";
+            lineA.quests = new List<QuestDefinitionSO> { adaQuest };
+
+            var lineB = ScriptableObject.CreateInstance<QuestLineSO>();
+            lineB.lineId = "line_b";
+            lineB.npcId = "coach_ben";
+            lineB.prerequisiteLineId = "line_a";
+            lineB.quests = new List<QuestDefinitionSO> { benQuest };
+
+            var registry = ScriptableObject.CreateInstance<QuestLineRegistrySO>();
+            registry.questLines = new List<QuestLineSO> { lineA, lineB };
+            _createdAssets.Add(lineA);
+            _createdAssets.Add(lineB);
+            _createdAssets.Add(registry);
+
+            QuestLineRegistrar registrar = CreateRegistrarWithRegistry(registry);
+            QuestSystemTestSupport.InvokeAwake(registrar);
+
+            QuestInfo second = _manager.GetQuestById("q02");
+
+            Assert.IsNotNull(second);
+            Assert.IsNotNull(second.requirements);
+            Assert.IsNotEmpty(second.requirements);
+            CollectionAssert.Contains(second.requirements[0].requiredQuestIds, "bonus_gate");
+            CollectionAssert.Contains(second.requirements[0].requiredQuestIds, "q01");
         }
 
         [Test]

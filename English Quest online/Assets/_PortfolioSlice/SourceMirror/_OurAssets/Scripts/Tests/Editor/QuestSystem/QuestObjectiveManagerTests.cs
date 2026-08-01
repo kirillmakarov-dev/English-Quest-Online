@@ -170,6 +170,28 @@ namespace EnglishQuest.Tests.QuestSystem
             Assert.AreEqual(QuestState.FINISHED, quest.state);
         }
 
+        [Test]
+        public void ResetAllProgress_RefreshesMiniGameBinderForRestartableObjectiveQuest()
+        {
+            LetterOrderingQuestConfigSO config =
+                QuestSystemTestSupport.CreateLetterOrderingQuestConfig("test_minigame");
+            QuestInfo quest = CreateMiniGameObjectiveQuest("minigame_reset_quest", "test_minigame", config);
+            _manager.RegisterQuest(quest);
+            _manager.StartQuest(quest);
+
+            Assert.IsTrue(ServiceLocator.For(_manager).TryGet(out IQuestMiniGameBinder binder));
+            Assert.IsTrue(binder.TryGetConfig("test_minigame", out _));
+
+            _eventBus.Publish(new QuestObjectiveEvents.MiniGameCompleted("test_minigame"));
+            Assert.IsFalse(binder.TryGetConfig("test_minigame", out _));
+
+            _manager.ResetAllProgress();
+
+            Assert.AreEqual(QuestState.CAN_START, quest.state);
+            Assert.IsTrue(binder.TryGetConfig("test_minigame", out QuestMiniGameConfigSO resolved));
+            Assert.AreSame(config, resolved);
+        }
+
         static QuestInfo CreateObjectiveQuest(string id, string areaId)
         {
             var definition = ScriptableObject.CreateInstance<QuestDefinitionSO>();

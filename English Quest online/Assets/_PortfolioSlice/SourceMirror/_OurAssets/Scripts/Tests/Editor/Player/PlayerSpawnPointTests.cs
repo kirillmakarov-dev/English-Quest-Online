@@ -84,6 +84,21 @@ namespace EnglishQuest.Tests.Player
             Assert.AreEqual(new Vector3(3f, 0f, 1f), position);
         }
 
+        [Test]
+        public void TryGetSpawnPointForPlayer_UsesStableSortedOrderPerScene()
+        {
+            Scene scene = CreateSpawnPoint("Spawn Point - Player Two", new Vector3(6f, 0f, 0f), Quaternion.identity).gameObject.scene;
+            CreateSpawnPoint("Spawn Point - Player One", new Vector3(2f, 0f, 0f), Quaternion.identity);
+
+            bool foundFirst = PlayerSpawnPoint.TryGetSpawnPointForPlayer(scene, 1, out Vector3 firstPosition, out _);
+            bool foundSecond = PlayerSpawnPoint.TryGetSpawnPointForPlayer(scene, 2, out Vector3 secondPosition, out _);
+
+            Assert.IsTrue(foundFirst);
+            Assert.IsTrue(foundSecond);
+            Assert.AreEqual(new Vector3(2f, 0f, 0f), firstPosition);
+            Assert.AreEqual(new Vector3(6f, 0f, 0f), secondPosition);
+        }
+
         private PlayerSpawnPoint CreateSpawnPoint(string name, Vector3 position, Quaternion rotation, string travelNodeId = null)
         {
             var go = new GameObject(name);

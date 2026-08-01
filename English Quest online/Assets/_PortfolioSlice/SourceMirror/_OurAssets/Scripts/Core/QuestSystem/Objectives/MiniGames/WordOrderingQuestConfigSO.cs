@@ -9,36 +9,53 @@ namespace EnglishQuest.QuestSystem
     fileName = "WordOrderingQuestConfig_")]
   public class WordOrderingQuestConfigSO : QuestMiniGameConfigSO
   {
+    private static readonly MiniGameLifecycleContract Contract =
+      new("word_ordering", requiresInteractionLock: true, supportsManualClose: true, publishesCompletionEvent: true);
+
     [SerializeField] private string gameId;
     [SerializeField] private WordOrderingDataSO data;
 
     public WordOrderingDataSO Data => data;
     public override string GameId => gameId;
+    public override MiniGameLifecycleContract LifecycleContract => Contract;
 
-    public override bool TryLaunch(
-      MiniGameWorldLaunchHost host,
-      PlayerInteraction interactor,
-      Action<int> onCompleted,
-      Action onClosed)
+    protected override bool TryValidateAuthoringInternal(out string error)
     {
-      if (host == null || data == null)
+      if (data == null)
+      {
+        error = "Word Ordering config is missing Data.";
         return false;
+      }
 
+      error = null;
+      return true;
+    }
+
+    protected override bool TryValidateRuntimeInternal(MiniGameWorldLaunchHost host, out string error)
+    {
       if (!host.TryGetWordGameMode(out WordOrderingMode mode))
       {
-        AppLog.Warning("[WordOrderingQuestConfigSO] No WordOrderingMode found on launch host.", host);
+        error = "WordOrderingMode not found on the launch host.";
         return false;
       }
 
       WordGameBootstrap bootstrap = host.ResolveWordGameBootstrap();
       if (bootstrap == null)
       {
-        AppLog.Warning("[WordOrderingQuestConfigSO] WordGameBootstrap not found.", host);
+        error = "WordGameBootstrap not found on the launch host.";
         return false;
       }
 
+      error = null;
+      return true;
+    }
+
+    protected override bool TryLaunchInternal(MiniGameLaunchContext context)
+    {
+      context.Host.TryGetWordGameMode(out WordOrderingMode mode);
+      WordGameBootstrap bootstrap = context.Host.ResolveWordGameBootstrap();
       mode.SetData(data);
-      bootstrap.Open(mode, interactor, () => onCompleted?.Invoke(0), onClosed);
+      bootstrap.Open(mode, context.Interactor, () => context.OnCompleted?.Invoke(0), context.OnClosed);
       return true;
     }
   }

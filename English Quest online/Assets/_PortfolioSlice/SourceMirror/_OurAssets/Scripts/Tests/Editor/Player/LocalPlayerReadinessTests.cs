@@ -108,6 +108,25 @@ namespace EnglishQuest.Tests.Player
             Assert.That(provider.TryGet(out _), Is.False);
         }
 
+        [Test]
+        public void Clear_OneRunner_DoesNotAffectDifferentSceneProvider()
+        {
+            Scene sceneA = CreateScene("SceneA");
+            Scene sceneB = CreateScene("SceneB");
+            LocalPlayerReadinessProvider providerA = CreateSceneReadinessProvider(sceneA);
+            LocalPlayerReadinessProvider providerB = CreateSceneReadinessProvider(sceneB);
+            NetworkRunner runnerA = CreateRunner("RunnerA");
+            NetworkRunner runnerB = CreateRunner("RunnerB");
+
+            providerA.NotifyReadyForTests(runnerA);
+            providerB.NotifyReadyForTests(runnerB);
+
+            LocalPlayerReadiness.Clear(runnerA);
+
+            Assert.That(providerA.TryGet(out _), Is.False);
+            Assert.That(providerB.TryGet(out _), Is.True);
+        }
+
         private NetworkRunner CreateRunner(string name = "TestRunner")
         {
             var go = new GameObject(name);

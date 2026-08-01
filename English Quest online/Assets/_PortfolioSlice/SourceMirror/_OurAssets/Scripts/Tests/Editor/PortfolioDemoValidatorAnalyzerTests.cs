@@ -433,6 +433,42 @@ namespace EnglishQuest.Tests
         }
 
         [Test]
+        public void ValidateQuestLineBuildSpec_ReportsMiniGameConfigMismatchAndMissingProfileCatalogs()
+        {
+            QuestLineBuildSpecSO spec = ScriptableObject.CreateInstance<QuestLineBuildSpecSO>();
+            spec.lineId = "line_teacher_ada";
+            spec.npcId = "teacher_ada";
+            spec.profile = ScriptableObject.CreateInstance<QuestLineAuthoringProfileSO>();
+            spec.quests = new List<QuestBuildEntry>
+            {
+                new()
+                {
+                    id = "quest_ada",
+                    objectives = new List<QuestObjectiveDefinition>
+                    {
+                        new()
+                        {
+                            type = QuestObjectiveType.CompleteMiniGame,
+                            targetId = "line_match",
+                            miniGameConfig = CreateLetterOrderingConfig("letter_ordering")
+                        }
+                    }
+                }
+            };
+
+            var errors = new List<string>();
+            var warnings = new List<string>();
+            var infos = new List<string>();
+
+            PortfolioDemoValidationAnalyzer.ValidateQuestLineBuildSpec(spec, errors, warnings, infos);
+
+            Assert.That(infos, Has.Some.Contains("Quest line build spec loaded"));
+            Assert.That(warnings, Has.Some.Contains("profile is missing QuestCatalogSO"));
+            Assert.That(warnings, Has.Some.Contains("profile is missing QuestWorldCatalogSetSO"));
+            Assert.That(errors, Has.Some.Contains("does not match config GameId 'letter_ordering'"));
+        }
+
+        [Test]
         public void ValidateQuestRegistry_ReportsMissingSharedCatalogReferences()
         {
             QuestLineRegistrySO registry = ScriptableObject.CreateInstance<QuestLineRegistrySO>();
@@ -488,6 +524,8 @@ namespace EnglishQuest.Tests
             string sceneText = @"
 m_Name: Quest Manager
 m_Name: Quest Line Registrar
+QuestLineRegistrar
+registry: {fileID: 11400000, guid: abc, type: 2}
 loadQuestState: 1
 m_Name: Portfolio Demo HUD
 m_Name: NPC - Teacher Ada
@@ -514,6 +552,31 @@ gameId: word_ordering
 
             Assert.That(errors, Has.Some.Contains("NPC - Teacher Ada has an incorrect or missing npcId binding"));
             Assert.That(errors, Has.Some.Contains("NPC - Teacher Ada is missing its QuestLineSO binding"));
+        }
+
+        [Test]
+        public void ValidateSceneText_ReportsMissingQuestRegistryBindingOnRegistrar()
+        {
+            string sceneText = @"
+m_Name: Quest Manager
+m_Name: Quest Line Registrar
+QuestLineRegistrar
+registry: {fileID: 0}
+loadQuestState: 1
+m_Name: NPC - Teacher Ada
+m_Name: NPC - Coach Ben
+m_Name: NPC - Guide Nora
+gameId: line_match
+gameId: letter_ordering
+gameId: word_ordering
+";
+            var errors = new List<string>();
+            var warnings = new List<string>();
+            var infos = new List<string>();
+
+            PortfolioDemoValidationAnalyzer.ValidateSceneText(sceneText, errors, warnings, infos);
+
+            Assert.That(errors, Has.Some.Contains("Quest Line Registrar is missing its QuestLineRegistrySO binding"));
         }
 
         [Test]

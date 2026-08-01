@@ -56,7 +56,42 @@ namespace EnglishQuest.QuestSystem
         return false;
       }
 
+      if (!config.TryValidateRuntime(launchHost, out string validationError))
+      {
+        AppLog.Warning(
+          $"[MiniGameWorldInteractable] Mini-game '{gameId}' failed runtime validation: {validationError}",
+          this);
+        return false;
+      }
+
       return config.TryLaunch(launchHost, interactor, OnGameCompleted, null);
+    }
+
+    public bool TryValidateCurrentBinding(out string error)
+    {
+      error = null;
+      if (string.IsNullOrWhiteSpace(gameId))
+      {
+        error = "Mini-game station has an empty gameId.";
+        return false;
+      }
+
+      if (launchHost == null)
+      {
+        error = "Mini-game station is missing MiniGameWorldLaunchHost.";
+        return false;
+      }
+
+      if (!TryResolveConfig(out QuestMiniGameConfigSO config))
+      {
+        error = $"No active quest mini-game config found for '{gameId}'.";
+        return false;
+      }
+
+      if (!config.TryValidateAuthoring(out error))
+        return false;
+
+      return launchHost.TryValidateBindings(config, out error);
     }
 
     private bool HasActiveBinding()

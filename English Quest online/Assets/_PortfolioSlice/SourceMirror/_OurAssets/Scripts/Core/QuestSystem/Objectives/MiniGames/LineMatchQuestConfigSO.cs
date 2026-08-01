@@ -9,29 +9,49 @@ namespace EnglishQuest.QuestSystem
     fileName = "LineMatchQuestConfig_")]
   public class LineMatchQuestConfigSO : QuestMiniGameConfigSO
   {
+    private static readonly MiniGameLifecycleContract Contract =
+      new("line_match", requiresInteractionLock: true, supportsManualClose: true, publishesCompletionEvent: true);
+
     [SerializeField] private string gameId;
     [SerializeField] private LetterConnectionLevelConfigSO levelConfig;
 
     public LetterConnectionLevelConfigSO LevelConfig => levelConfig;
     public override string GameId => gameId;
+    public override MiniGameLifecycleContract LifecycleContract => Contract;
 
-    public override bool TryLaunch(
-      MiniGameWorldLaunchHost host,
-      PlayerInteraction interactor,
-      Action<int> onCompleted,
-      Action onClosed)
+    protected override bool TryValidateAuthoringInternal(out string error)
     {
-      if (host == null || levelConfig == null)
-        return false;
-
-      LetterConnectionBootstrap bootstrap = host.ResolveLineMatchBootstrap();
-      if (bootstrap == null)
+      if (levelConfig == null)
       {
-        AppLog.Warning("[LineMatchQuestConfigSO] LetterConnectionBootstrap not found.", host);
+        error = "Line Match config is missing LevelConfig.";
         return false;
       }
 
-      return bootstrap.Open(levelConfig, interactor, () => onCompleted?.Invoke(0), onClosed);
+      error = null;
+      return true;
+    }
+
+    protected override bool TryValidateRuntimeInternal(MiniGameWorldLaunchHost host, out string error)
+    {
+      LetterConnectionBootstrap bootstrap = host.ResolveLineMatchBootstrap();
+      if (bootstrap == null)
+      {
+        error = "LetterConnectionBootstrap not found on the launch host.";
+        return false;
+      }
+
+      error = null;
+      return true;
+    }
+
+    protected override bool TryLaunchInternal(MiniGameLaunchContext context)
+    {
+      LetterConnectionBootstrap bootstrap = context.Host.ResolveLineMatchBootstrap();
+      return bootstrap.Open(
+        levelConfig,
+        context.Interactor,
+        () => context.OnCompleted?.Invoke(0),
+        context.OnClosed);
     }
   }
 }

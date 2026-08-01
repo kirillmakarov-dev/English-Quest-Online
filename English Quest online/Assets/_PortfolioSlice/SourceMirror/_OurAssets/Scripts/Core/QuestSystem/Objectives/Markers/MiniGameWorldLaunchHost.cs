@@ -61,6 +61,17 @@ namespace EnglishQuest.QuestSystem
 
       return false;
     }
+
+    public bool TryValidateBindings(QuestMiniGameConfigSO config, out string error)
+    {
+      if (config == null)
+      {
+        error = "QuestMiniGameConfigSO is not assigned.";
+        return false;
+      }
+
+      return config.TryValidateRuntime(this, out error);
+    }
   }
 }
 

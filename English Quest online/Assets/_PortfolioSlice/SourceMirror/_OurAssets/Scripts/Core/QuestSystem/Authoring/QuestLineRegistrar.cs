@@ -52,6 +52,9 @@ public class QuestLineRegistrar : MonoBehaviour
             return;
         }
 
+        if (!ValidateResolvedLines(lines))
+            return;
+
         if (!ServiceLocator.For(this).TryGet<IQuestService>(out IQuestService questService))
         {
             AppLog.Error("[QuestLineRegistrar] IQuestService not found.", this);
@@ -155,6 +158,75 @@ public class QuestLineRegistrar : MonoBehaviour
             lines.Add(questLine);
 
         return lines.Count > 0;
+    }
+
+    private bool ValidateResolvedLines(IReadOnlyList<QuestLineSO> lines)
+    {
+        if (lines == null || lines.Count == 0)
+            return false;
+
+        var seenLineIds = new HashSet<string>();
+        var seenQuestIds = new HashSet<string>();
+
+        for (int i = 0; i < lines.Count; i++)
+        {
+            QuestLineSO line = lines[i];
+            if (line == null)
+            {
+                AppLog.Error("[QuestLineRegistrar] Resolved quest lines contain a null entry.", this);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(line.lineId))
+            {
+                AppLog.Error($"[QuestLineRegistrar] Quest line '{line.name}' has an empty lineId.", this);
+                return false;
+            }
+
+            if (!seenLineIds.Add(line.lineId))
+            {
+                AppLog.Error($"[QuestLineRegistrar] Duplicate line id '{line.lineId}' detected.", this);
+                return false;
+            }
+
+            if (line.quests == null || line.quests.Count == 0)
+            {
+                AppLog.Error($"[QuestLineRegistrar] Quest line '{line.lineId}' has no quest definitions.", this);
+                return false;
+            }
+
+            foreach (QuestDefinitionSO definition in line.quests)
+            {
+                if (definition == null || string.IsNullOrWhiteSpace(definition.id))
+                {
+                    AppLog.Error($"[QuestLineRegistrar] Quest line '{line.lineId}' contains an invalid quest definition.", this);
+                    return false;
+                }
+
+                if (!seenQuestIds.Add(definition.id))
+                {
+                    AppLog.Error($"[QuestLineRegistrar] Duplicate quest id '{definition.id}' detected across quest lines.", this);
+                    return false;
+                }
+            }
+        }
+
+        for (int i = 0; i < lines.Count; i++)
+        {
+            QuestLineSO line = lines[i];
+            if (string.IsNullOrWhiteSpace(line.prerequisiteLineId))
+                continue;
+
+            if (!seenLineIds.Contains(line.prerequisiteLineId))
+            {
+                AppLog.Error(
+                    $"[QuestLineRegistrar] Quest line '{line.lineId}' references missing prerequisite line '{line.prerequisiteLineId}'.",
+                    this);
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private QuestCatalogSO ResolveQuestCatalog()

@@ -119,6 +119,52 @@ namespace EnglishQuest.Tests.QuestSystem
             Object.DestroyImmediate(quest.gameObject);
         }
 
+        [Test]
+        public void TryValidateCurrentBinding_ReturnsFalse_WhenConfigFailsAuthoringValidation()
+        {
+            _root = new GameObject("mini-game-test");
+            ServiceLocator locator = QuestSystemTestSupport.CreateServiceLocator(_root);
+
+            var binder = new QuestMiniGameBinder();
+            locator.Register<IQuestMiniGameBinder>(binder);
+
+            var config = ScriptableObject.CreateInstance<TestQuestMiniGameConfig>();
+            config.Configure(string.Empty);
+            _ownedAssets.Add(config);
+
+            QuestDefinitionSO definition = ScriptableObject.CreateInstance<QuestDefinitionSO>();
+            _ownedAssets.Add(definition);
+            definition.id = "quest_minigame";
+            definition.objectives = new List<QuestObjectiveDefinition>
+            {
+                new QuestObjectiveDefinition
+                {
+                    type = QuestObjectiveType.CompleteMiniGame,
+                    targetId = "active_game",
+                    miniGameConfig = config
+                }
+            };
+
+            QuestInfo quest = QuestSystemTestSupport.CreateObjectiveQuestWithDefinition(definition);
+            quest.SetState(QuestState.IN_PROGRESS);
+
+            var service = new StubQuestService();
+            service.Quests.Add(quest);
+            binder.Refresh(service);
+
+            var host = _root.AddComponent<MiniGameWorldLaunchHost>();
+            var interactable = _root.AddComponent<MiniGameWorldInteractable>();
+            QuestSystemTestSupport.SetPrivateField(interactable, "gameId", "active_game");
+            QuestSystemTestSupport.SetPrivateField(interactable, "launchHost", host);
+
+            bool isValid = interactable.TryValidateCurrentBinding(out string error);
+
+            Assert.IsFalse(isValid);
+            Assert.That(error, Does.Contain("empty GameId"));
+
+            Object.DestroyImmediate(quest.gameObject);
+        }
+
         private sealed class TestQuestMiniGameConfig : QuestMiniGameConfigSO
         {
             private string _gameId;
@@ -126,19 +172,29 @@ namespace EnglishQuest.Tests.QuestSystem
             public bool WasLaunched { get; private set; }
 
             public override string GameId => _gameId;
+            public override MiniGameLifecycleContract LifecycleContract =>
+                new("test_minigame", requiresInteractionLock: true, supportsManualClose: true, publishesCompletionEvent: true);
 
             public void Configure(string gameId)
             {
                 _gameId = gameId;
             }
 
-            public override bool TryLaunch(
-                MiniGameWorldLaunchHost host,
-                PlayerInteraction interactor,
-                System.Action<int> onCompleted,
-                System.Action onClosed)
+            protected override bool TryValidateAuthoringInternal(out string error)
             {
-                WasLaunched = host != null;
+                error = null;
+                return true;
+            }
+
+            protected override bool TryValidateRuntimeInternal(MiniGameWorldLaunchHost host, out string error)
+            {
+                error = null;
+                return host != null;
+            }
+
+            protected override bool TryLaunchInternal(MiniGameLaunchContext context)
+            {
+                WasLaunched = context.Host != null;
                 return WasLaunched;
             }
         }

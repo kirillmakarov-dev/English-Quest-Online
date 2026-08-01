@@ -22,6 +22,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
 
             ValidateSceneFile(errors, warnings, infos);
             ValidateQuestRegistry(errors, warnings, infos);
+            ValidateQuestLineBuildSpecs(errors, warnings, infos);
             ValidateSessionProfile(errors, warnings);
             ValidateShowcaseDocs(warnings, infos);
 
@@ -63,6 +64,23 @@ namespace EnglishQuest.Editor.PortfolioDemo
             }
 
             PortfolioDemoValidationAnalyzer.ValidateSessionProfile(profile, errors, warnings);
+        }
+
+        private static void ValidateQuestLineBuildSpecs(List<string> errors, List<string> warnings, List<string> infos)
+        {
+            string[] guids = AssetDatabase.FindAssets("t:QuestLineBuildSpecSO");
+            if (guids == null || guids.Length == 0)
+            {
+                infos.Add("No QuestLineBuildSpecSO assets found. Registry-driven authoring remains the active path.");
+                return;
+            }
+
+            foreach (string guid in guids)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                QuestLineBuildSpecSO spec = AssetDatabase.LoadAssetAtPath<QuestLineBuildSpecSO>(assetPath);
+                PortfolioDemoValidationAnalyzer.ValidateQuestLineBuildSpec(spec, errors, warnings, infos);
+            }
         }
 
         private static void ValidateShowcaseDocs(List<string> warnings, List<string> infos)

@@ -222,6 +222,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
 
             ValidateHudBindings(sceneText, errors);
             ValidateNetworkBindings(sceneText, errors);
+            ValidateQuestRegistrarBindings(sceneText, errors);
             ValidateNpcBindings(sceneText, errors);
             ValidateMiniGameStationBindings(sceneText, errors);
             ValidateOptionalCoopBindings(sceneText, warnings);
@@ -406,6 +407,71 @@ namespace EnglishQuest.Editor.PortfolioDemo
             }
         }
 
+        public static void ValidateQuestLineBuildSpec(
+            QuestLineBuildSpecSO spec,
+            List<string> errors,
+            List<string> warnings,
+            List<string> infos)
+        {
+            if (spec == null)
+            {
+                errors.Add("Quest line build spec asset is missing.");
+                return;
+            }
+
+            infos.Add($"Quest line build spec loaded: {spec.name}");
+            spec.CollectValidationIssues(errors, warnings);
+
+            if (spec.profile != null)
+            {
+                if (spec.profile.questCatalog == null)
+                    warnings.Add($"Quest line build spec '{spec.name}' profile is missing QuestCatalogSO.");
+
+                if (spec.profile.worldCatalogSet == null)
+                    warnings.Add($"Quest line build spec '{spec.name}' profile is missing QuestWorldCatalogSetSO.");
+            }
+
+            if (spec.quests == null)
+                return;
+
+            for (int questIndex = 0; questIndex < spec.quests.Count; questIndex++)
+            {
+                QuestBuildEntry entry = spec.quests[questIndex];
+                if (entry?.objectives == null)
+                    continue;
+
+                for (int objectiveIndex = 0; objectiveIndex < entry.objectives.Count; objectiveIndex++)
+                {
+                    QuestObjectiveDefinition objective = entry.objectives[objectiveIndex];
+                    if (objective == null || objective.type != QuestObjectiveType.CompleteMiniGame)
+                        continue;
+
+                    if (string.IsNullOrWhiteSpace(objective.targetId))
+                    {
+                        errors.Add(
+                            $"Quest line build spec '{spec.name}' quest '{entry.id}' objective {objectiveIndex} has an empty mini-game targetId.");
+                        continue;
+                    }
+
+                    if (objective.miniGameConfig == null)
+                    {
+                        errors.Add(
+                            $"Quest line build spec '{spec.name}' quest '{entry.id}' objective {objectiveIndex} is missing QuestMiniGameConfigSO.");
+                        continue;
+                    }
+
+                    if (objective.miniGameConfig.GameId != objective.targetId)
+                    {
+                        errors.Add(
+                            $"Quest line build spec '{spec.name}' quest '{entry.id}' objective {objectiveIndex} targetId '{objective.targetId}' " +
+                            $"does not match config GameId '{objective.miniGameConfig.GameId}'.");
+                    }
+
+                    ValidateMiniGameConfig(entry.id, objectiveIndex, objective.miniGameConfig, errors);
+                }
+            }
+        }
+
         public static void ValidateSessionProfile(NetworkSessionProfile profile, List<string> errors, List<string> warnings)
         {
             if (profile == null)
@@ -543,6 +609,34 @@ namespace EnglishQuest.Editor.PortfolioDemo
             QuestMiniGameConfigSO config,
             List<string> errors)
         {
+            if (!config.TryValidateAuthoring(out string validationError))
+            {
+                errors.Add(
+                    $"Quest '{questId}' objective {objectiveIndex} mini-game config '{config.name}' failed authoring validation: {validationError}");
+                return;
+            }
+
+            if (!config.LifecycleContract.RequiresInteractionLock)
+            {
+                errors.Add(
+                    $"Quest '{questId}' objective {objectiveIndex} mini-game config '{config.name}' does not require an interaction lock. " +
+                    "Portfolio lesson mini-games must pause world interaction while active.");
+            }
+
+            if (!config.LifecycleContract.SupportsManualClose)
+            {
+                errors.Add(
+                    $"Quest '{questId}' objective {objectiveIndex} mini-game config '{config.name}' does not support manual close. " +
+                    "Portfolio lesson mini-games must allow leaving the panel cleanly.");
+            }
+
+            if (!config.LifecycleContract.PublishesCompletionEvent)
+            {
+                errors.Add(
+                    $"Quest '{questId}' objective {objectiveIndex} mini-game config '{config.name}' does not publish completion. " +
+                    "Quest progression depends on a completion callback.");
+            }
+
             switch (config)
             {
                 case LineMatchQuestConfigSO lineMatchConfig when lineMatchConfig.LevelConfig == null:
@@ -754,6 +848,22 @@ namespace EnglishQuest.Editor.PortfolioDemo
 
             ValidateSpawnPoint(sceneText, "Spawn Point - Player One", errors);
             ValidateSpawnPoint(sceneText, "Spawn Point - Player Two", errors);
+        }
+
+        private static void ValidateQuestRegistrarBindings(string sceneText, List<string> errors)
+        {
+            string section = ExtractObjectSection(sceneText, "Quest Line Registrar");
+            if (string.IsNullOrEmpty(section))
+                return;
+
+            if (!section.Contains("QuestLineRegistrar"))
+            {
+                errors.Add("Quest Line Registrar object is missing the QuestLineRegistrar component.");
+                return;
+            }
+
+            if (!section.Contains("registry: {fileID:") || section.Contains("registry: {fileID: 0}"))
+                errors.Add("Quest Line Registrar is missing its QuestLineRegistrySO binding.");
         }
 
         private static void ValidateSpawnPoint(string sceneText, string objectName, List<string> errors)
