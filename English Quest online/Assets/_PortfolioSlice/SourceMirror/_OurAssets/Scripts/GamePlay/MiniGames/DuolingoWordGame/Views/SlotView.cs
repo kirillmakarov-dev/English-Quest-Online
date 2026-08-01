@@ -1,7 +1,9 @@
 using System;
+using EnglishQuest.PortfolioDemo;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 {
@@ -15,6 +17,7 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
     {
         [SerializeField] private TextMeshProUGUI _label;
         [SerializeField] private GameObject _emptyIndicator;
+        [SerializeField] private Image _backgroundImage;
 
         public int SlotIndex { get; private set; }
         public bool IsPreFilled { get; private set; }
@@ -29,6 +32,9 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
         {
             SlotIndex = index;
             IsPreFilled = definition.IsPreFilled;
+
+            if (_backgroundImage == null)
+                _backgroundImage = GetComponent<Image>();
 
             if (IsPreFilled)
                 SetDisplay(definition.PreFilledDisplayValue);
@@ -46,6 +52,8 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 
             if (_emptyIndicator != null)
                 _emptyIndicator.SetActive(isEmpty && !IsPreFilled);
+
+            PortfolioThemeResources.ApplySlotSurface(_backgroundImage, _label, isFilled: !isEmpty, isPreFilled: IsPreFilled);
         }
 
         // ── IPointerClickHandler ─────────────────────────────────────────────

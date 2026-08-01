@@ -1,4 +1,5 @@
 using TMPro;
+using EnglishQuest.PortfolioDemo;
 using UnityEngine;
 using UnityServiceLocator;
 
@@ -20,6 +21,8 @@ public class QuestNpcIndicator : MonoBehaviour
     private IQuestAvailabilityService _availabilityService;
     private GameObject _defaultMarker;
     private TMP_Text _defaultLabel;
+    private QuestNpcIndicatorState _currentState = QuestNpcIndicatorState.None;
+    private Vector3 _defaultMarkerBaseScale = Vector3.one;
 
     public void Configure(string newNpcId)
     {
@@ -77,24 +80,29 @@ public class QuestNpcIndicator : MonoBehaviour
         QuestNpcIndicatorState state = availabilityService != null
             ? availabilityService.GetBestIndicator(npcId)
             : QuestNpcIndicatorState.None;
+        _currentState = state;
 
         bool usesDefaultMarker = HasNoAssignedMarkers();
         if (usesDefaultMarker)
             SetDefaultMarker(state);
 
-        SetMarker(availableMarker, availableLabel, "!", state == QuestNpcIndicatorState.Available && !usesDefaultMarker);
-        SetMarker(inProgressMarker, inProgressLabel, "...", state == QuestNpcIndicatorState.InProgress && !usesDefaultMarker);
-        SetMarker(turnInMarker, turnInLabel, "?", state == QuestNpcIndicatorState.TurnIn && !usesDefaultMarker);
-        SetMarker(lockedMarker, lockedLabel, "LOCKED", state == QuestNpcIndicatorState.Locked && !usesDefaultMarker);
+        SetMarker(availableMarker, availableLabel, QuestNpcIndicatorState.Available, state == QuestNpcIndicatorState.Available && !usesDefaultMarker);
+        SetMarker(inProgressMarker, inProgressLabel, QuestNpcIndicatorState.InProgress, state == QuestNpcIndicatorState.InProgress && !usesDefaultMarker);
+        SetMarker(turnInMarker, turnInLabel, QuestNpcIndicatorState.TurnIn, state == QuestNpcIndicatorState.TurnIn && !usesDefaultMarker);
+        SetMarker(lockedMarker, lockedLabel, QuestNpcIndicatorState.Locked, state == QuestNpcIndicatorState.Locked && !usesDefaultMarker);
     }
 
-    private static void SetMarker(GameObject marker, TMP_Text label, string text, bool active)
+    private static void SetMarker(GameObject marker, TMP_Text label, QuestNpcIndicatorState state, bool active)
     {
         if (marker != null)
             marker.SetActive(active);
 
         if (label != null && active)
-            label.text = text;
+        {
+            label.text = PortfolioThemeResources.GetNpcIndicatorText(state);
+            label.color = PortfolioThemeResources.GetNpcIndicatorColor(state);
+            label.fontStyle = FontStyles.Bold;
+        }
     }
 
     private bool HasNoAssignedMarkers()
@@ -125,9 +133,12 @@ public class QuestNpcIndicator : MonoBehaviour
         _defaultLabel.textWrappingMode = TextWrappingModes.NoWrap;
         _defaultLabel.outlineWidth = 0.25f;
         _defaultLabel.outlineColor = Color.black;
+        _defaultLabel.characterSpacing = 6f;
+        _defaultLabel.textWrappingMode = TextWrappingModes.NoWrap;
 
         NameTagBillboard billboard = _defaultMarker.AddComponent<NameTagBillboard>();
         billboard.Configure(NameTagBillboard.FacingMode.TowardCamera, new Vector3(0f, 180f, 0f));
+        _defaultMarkerBaseScale = _defaultMarker.transform.localScale;
     }
 
     private void SetDefaultMarker(QuestNpcIndicatorState state)
@@ -138,16 +149,16 @@ public class QuestNpcIndicator : MonoBehaviour
         switch (state)
         {
             case QuestNpcIndicatorState.Available:
-                SetDefaultMarker("!", new Color(1f, 0.82f, 0.15f), true);
+                SetDefaultMarker(PortfolioThemeResources.GetNpcIndicatorText(state), PortfolioThemeResources.GetNpcIndicatorColor(state), true);
                 break;
             case QuestNpcIndicatorState.InProgress:
-                SetDefaultMarker("...", new Color(0.35f, 0.75f, 1f), true);
+                SetDefaultMarker(PortfolioThemeResources.GetNpcIndicatorText(state), PortfolioThemeResources.GetNpcIndicatorColor(state), true);
                 break;
             case QuestNpcIndicatorState.TurnIn:
-                SetDefaultMarker("?", new Color(0.35f, 1f, 0.45f), true);
+                SetDefaultMarker(PortfolioThemeResources.GetNpcIndicatorText(state), PortfolioThemeResources.GetNpcIndicatorColor(state), true);
                 break;
             case QuestNpcIndicatorState.Locked:
-                SetDefaultMarker("LOCKED", new Color(0.7f, 0.7f, 0.7f), true);
+                SetDefaultMarker(PortfolioThemeResources.GetNpcIndicatorText(state), PortfolioThemeResources.GetNpcIndicatorColor(state), true);
                 break;
             default:
                 SetDefaultMarker(string.Empty, Color.white, false);
@@ -163,5 +174,21 @@ public class QuestNpcIndicator : MonoBehaviour
 
         _defaultLabel.text = text;
         _defaultLabel.color = color;
+    }
+
+    private void Update()
+    {
+        if (_defaultMarker == null || !_defaultMarker.activeSelf)
+            return;
+
+        float pulse = _currentState switch
+        {
+            QuestNpcIndicatorState.TurnIn => 1f + Mathf.Sin(Time.unscaledTime * 5.4f) * 0.08f,
+            QuestNpcIndicatorState.Available => 1f + Mathf.Sin(Time.unscaledTime * 3.8f) * 0.05f,
+            QuestNpcIndicatorState.InProgress => 1f + Mathf.Sin(Time.unscaledTime * 2.8f) * 0.03f,
+            _ => 1f
+        };
+
+        _defaultMarker.transform.localScale = _defaultMarkerBaseScale * pulse;
     }
 }

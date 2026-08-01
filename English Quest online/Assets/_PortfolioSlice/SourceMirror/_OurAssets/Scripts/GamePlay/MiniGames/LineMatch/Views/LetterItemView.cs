@@ -1,4 +1,5 @@
 using System;
+using EnglishQuest.PortfolioDemo;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,6 +12,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
         [SerializeField] private TMP_Text valueText;
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private RectTransform anchorPoint;
+        [SerializeField] private Image backgroundImage;
 
         public string Id { get; private set; }
         public string Value { get; private set; }
@@ -28,6 +30,9 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             {
                 valueText.raycastTarget = false;
             }
+
+            if (backgroundImage == null)
+                backgroundImage = GetComponent<Image>();
         }
 
         public void Bind(string id, string value, bool isUsed)
@@ -53,6 +58,8 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             canvasGroup.alpha = isUsed ? 0.45f : 1f;
             canvasGroup.interactable = !isUsed;
             canvasGroup.blocksRaycasts = !isUsed;
+
+            PortfolioThemeResources.ApplyTileSurface(backgroundImage, valueText, isUsed);
         }
 
         public void OnInitializePotentialDrag(PointerEventData eventData)

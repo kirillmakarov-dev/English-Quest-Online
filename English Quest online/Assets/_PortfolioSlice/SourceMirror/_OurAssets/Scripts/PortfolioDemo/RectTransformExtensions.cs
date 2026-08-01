@@ -22,6 +22,18 @@ namespace EnglishQuest.PortfolioDemo
     {
         private const string ResourceRoot = "UI/PortfolioTheme/";
 
+        public static readonly Color WarmHeadingColor = new(1f, 0.82f, 0.34f, 1f);
+        public static readonly Color BodyTextColor = new(0.96f, 0.98f, 1f, 1f);
+        public static readonly Color AccentMintColor = new(0.56f, 0.95f, 0.82f, 1f);
+        public static readonly Color MutedTextColor = new(0.79f, 0.88f, 0.93f, 0.95f);
+        public static readonly Color TileGlowColor = new(0.18f, 0.72f, 0.68f, 0.94f);
+        public static readonly Color SlotGlowColor = new(0.15f, 0.32f, 0.52f, 0.92f);
+        public static readonly Color SlotFilledColor = new(0.17f, 0.48f, 0.42f, 0.92f);
+        public static readonly Color LockedColor = new(0.73f, 0.75f, 0.8f, 1f);
+        public static readonly Color TurnInColor = new(0.46f, 1f, 0.62f, 1f);
+        public static readonly Color AvailableColor = new(1f, 0.83f, 0.22f, 1f);
+        public static readonly Color InProgressColor = new(0.5f, 0.82f, 1f, 1f);
+
         public static Sprite HeaderCardSprite => LoadSprite("dialogue_panel");
         public static Sprite BriefingCardSprite => LoadSprite("mission_card");
         public static Sprite PlayerCardSprite => LoadSprite("player_card");
@@ -57,15 +69,94 @@ namespace EnglishQuest.PortfolioDemo
 
             if (titleText != null)
             {
-                titleText.color = new Color(1f, 0.82f, 0.34f, 1f);
+                titleText.color = WarmHeadingColor;
                 titleText.fontStyle = FontStyles.Bold;
             }
 
             if (bodyText != null)
             {
-                bodyText.color = new Color(0.96f, 0.98f, 1f, 1f);
+                bodyText.color = BodyTextColor;
                 bodyText.fontStyle = FontStyles.Normal;
             }
+        }
+
+        public static void ApplyMiniGameSurface(Image image)
+        {
+            ApplyPanelSprite(image, DialogueCardSprite);
+        }
+
+        public static void ApplyTileSurface(Image image, TMP_Text label, bool isUsed)
+        {
+            if (image != null)
+                ApplyPanelSprite(image, PrimaryButtonSprite, isUsed ? new Color(1f, 1f, 1f, 0.46f) : Color.white);
+
+            if (label != null)
+            {
+                label.color = isUsed ? new Color(0.82f, 0.85f, 0.9f, 0.85f) : WarmHeadingColor;
+                label.fontStyle = FontStyles.Bold;
+                label.fontSize = Mathf.Max(label.fontSize, 24f);
+            }
+        }
+
+        public static void ApplySlotSurface(Image image, TMP_Text label, bool isFilled, bool isPreFilled)
+        {
+            if (image != null)
+            {
+                Color tint = isPreFilled
+                    ? new Color(0.2f, 0.26f, 0.4f, 0.94f)
+                    : isFilled
+                        ? SlotFilledColor
+                        : SlotGlowColor;
+                ApplyPanelSprite(image, SecondaryButtonSprite, tint);
+            }
+
+            if (label != null)
+            {
+                label.color = isFilled || isPreFilled ? BodyTextColor : AccentMintColor;
+                label.fontStyle = FontStyles.Bold;
+                label.fontSize = Mathf.Max(label.fontSize, 22f);
+            }
+        }
+
+        public static void ApplySectionHeading(TextMeshProUGUI label)
+        {
+            if (label == null)
+                return;
+
+            label.color = WarmHeadingColor;
+            label.fontStyle = FontStyles.Bold;
+        }
+
+        public static void ApplyBodyLabel(TextMeshProUGUI label)
+        {
+            if (label == null)
+                return;
+
+            label.color = BodyTextColor;
+        }
+
+        public static string GetNpcIndicatorText(QuestNpcIndicatorState state)
+        {
+            return state switch
+            {
+                QuestNpcIndicatorState.Available => "AVAILABLE",
+                QuestNpcIndicatorState.InProgress => "ACTIVE",
+                QuestNpcIndicatorState.TurnIn => "READY",
+                QuestNpcIndicatorState.Locked => "LOCKED",
+                _ => string.Empty
+            };
+        }
+
+        public static Color GetNpcIndicatorColor(QuestNpcIndicatorState state)
+        {
+            return state switch
+            {
+                QuestNpcIndicatorState.Available => AvailableColor,
+                QuestNpcIndicatorState.InProgress => InProgressColor,
+                QuestNpcIndicatorState.TurnIn => TurnInColor,
+                QuestNpcIndicatorState.Locked => LockedColor,
+                _ => Color.white
+            };
         }
 
         private static void ApplyButtonStyle(Button button, Sprite sprite, Color textColor)

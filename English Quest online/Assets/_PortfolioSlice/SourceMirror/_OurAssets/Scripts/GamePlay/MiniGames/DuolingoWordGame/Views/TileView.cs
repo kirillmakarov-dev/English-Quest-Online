@@ -1,4 +1,5 @@
 using System;
+using EnglishQuest.PortfolioDemo;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -19,6 +20,7 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
     {
         [SerializeField] private TextMeshProUGUI _label;
         [SerializeField] private float _usedAlpha = 0.35f;
+        [SerializeField] private Image _backgroundImage;
 
         private CanvasGroup _canvasGroup;
         private Canvas _rootCanvas;
@@ -44,8 +46,13 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             _canvasGroup = GetComponent<CanvasGroup>();
             _rootCanvas = GetComponentInParent<Canvas>()?.rootCanvas;
 
+            if (_backgroundImage == null)
+                _backgroundImage = GetComponent<Image>();
+
             if (_label != null)
                 _label.text = DisplayValue;
+
+            PortfolioThemeResources.ApplyTileSurface(_backgroundImage, _label, isUsed: false);
         }
 
         public void SetUsed(bool isUsed)
@@ -54,6 +61,7 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             _canvasGroup.alpha = isUsed ? _usedAlpha : 1f;
             _canvasGroup.interactable = !isUsed;
             _canvasGroup.blocksRaycasts = !isUsed;
+            PortfolioThemeResources.ApplyTileSurface(_backgroundImage, _label, isUsed);
         }
 
         // ── IPointerClickHandler ─────────────────────────────────────────────

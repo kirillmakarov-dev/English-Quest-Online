@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using EnglishQuest.PortfolioDemo;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -14,6 +15,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
         [SerializeField] private RectTransform dropZone;
         [SerializeField] private RectTransform anchorPoint;
         [SerializeField] private GameObject highlightObject;
+        [SerializeField] private Image backgroundImage;
         [SerializeField] private Color normalTextColor = Color.white;
         [SerializeField] private Color wrongFeedbackColor = new Color(1f, 0.35f, 0.35f);
         [SerializeField] private float wrongFeedbackDuration = 0.2f;
@@ -40,6 +42,9 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             {
                 illustrationImage.raycastTarget = false;
             }
+
+            if (backgroundImage == null)
+                backgroundImage = GetComponent<Image>();
         }
 
         public void Bind(string id, string maskedWord, Sprite image)
@@ -54,6 +59,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             }
 
             SetHighlighted(false);
+            PortfolioThemeResources.ApplySlotSurface(backgroundImage, wordText, isFilled: false, isPreFilled: false);
         }
 
         public void ShowMaskedWord(string maskedWord)
@@ -70,6 +76,8 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             {
                 wordText.text = resolvedWord;
             }
+
+            PortfolioThemeResources.ApplySlotSurface(backgroundImage, wordText, isFilled: true, isPreFilled: false);
         }
 
         public void SetWordText(string displayWord)
@@ -87,6 +95,9 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             if (highlightObject != null)
             {
                 highlightObject.SetActive(isHighlighted);
+
+                if (highlightObject.TryGetComponent(out Image highlightImage))
+                    highlightImage.color = new Color(PortfolioThemeResources.AccentMintColor.r, PortfolioThemeResources.AccentMintColor.g, PortfolioThemeResources.AccentMintColor.b, isHighlighted ? 0.26f : 0f);
             }
         }
 
@@ -124,10 +135,7 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
 
             yield return new WaitForSeconds(wrongFeedbackDuration);
 
-            if (wordText != null)
-            {
-                wordText.color = normalTextColor;
-            }
+            PortfolioThemeResources.ApplySlotSurface(backgroundImage, wordText, isFilled: false, isPreFilled: false);
 
             wrongFeedbackRoutine = null;
         }

@@ -237,7 +237,7 @@ namespace EnglishQuest.PortfolioDemo
                 headerCardRoot.anchorMax = new Vector2(0f, 1f);
                 headerCardRoot.pivot = new Vector2(0f, 1f);
                 headerCardRoot.anchoredPosition = new Vector2(16f, -16f);
-                headerCardRoot.sizeDelta = new Vector2(860f, 136f);
+                headerCardRoot.sizeDelta = new Vector2(900f, 146f);
 
                 Image background = card.AddComponent<Image>();
                 background.color = new Color(0.02f, 0.05f, 0.07f, 0.78f);
@@ -283,20 +283,21 @@ namespace EnglishQuest.PortfolioDemo
                 statusText.transform.SetParent(headerCardRoot, false);
 
             titleText.text = "ENGLISH QUEST ONLINE\nOpen-World Quest Portfolio Slice";
-            titleText.fontSize = 28f;
+            titleText.fontSize = 30f;
             titleText.fontStyle = FontStyles.Bold;
             titleText.color = new Color(0.97f, 0.98f, 1f, 1f);
             titleText.alignment = TextAlignmentOptions.TopLeft;
             titleText.textWrappingMode = TextWrappingModes.Normal;
+            titleText.lineSpacing = -10f;
             titleText.rectTransform.anchorMin = new Vector2(0f, 1f);
             titleText.rectTransform.anchorMax = new Vector2(0f, 1f);
             titleText.rectTransform.pivot = new Vector2(0f, 1f);
             titleText.rectTransform.anchoredPosition = new Vector2(24f, -34f);
-            titleText.rectTransform.sizeDelta = new Vector2(760f, 62f);
+            titleText.rectTransform.sizeDelta = new Vector2(790f, 66f);
 
             controlsText.text =
                 "3 learning stages · Optional 2 Players via Photon Fusion\nWASD Move · Mouse Look · Space Jump · E Interact";
-            controlsText.fontSize = 16f;
+            controlsText.fontSize = 17f;
             controlsText.fontStyle = FontStyles.Normal;
             controlsText.color = new Color(0.8f, 0.91f, 0.95f, 0.96f);
             controlsText.alignment = TextAlignmentOptions.TopLeft;
@@ -345,7 +346,7 @@ namespace EnglishQuest.PortfolioDemo
             playerPanelRoot.anchorMax = new Vector2(0f, 1f);
             playerPanelRoot.pivot = new Vector2(0f, 1f);
             playerPanelRoot.anchoredPosition = new Vector2(24f, -164f);
-            playerPanelRoot.sizeDelta = new Vector2(340f, 172f);
+            playerPanelRoot.sizeDelta = new Vector2(356f, 188f);
 
             Image panelBackground = panel.AddComponent<Image>();
             panelBackground.color = new Color(0.02f, 0.05f, 0.06f, 0.78f);
@@ -353,7 +354,7 @@ namespace EnglishQuest.PortfolioDemo
 
             VerticalLayoutGroup layout = panel.AddComponent<VerticalLayoutGroup>();
             layout.padding = new RectOffset(14, 14, 10, 12);
-            layout.spacing = 7f;
+            layout.spacing = 8f;
             layout.childControlWidth = true;
             layout.childControlHeight = true;
             layout.childForceExpandWidth = true;
@@ -449,7 +450,7 @@ namespace EnglishQuest.PortfolioDemo
             demoBriefingRoot.anchorMax = new Vector2(1f, 1f);
             demoBriefingRoot.pivot = new Vector2(1f, 1f);
             demoBriefingRoot.anchoredPosition = new Vector2(-24f, -24f);
-            demoBriefingRoot.sizeDelta = new Vector2(500f, 220f);
+            demoBriefingRoot.sizeDelta = new Vector2(520f, 236f);
 
             Image panelBackground = panel.AddComponent<Image>();
             panelBackground.color = new Color(0.02f, 0.05f, 0.06f, 0.78f);
@@ -458,7 +459,7 @@ namespace EnglishQuest.PortfolioDemo
 
             VerticalLayoutGroup layout = panel.AddComponent<VerticalLayoutGroup>();
             layout.padding = new RectOffset(16, 16, 12, 14);
-            layout.spacing = 8f;
+            layout.spacing = 9f;
             layout.childControlWidth = true;
             layout.childControlHeight = true;
             layout.childForceExpandWidth = true;
@@ -805,6 +806,7 @@ namespace EnglishQuest.PortfolioDemo
 
                 Image rowBackground = row.AddComponent<Image>();
                 rowBackground.color = new Color(1f, 1f, 1f, 0.08f);
+                PortfolioThemeResources.ApplyPanelSprite(rowBackground, PortfolioThemeResources.SecondaryButtonSprite, new Color(1f, 1f, 1f, 0.09f));
                 playerRowBackgrounds.Add(rowBackground);
 
                 HorizontalLayoutGroup rowLayout = row.AddComponent<HorizontalLayoutGroup>();
