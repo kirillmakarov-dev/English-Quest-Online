@@ -63,6 +63,7 @@ public class QuestLineRegistrar : MonoBehaviour
 
         RegisterQuestLines(questService, lines);
         RegisterAvailabilityService();
+        BindNpcQuestGivers(lines);
         RegisterObjectiveRuntime(questService, lines);
         EnsureWorldTargetRegistry();
         EnsureObjectiveIndicatorDirector();
@@ -167,6 +168,7 @@ public class QuestLineRegistrar : MonoBehaviour
 
         var seenLineIds = new HashSet<string>();
         var seenQuestIds = new HashSet<string>();
+        var seenNpcIds = new HashSet<string>();
 
         for (int i = 0; i < lines.Count; i++)
         {
@@ -183,9 +185,21 @@ public class QuestLineRegistrar : MonoBehaviour
                 return false;
             }
 
+            if (string.IsNullOrWhiteSpace(line.npcId))
+            {
+                AppLog.Error($"[QuestLineRegistrar] Quest line '{line.lineId}' has an empty npcId.", this);
+                return false;
+            }
+
             if (!seenLineIds.Add(line.lineId))
             {
                 AppLog.Error($"[QuestLineRegistrar] Duplicate line id '{line.lineId}' detected.", this);
+                return false;
+            }
+
+            if (!seenNpcIds.Add(line.npcId))
+            {
+                AppLog.Error($"[QuestLineRegistrar] Duplicate npc id '{line.npcId}' detected across quest lines.", this);
                 return false;
             }
 
@@ -227,6 +241,39 @@ public class QuestLineRegistrar : MonoBehaviour
         }
 
         return true;
+    }
+
+    private void BindNpcQuestGivers(IReadOnlyList<QuestLineSO> lines)
+    {
+        if (lines == null || lines.Count == 0)
+            return;
+
+        var lineByNpcId = new Dictionary<string, QuestLineSO>();
+        for (int i = 0; i < lines.Count; i++)
+        {
+            QuestLineSO line = lines[i];
+            if (line == null || string.IsNullOrWhiteSpace(line.npcId))
+                continue;
+
+            lineByNpcId[line.npcId] = line;
+        }
+
+        NpcQuestGiver[] givers = FindObjectsByType<NpcQuestGiver>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < givers.Length; i++)
+        {
+            NpcQuestGiver giver = givers[i];
+            if (giver == null)
+                continue;
+
+            string npcId = giver.NpcId;
+            if (string.IsNullOrWhiteSpace(npcId))
+                continue;
+
+            if (!lineByNpcId.TryGetValue(npcId, out QuestLineSO line) || line == null)
+                continue;
+
+            giver.AssignQuestLine(line);
+        }
     }
 
     private QuestCatalogSO ResolveQuestCatalog()

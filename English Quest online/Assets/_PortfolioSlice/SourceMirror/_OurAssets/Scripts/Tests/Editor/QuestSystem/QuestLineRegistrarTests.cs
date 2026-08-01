@@ -135,6 +135,34 @@ namespace EnglishQuest.Tests.QuestSystem
         }
 
         [Test]
+        public void Awake_FromRegistry_BindsNpcQuestGiverQuestLineByNpcId()
+        {
+            QuestDefinitionSO q01 = QuestSystemTestSupport.CreateDefinition("q01", "teacher_maya");
+            q01.objectives = new List<QuestObjectiveDefinition>
+            {
+                new QuestObjectiveDefinition { type = QuestObjectiveType.EnterArea, targetId = "area_a" }
+            };
+
+            var line = ScriptableObject.CreateInstance<QuestLineSO>();
+            line.lineId = "line_teacher";
+            line.npcId = "teacher_maya";
+            line.quests = new List<QuestDefinitionSO> { q01 };
+            _createdAssets.Add(line);
+
+            var registry = ScriptableObject.CreateInstance<QuestLineRegistrySO>();
+            registry.questLines = new List<QuestLineSO> { line };
+            _createdAssets.Add(registry);
+
+            NpcQuestGiver giver = CreateNpcQuestGiver("teacher_maya");
+            Assert.That(giver.QuestLine, Is.Null);
+
+            QuestLineRegistrar registrar = CreateRegistrarWithRegistry(registry);
+            QuestSystemTestSupport.InvokeAwake(registrar);
+
+            Assert.That(giver.QuestLine, Is.SameAs(line));
+        }
+
+        [Test]
         public void Awake_DuplicateLineIds_StopsRegistration()
         {
             QuestDefinitionSO q01 = QuestSystemTestSupport.CreateDefinition("q01", "teacher_maya");

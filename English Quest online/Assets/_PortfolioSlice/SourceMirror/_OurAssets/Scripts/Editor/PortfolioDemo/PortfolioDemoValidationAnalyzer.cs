@@ -421,6 +421,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
 
             infos.Add($"Quest line build spec loaded: {spec.name}");
             spec.CollectValidationIssues(errors, warnings);
+            ValidateQuestLineBuildSpecRuntimeBindings(spec, errors, warnings);
 
             if (spec.profile != null)
             {
@@ -468,6 +469,84 @@ namespace EnglishQuest.Editor.PortfolioDemo
                     }
 
                     ValidateMiniGameConfig(entry.id, objectiveIndex, objective.miniGameConfig, errors);
+                }
+            }
+        }
+
+        private static void ValidateQuestLineBuildSpecRuntimeBindings(
+            QuestLineBuildSpecSO spec,
+            List<string> errors,
+            List<string> warnings)
+        {
+            if (spec == null)
+                return;
+
+            if (spec.runtimeLine != null)
+            {
+                if (!string.IsNullOrWhiteSpace(spec.lineId) && spec.runtimeLine.lineId != spec.lineId)
+                {
+                    warnings.Add(
+                        $"Quest line build spec '{spec.name}' runtime line '{spec.runtimeLine.name}' has lineId '{spec.runtimeLine.lineId}' " +
+                        $"instead of '{spec.lineId}'. Re-apply the build spec.");
+                }
+
+                if (!string.IsNullOrWhiteSpace(spec.npcId) && spec.runtimeLine.npcId != spec.npcId)
+                {
+                    warnings.Add(
+                        $"Quest line build spec '{spec.name}' runtime line '{spec.runtimeLine.name}' has npcId '{spec.runtimeLine.npcId}' " +
+                        $"instead of '{spec.npcId}'. Re-apply the build spec.");
+                }
+            }
+
+            if (spec.registries != null)
+            {
+                for (int i = 0; i < spec.registries.Count; i++)
+                {
+                    QuestLineRegistrySO registry = spec.registries[i];
+                    if (registry == null)
+                    {
+                        warnings.Add($"Quest line build spec '{spec.name}' has a null registry reference at index {i}.");
+                        continue;
+                    }
+
+                    if (spec.runtimeLine != null &&
+                        (registry.questLines == null || !registry.questLines.Contains(spec.runtimeLine)))
+                    {
+                        warnings.Add(
+                            $"Quest line build spec '{spec.name}' runtime line '{spec.runtimeLine.name}' is not included in registry '{registry.name}'.");
+                    }
+                }
+            }
+
+            if (spec.quests == null)
+                return;
+
+            for (int i = 0; i < spec.quests.Count; i++)
+            {
+                QuestBuildEntry entry = spec.quests[i];
+                if (entry == null || entry.runtimeDefinition == null)
+                    continue;
+
+                if (!string.IsNullOrWhiteSpace(entry.id) && entry.runtimeDefinition.id != entry.id)
+                {
+                    warnings.Add(
+                        $"Quest build entry '{entry.id}' in '{spec.name}' is out of sync with runtime definition '{entry.runtimeDefinition.name}'. " +
+                        $"Expected id '{entry.id}', found '{entry.runtimeDefinition.id}'.");
+                }
+
+                if (!string.IsNullOrWhiteSpace(spec.npcId) && entry.runtimeDefinition.giverNpcId != spec.npcId)
+                {
+                    warnings.Add(
+                        $"Quest build entry '{entry.id}' in '{spec.name}' runtime definition '{entry.runtimeDefinition.name}' has giverNpcId '{entry.runtimeDefinition.giverNpcId}' " +
+                        $"instead of '{spec.npcId}'.");
+                }
+
+                if (entry.objectives != null && entry.runtimeDefinition.objectives != null &&
+                    entry.objectives.Count != entry.runtimeDefinition.objectives.Count)
+                {
+                    warnings.Add(
+                        $"Quest build entry '{entry.id}' in '{spec.name}' has {entry.objectives.Count} objectives, " +
+                        $"but runtime definition '{entry.runtimeDefinition.name}' has {entry.runtimeDefinition.objectives.Count}. Re-apply the build spec.");
                 }
             }
         }

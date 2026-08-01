@@ -469,6 +469,53 @@ namespace EnglishQuest.Tests
         }
 
         [Test]
+        public void ValidateQuestLineBuildSpec_ReportsOutOfSyncRuntimeBindings()
+        {
+            QuestLineBuildSpecSO spec = ScriptableObject.CreateInstance<QuestLineBuildSpecSO>();
+            spec.lineId = "line_teacher_ada";
+            spec.npcId = "teacher_ada";
+            spec.runtimeLine = ScriptableObject.CreateInstance<QuestLineSO>();
+            spec.runtimeLine.lineId = "line_wrong";
+            spec.runtimeLine.npcId = "npc_wrong";
+
+            QuestDefinitionSO runtimeDefinition = ScriptableObject.CreateInstance<QuestDefinitionSO>();
+            runtimeDefinition.id = "quest_wrong";
+            runtimeDefinition.giverNpcId = "npc_wrong";
+            runtimeDefinition.objectives = new List<QuestObjectiveDefinition>();
+
+            QuestLineRegistrySO registry = ScriptableObject.CreateInstance<QuestLineRegistrySO>();
+            spec.registries = new List<QuestLineRegistrySO> { registry };
+            spec.quests = new List<QuestBuildEntry>
+            {
+                new()
+                {
+                    id = "quest_teacher_ada_letters",
+                    runtimeDefinition = runtimeDefinition,
+                    objectives = new List<QuestObjectiveDefinition>
+                    {
+                        new()
+                        {
+                            type = QuestObjectiveType.CompleteMiniGame,
+                            targetId = "line_match",
+                            miniGameConfig = CreateLineMatchConfig("line_match")
+                        }
+                    }
+                }
+            };
+
+            var errors = new List<string>();
+            var warnings = new List<string>();
+            var infos = new List<string>();
+
+            PortfolioDemoValidationAnalyzer.ValidateQuestLineBuildSpec(spec, errors, warnings, infos);
+
+            Assert.That(warnings, Has.Some.Contains("runtime line").And.Contains("instead of 'line_teacher_ada'"));
+            Assert.That(warnings, Has.Some.Contains("is not included in registry"));
+            Assert.That(warnings, Has.Some.Contains("out of sync with runtime definition"));
+            Assert.That(warnings, Has.Some.Contains("has giverNpcId 'npc_wrong'"));
+        }
+
+        [Test]
         public void ValidateQuestRegistry_ReportsMissingSharedCatalogReferences()
         {
             QuestLineRegistrySO registry = ScriptableObject.CreateInstance<QuestLineRegistrySO>();

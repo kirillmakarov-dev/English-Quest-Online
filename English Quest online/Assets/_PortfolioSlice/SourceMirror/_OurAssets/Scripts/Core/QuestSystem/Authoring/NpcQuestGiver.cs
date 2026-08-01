@@ -19,6 +19,7 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
 
     public string InteractionPrompt => "Talk";
     public string NpcId => ResolveNpcId();
+    public QuestLineSO QuestLine => questLine;
 
     private void Awake()
     {
@@ -66,6 +67,19 @@ public class NpcQuestGiver : MonoBehaviour, IInteractable
             return npcId;
 
         return questLine != null ? questLine.npcId : null;
+    }
+
+    public void AssignQuestLine(QuestLineSO line)
+    {
+        if (line == null)
+            return;
+
+        questLine = line;
+
+        if (string.IsNullOrEmpty(npcId))
+            npcId = line.npcId;
+
+        EnsureQuestIndicator();
     }
 
     private void EnsureQuestIndicator()
