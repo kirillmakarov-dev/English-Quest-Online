@@ -20,6 +20,7 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
 
     [Header("UI References")]
     public GameObject dialoguePanel;
+    public CanvasGroup dialogueCanvasGroup;
     public Image portraitImage;
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI dialogueText;
@@ -69,9 +70,12 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
         if (textTyper == null)
             textTyper = gameObject.AddComponent<TextTyper>();
 
+        if (dialogueCanvasGroup == null && dialoguePanel != null)
+            dialogueCanvasGroup = dialoguePanel.GetComponent<CanvasGroup>();
+
         // Only hide if we aren't already active (e.g. opened via script before Awake ran)
         if (dialoguePanel != null && !isDialogueActive)
-            dialoguePanel.SetActive(false);
+            SetDialoguePanelVisible(false);
     }
 
     protected override void OnDestroy()
@@ -97,8 +101,7 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
         OnDialogueStart?.Invoke();
         currentPortrait = speakerSprite;
         if (nameText != null) nameText.text = speakerName;
-        if (dialoguePanel != null)
-            dialoguePanel.SetActive(true);
+        SetDialoguePanelVisible(true);
             
         DisplayNode(startNode);
     }
@@ -234,12 +237,27 @@ public class DialogueManager : StaticInstance<DialogueManager>, IDialogueService
             audioService.StopVoice();
         }
 
-        if (dialoguePanel != null)
-            dialoguePanel.SetActive(false);
+        SetDialoguePanelVisible(false);
             
         // Clean up choices
         ClearChoices();
         ReleaseDialogueInput();
+    }
+
+    private void SetDialoguePanelVisible(bool visible)
+    {
+        if (dialoguePanel != null)
+            dialoguePanel.SetActive(visible);
+
+        if (dialogueCanvasGroup == null && dialoguePanel != null)
+            dialogueCanvasGroup = dialoguePanel.GetComponent<CanvasGroup>();
+
+        if (dialogueCanvasGroup == null)
+            return;
+
+        dialogueCanvasGroup.alpha = visible ? 1f : 0f;
+        dialogueCanvasGroup.interactable = visible;
+        dialogueCanvasGroup.blocksRaycasts = visible;
     }
 
     private void AcquireDialogueInput(Transform localPlayer)

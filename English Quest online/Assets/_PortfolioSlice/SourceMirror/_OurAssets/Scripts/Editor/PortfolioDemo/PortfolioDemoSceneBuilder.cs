@@ -422,8 +422,10 @@ namespace EnglishQuest.Editor.PortfolioDemo
 
             GameObject managerObject = new("Dialogue Manager");
             DialogueManager manager = managerObject.AddComponent<DialogueManager>();
+            CanvasGroup dialogueCanvasGroup = panel.GetComponent<CanvasGroup>() ?? panel.AddComponent<CanvasGroup>();
             SerializedObject serializedManager = new(manager);
             serializedManager.FindProperty("dialoguePanel").objectReferenceValue = panel;
+            serializedManager.FindProperty("dialogueCanvasGroup").objectReferenceValue = dialogueCanvasGroup;
             serializedManager.FindProperty("nameText").objectReferenceValue = nameText;
             serializedManager.FindProperty("dialogueText").objectReferenceValue = dialogueText;
             serializedManager.FindProperty("choiceContainer").objectReferenceValue = choices.transform;

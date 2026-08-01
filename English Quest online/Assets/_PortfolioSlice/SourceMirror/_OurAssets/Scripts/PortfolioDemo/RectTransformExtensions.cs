@@ -18,10 +18,28 @@ namespace EnglishQuest.PortfolioDemo
         }
     }
 
+    [System.Serializable]
+    internal sealed class PortfolioThemeSpriteSet
+    {
+        [SerializeField] private Sprite headerCard;
+        [SerializeField] private Sprite briefingCard;
+        [SerializeField] private Sprite playerCard;
+        [SerializeField] private Sprite completionCard;
+        [SerializeField] private Sprite dialogueCard;
+        [SerializeField] private Sprite primaryButton;
+        [SerializeField] private Sprite secondaryButton;
+
+        public Sprite HeaderCard => headerCard;
+        public Sprite BriefingCard => briefingCard;
+        public Sprite PlayerCard => playerCard;
+        public Sprite CompletionCard => completionCard;
+        public Sprite DialogueCard => dialogueCard;
+        public Sprite PrimaryButton => primaryButton;
+        public Sprite SecondaryButton => secondaryButton;
+    }
+
     internal static class PortfolioThemeResources
     {
-        private const string ResourceRoot = "UI/PortfolioTheme/";
-
         public static readonly Color WarmHeadingColor = new(1f, 0.82f, 0.34f, 1f);
         public static readonly Color BodyTextColor = new(0.96f, 0.98f, 1f, 1f);
         public static readonly Color AccentMintColor = new(0.56f, 0.95f, 0.82f, 1f);
@@ -38,40 +56,54 @@ namespace EnglishQuest.PortfolioDemo
         private static readonly Color PrimaryButtonSurfaceColor = new(0.08f, 0.62f, 0.55f, 0.96f);
         private static readonly Color SecondaryButtonSurfaceColor = new(0.08f, 0.22f, 0.32f, 0.94f);
 
-        public static Sprite HeaderCardSprite => LoadSprite("dialogue_panel");
-        public static Sprite BriefingCardSprite => LoadSprite("mission_card");
-        public static Sprite PlayerCardSprite => LoadSprite("player_card");
-        public static Sprite CompletionCardSprite => LoadSprite("completion_panel");
-        public static Sprite DialogueCardSprite => LoadSprite("dialogue_panel");
-        public static Sprite PrimaryButtonSprite => LoadSprite("button_primary");
-        public static Sprite SecondaryButtonSprite => LoadSprite("button_secondary");
+        private static PortfolioThemeSpriteSet currentSprites;
+
+        public static Sprite HeaderCardSprite => currentSprites != null ? currentSprites.HeaderCard : null;
+        public static Sprite BriefingCardSprite => currentSprites != null ? currentSprites.BriefingCard : null;
+        public static Sprite PlayerCardSprite => currentSprites != null ? currentSprites.PlayerCard : null;
+        public static Sprite CompletionCardSprite => currentSprites != null ? currentSprites.CompletionCard : null;
+        public static Sprite DialogueCardSprite => currentSprites != null ? currentSprites.DialogueCard : null;
+        public static Sprite PrimaryButtonSprite => currentSprites != null ? currentSprites.PrimaryButton : null;
+        public static Sprite SecondaryButtonSprite => currentSprites != null ? currentSprites.SecondaryButton : null;
+
+        public static void SetSprites(PortfolioThemeSpriteSet sprites)
+        {
+            currentSprites = sprites;
+        }
 
         public static void ApplyPanelSprite(Image image, Sprite sprite, Color? tint = null)
         {
             if (image == null)
                 return;
 
-            // The generated PNG frames contain transparent padding. In Unity UI this can expose
-            // checker-like artifacts, so portfolio surfaces are rendered as solid runtime glass.
-            image.sprite = null;
-            image.type = Image.Type.Simple;
+            if (sprite != null)
+            {
+                image.sprite = sprite;
+                image.type = Image.Type.Simple;
+            }
+            else
+            {
+                image.sprite = null;
+                image.type = Image.Type.Simple;
+            }
+
             image.preserveAspect = false;
-            image.color = tint ?? PanelSurfaceColor;
+            image.color = sprite != null ? tint ?? Color.white : new Color(1f, 1f, 1f, 0f);
         }
 
         public static void ApplyPrimaryButtonStyle(Button button)
         {
-            ApplyButtonStyle(button, PrimaryButtonSprite, new Color(1f, 0.97f, 0.92f, 1f));
+            ApplyButtonStyle(button, PrimaryButtonSprite, new Color(1f, 0.97f, 0.92f, 1f), new Color(1f, 1f, 1f, 0.98f));
         }
 
         public static void ApplySecondaryButtonStyle(Button button)
         {
-            ApplyButtonStyle(button, SecondaryButtonSprite, new Color(0.93f, 0.97f, 1f, 1f));
+            ApplyButtonStyle(button, SecondaryButtonSprite, new Color(0.93f, 0.97f, 1f, 1f), new Color(1f, 1f, 1f, 0.92f));
         }
 
         public static void ApplyDialogueSurface(Image image, TextMeshProUGUI titleText, TextMeshProUGUI bodyText)
         {
-            ApplyPanelSprite(image, DialogueCardSprite);
+            ApplyPanelSprite(image, DialogueCardSprite, new Color(1f, 1f, 1f, 0.98f));
 
             if (titleText != null)
             {
@@ -88,7 +120,7 @@ namespace EnglishQuest.PortfolioDemo
 
         public static void ApplyMiniGameSurface(Image image)
         {
-            ApplyPanelSprite(image, DialogueCardSprite, new Color(0.015f, 0.07f, 0.1f, 0.94f));
+            ApplyPanelSprite(image, DialogueCardSprite, new Color(1f, 1f, 1f, 0.98f));
         }
 
         public static void ApplyTileSurface(Image image, TMP_Text label, bool isUsed)
@@ -165,19 +197,18 @@ namespace EnglishQuest.PortfolioDemo
             };
         }
 
-        private static void ApplyButtonStyle(Button button, Sprite sprite, Color textColor)
+        private static void ApplyButtonStyle(Button button, Sprite sprite, Color textColor, Color surfaceTint)
         {
             if (button == null)
                 return;
 
             Image image = button.GetComponent<Image>();
-            Color surfaceColor = sprite == PrimaryButtonSprite ? PrimaryButtonSurfaceColor : PanelAccentColor;
-            ApplyPanelSprite(image, sprite, surfaceColor);
+            ApplyPanelSprite(image, sprite, surfaceTint);
 
             ColorBlock colors = button.colors;
             colors.normalColor = Color.white;
             colors.highlightedColor = new Color(1.12f, 1.12f, 1.12f, 1f);
-            colors.pressedColor = new Color(0.78f, 0.88f, 0.9f, 1f);
+            colors.pressedColor = new Color(0.78f, 0.96f, 0.92f, 1f);
             colors.selectedColor = colors.highlightedColor;
             colors.disabledColor = new Color(1f, 1f, 1f, 0.45f);
             colors.fadeDuration = 0.15f;
@@ -193,9 +224,5 @@ namespace EnglishQuest.PortfolioDemo
             }
         }
 
-        private static Sprite LoadSprite(string assetName)
-        {
-            return Resources.Load<Sprite>(ResourceRoot + assetName);
-        }
     }
 }
