@@ -1,5 +1,4 @@
 using System;
-using EnglishQuest.PortfolioDemo;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -58,8 +57,6 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             canvasGroup.alpha = isUsed ? 0.45f : 1f;
             canvasGroup.interactable = !isUsed;
             canvasGroup.blocksRaycasts = !isUsed;
-
-            PortfolioThemeResources.ApplyTileSurface(backgroundImage, valueText, isUsed);
         }
 
         public void OnInitializePotentialDrag(PointerEventData eventData)

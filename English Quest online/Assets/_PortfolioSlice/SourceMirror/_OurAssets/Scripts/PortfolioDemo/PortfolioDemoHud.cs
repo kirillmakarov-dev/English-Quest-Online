@@ -176,7 +176,7 @@ namespace EnglishQuest.PortfolioDemo
         private void HandleDialogueEnded() => SetStatus("Dialogue completed");
         private void HandleLevelCompleted()
         {
-            completionDismissed = false;
+            completionDismissed = !HasConfiguredCompletionPanel();
             SetStatus("All lessons completed. MVP level finished.");
             UpdateCompletionPanelContent();
             ApplyState(PortfolioGameFlowState.LevelCompleted);
@@ -364,17 +364,21 @@ namespace EnglishQuest.PortfolioDemo
 
             completionCanvas = completionPanelRoot.GetComponent<Canvas>();
             completionCanvasGroup = completionPanelRoot.GetComponent<CanvasGroup>();
-            completionEyebrowText ??= FindChildText(completionPanelRoot, "Eyebrow");
+            completionEyebrowText ??= FindChildText(completionPanelRoot, "Eyebrow") ??
+                                      FindChildText(completionPanelRoot, "Section Label");
             completionTitleText ??= FindChildText(completionPanelRoot, "Title");
-            completionSupportText ??= FindChildText(completionPanelRoot, "Support");
+            completionSupportText ??= FindChildText(completionPanelRoot, "Support") ??
+                                      FindChildText(completionPanelRoot, "Current Step");
             completionBodyText ??= FindChildText(completionPanelRoot, "Body");
             completionFooterText ??= FindChildText(completionPanelRoot, "Footer");
 
             if (replayButton == null)
-                replayButton = FindChildButton(completionPanelRoot, "Replay From Start Button");
+                replayButton = FindChildButton(completionPanelRoot, "Replay From Start Button") ??
+                               FindChildButton(completionPanelRoot, "Start Again Button");
 
             if (closeCompletionButton == null)
-                closeCompletionButton = FindChildButton(completionPanelRoot, "Close Button");
+                closeCompletionButton = FindChildButton(completionPanelRoot, "Close Button") ??
+                                        FindChildButton(completionPanelRoot, "Continue Button");
 
             if (replayButton != null)
             {
@@ -693,9 +697,6 @@ namespace EnglishQuest.PortfolioDemo
 
         private void ApplyOpenWorldHudVisibility(bool isVisible)
         {
-            if (isOpenWorldHudVisible == isVisible)
-                return;
-
             isOpenWorldHudVisible = isVisible;
 
             if (openWorldHudRoots.Count == 0)
@@ -799,9 +800,21 @@ namespace EnglishQuest.PortfolioDemo
 
         private PortfolioGameFlowState CurrentStateOrFallback()
         {
-            return flowCoordinator != null
-                ? flowCoordinator.CurrentState
-                : PortfolioGameFlowState.OpenWorld;
+            if (flowCoordinator != null)
+                return flowCoordinator.CurrentState;
+
+            ResolveQuestService();
+
+            if (questService != null && questService.IsLevelCompleted)
+                return PortfolioGameFlowState.LevelCompleted;
+
+            if (IsAnyMiniGameOpen())
+                return PortfolioGameFlowState.MiniGame;
+
+            if (dialogueManager != null && dialogueManager.IsDialogueActive)
+                return PortfolioGameFlowState.Dialogue;
+
+            return PortfolioGameFlowState.OpenWorld;
         }
 
         private void HandleStateTransition(PortfolioGameFlowState previousState, PortfolioGameFlowState currentState)
@@ -863,17 +876,25 @@ namespace EnglishQuest.PortfolioDemo
 
         private void UpdateCompletionPanelContent()
         {
-            if (completionBodyText == null || completionTitleText == null || completionSupportText == null || completionFooterText == null)
-                return;
+            if (completionTitleText != null)
+                completionTitleText.text = "English Quest MVP Finished";
 
-            completionTitleText.text = "English Quest MVP Finished";
-            completionSupportText.text = "Three connected learning beats are now fully playable in one clean open-world slice.";
-            completionBodyText.text =
-                "Teacher Ada introduced the first letters.\n" +
-                "Coach Ben reinforced vocabulary through missing letters.\n" +
-                "Guide Nora completed the flow with the final lesson.";
-            completionFooterText.text =
-                "This is a portfolio prototype: solo completion remains valid, multiplayer stays optional, and you can restart from the beginning to replay the full flow.";
+            if (completionSupportText != null)
+                completionSupportText.text = "Three connected learning beats are now fully playable in one clean open-world slice.";
+
+            if (completionBodyText != null)
+            {
+                completionBodyText.text =
+                    "Teacher Ada introduced the first letters.\n" +
+                    "Coach Ben reinforced vocabulary through missing letters.\n" +
+                    "Guide Nora completed the flow with the final lesson.";
+            }
+
+            if (completionFooterText != null)
+            {
+                completionFooterText.text =
+                    "This is a portfolio prototype: solo completion remains valid, multiplayer stays optional, and you can restart from the beginning to replay the full flow.";
+            }
         }
 
         private void ReplayFromStart()
@@ -906,11 +927,23 @@ namespace EnglishQuest.PortfolioDemo
             if (completionPanelRoot == null)
                 return;
 
+            if (isVisible && !HasConfiguredCompletionPanel())
+            {
+                completionDismissed = true;
+                ReleaseCompletionInteraction();
+
+                if (completionPanelRoot.gameObject.activeSelf)
+                    completionPanelRoot.gameObject.SetActive(false);
+
+                return;
+            }
+
             if (completionPanelRoutine != null)
                 StopCoroutine(completionPanelRoutine);
 
             if (isVisible)
             {
+                bool hasInteractiveButtons = replayButton != null || closeCompletionButton != null;
                 HideTransitionOverlayImmediate();
                 completionPanelRoot.SetAsLastSibling();
                 completionPanelRoot.gameObject.SetActive(true);
@@ -923,17 +956,39 @@ namespace EnglishQuest.PortfolioDemo
 
                 if (completionCanvasGroup != null)
                 {
-                    completionCanvasGroup.interactable = true;
-                    completionCanvasGroup.blocksRaycasts = true;
+                    completionCanvasGroup.interactable = hasInteractiveButtons;
+                    completionCanvasGroup.blocksRaycasts = hasInteractiveButtons;
                 }
 
-                AcquireCompletionInteraction();
+                if (hasInteractiveButtons)
+                    AcquireCompletionInteraction();
+                else
+                    ReleaseCompletionInteraction();
+
                 completionPanelRoutine = StartCoroutine(FadeCanvasGroup(completionCanvasGroup, 1f, 0.24f, deactivateOnComplete: false));
                 return;
             }
 
             ReleaseCompletionInteraction();
             completionPanelRoutine = StartCoroutine(FadeCanvasGroup(completionCanvasGroup, 0f, 0.18f, deactivateOnComplete: true, completionPanelRoot.gameObject));
+        }
+
+        private bool HasConfiguredCompletionPanel()
+        {
+            if (completionPanelRoot == null)
+                return false;
+
+            if (completionTitleText != null ||
+                completionSupportText != null ||
+                completionBodyText != null ||
+                completionFooterText != null ||
+                replayButton != null ||
+                closeCompletionButton != null)
+            {
+                return true;
+            }
+
+            return completionPanelRoot.childCount > 0;
         }
 
         private IEnumerator FadeCanvasGroup(CanvasGroup canvasGroup, float targetAlpha, float duration, bool deactivateOnComplete, GameObject deactivateTarget = null)

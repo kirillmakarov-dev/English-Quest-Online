@@ -1,5 +1,4 @@
 using System;
-using EnglishQuest.PortfolioDemo;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -53,8 +52,6 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 
             if (_emptyIndicator != null)
                 _emptyIndicator.SetActive(isEmpty && !IsPreFilled);
-
-            PortfolioThemeResources.ApplySlotSurface(_backgroundImage, _label, isFilled: !isEmpty, isPreFilled: IsPreFilled);
         }
 
         // ── IPointerClickHandler ─────────────────────────────────────────────

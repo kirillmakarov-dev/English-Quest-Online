@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using EnglishQuest.PortfolioDemo;
 using Puzzle.Gameplay.Features.WordReveal;
 using TMPro;
 using UnityEngine;
@@ -34,9 +33,7 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
                 _screenCanvas = GetComponentInParent<Canvas>(true);
 
             ResolveCoreReferences();
-            EnsurePresentationLabels();
             ApplyOpenState(false);
-            ApplyTheme();
 
             if (_closeButton != null)
                 _closeButton.onClick.AddListener(() => CloseRequested?.Invoke());
@@ -63,12 +60,6 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
                 ApplyOpenState(false);
                 return false;
             }
-
-            if (_titleLabel != null)
-                _titleLabel.text = ResolveTitle(prompt);
-
-            if (_subtitleLabel != null)
-                _subtitleLabel.text = ResolveSubtitle(prompt);
 
             if (_promptLabel != null)
                 _promptLabel.text = prompt;
@@ -130,22 +121,6 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             _canvasGroup.blocksRaycasts = isOpen;
         }
 
-        private void ApplyTheme()
-        {
-            PortfolioThemeResources.ApplyPanelSprite(GetComponent<Image>(), PortfolioThemeResources.DialogueCardSprite);
-            PortfolioThemeResources.ApplySecondaryButtonStyle(_closeButton);
-
-            PortfolioThemeResources.ApplySectionHeading(_titleLabel);
-            PortfolioThemeResources.ApplyBodyLabel(_subtitleLabel);
-
-            if (_promptLabel != null)
-            {
-                _promptLabel.color = PortfolioThemeResources.WarmHeadingColor;
-                _promptLabel.fontStyle = FontStyles.Bold;
-                _promptLabel.fontSize = Mathf.Max(_promptLabel.fontSize, 32f);
-            }
-        }
-
         private void ResolveCoreReferences()
         {
             ResolveCoreReferences(forceRefresh: false);
@@ -184,71 +159,16 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             }
         }
 
-        private void EnsurePresentationLabels()
-        {
-            if (_titleLabel == null)
-            {
-                _titleLabel = CreateRuntimeLabel(
-                    "Lesson Title",
-                    new Vector2(36f, -26f),
-                    new Vector2(780f, 34f),
-                    16f,
-                    FontStyles.Bold,
-                    PortfolioThemeResources.WarmHeadingColor);
-            }
-
-            if (_subtitleLabel == null)
-            {
-                _subtitleLabel = CreateRuntimeLabel(
-                    "Lesson Subtitle",
-                    new Vector2(36f, -58f),
-                    new Vector2(780f, 28f),
-                    14f,
-                    FontStyles.Normal,
-                    PortfolioThemeResources.MutedTextColor);
-            }
-        }
-
-        private TextMeshProUGUI CreateRuntimeLabel(string name, Vector2 anchoredPosition, Vector2 size, float fontSize, FontStyles style, Color color)
-        {
-            GameObject textObject = new GameObject(name, typeof(RectTransform));
-            textObject.transform.SetParent(transform, false);
-
-            RectTransform rect = textObject.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(0f, 1f);
-            rect.pivot = new Vector2(0f, 1f);
-            rect.anchoredPosition = anchoredPosition;
-            rect.sizeDelta = size;
-
-            TextMeshProUGUI label = textObject.AddComponent<TextMeshProUGUI>();
-            label.fontSize = fontSize;
-            label.fontStyle = style;
-            label.color = color;
-            label.alignment = TextAlignmentOptions.TopLeft;
-            label.raycastTarget = false;
-            label.textWrappingMode = TextWrappingModes.Normal;
-            return label;
-        }
-
-        private static string ResolveTitle(string prompt)
-        {
-            if (!string.IsNullOrWhiteSpace(prompt) && prompt.Contains("_"))
-                return "Lesson Exercise - Complete the missing answer";
-
-            return "Lesson Exercise - Arrange the correct answer";
-        }
-
-        private static string ResolveSubtitle(string prompt)
-        {
-            if (!string.IsNullOrWhiteSpace(prompt) && prompt.Contains("_"))
-                return "Fill the missing piece and reinforce the new vocabulary.";
-
-            return "Read the prompt, place the answer in order, and finish the lesson cleanly.";
-        }
-
         private void StartFade(bool isOpen)
         {
+            if (!isActiveAndEnabled || !gameObject.activeInHierarchy)
+            {
+                ApplyOpenState(isOpen);
+                if (!isOpen)
+                    gameObject.SetActive(false);
+                return;
+            }
+
             if (_canvasGroup == null || _fadeDuration <= 0f)
             {
                 ApplyOpenState(isOpen);

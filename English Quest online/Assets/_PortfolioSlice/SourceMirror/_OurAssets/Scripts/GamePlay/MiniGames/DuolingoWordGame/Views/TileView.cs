@@ -1,5 +1,4 @@
 using System;
-using EnglishQuest.PortfolioDemo;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -50,8 +49,6 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 
             if (_label != null)
                 _label.text = DisplayValue;
-
-            PortfolioThemeResources.ApplyTileSurface(_backgroundImage, _label, isUsed: false);
         }
 
         public void SetUsed(bool isUsed)
@@ -62,7 +59,6 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             _canvasGroup.alpha = isUsed ? _usedAlpha : 1f;
             _canvasGroup.interactable = !isUsed;
             _canvasGroup.blocksRaycasts = !isUsed;
-            PortfolioThemeResources.ApplyTileSurface(_backgroundImage, _label, isUsed);
         }
 
         // ── IPointerClickHandler ─────────────────────────────────────────────

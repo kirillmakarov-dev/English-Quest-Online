@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityServiceLocator;
 using System;
+using System.Collections;
 
 /// <summary>
 /// Base class for any gameplay UI panel that requires mouse control.
@@ -64,9 +65,13 @@ public abstract class GameplayUIBase : MonoBehaviour
 /// </summary>
 public abstract class QuestMiniGameRuntimeBase : GameplayUIBase
 {
+    [SerializeField, Min(0f)] private float completionAutoCloseDelay = 2f;
+
     private Action _onCompleted;
     private Action _onClosed;
     private bool _completionTriggered;
+    private bool _completionPending;
+    private Coroutine _completionRoutine;
 
     public abstract string RuntimeTypeId { get; }
     public virtual bool SupportsManualClose => true;
@@ -91,9 +96,12 @@ public abstract class QuestMiniGameRuntimeBase : GameplayUIBase
 
     protected void NotifyMiniGameCompleted()
     {
+        CancelPendingCompletionRoutine();
+
         if (!IsMiniGameOpen || _completionTriggered)
             return;
 
+        _completionPending = false;
         _completionTriggered = true;
         IsMiniGameOpen = false;
 
@@ -106,8 +114,25 @@ public abstract class QuestMiniGameRuntimeBase : GameplayUIBase
         completed?.Invoke();
     }
 
+    protected void NotifyMiniGameCompletedDelayed(Action onBeforeCompleteClose)
+    {
+        if (!IsMiniGameOpen || _completionTriggered || _completionPending)
+            return;
+
+        _completionPending = true;
+        CancelPendingCompletionRoutine();
+        _completionRoutine = StartCoroutine(CompleteAfterDelayRoutine(onBeforeCompleteClose));
+    }
+
     protected void NotifyMiniGameClosed()
     {
+        if (_completionPending)
+        {
+            CancelPendingCompletionRoutine();
+            NotifyMiniGameCompleted();
+            return;
+        }
+
         if (_completionTriggered)
         {
             EndInteraction();
@@ -133,9 +158,11 @@ public abstract class QuestMiniGameRuntimeBase : GameplayUIBase
 
     protected void ResetMiniGameSessionState()
     {
+        CancelPendingCompletionRoutine();
         _onCompleted = null;
         _onClosed = null;
         _completionTriggered = false;
+        _completionPending = false;
 
         if (IsMiniGameOpen)
         {
@@ -147,5 +174,24 @@ public abstract class QuestMiniGameRuntimeBase : GameplayUIBase
     protected virtual void OnDestroy()
     {
         ResetMiniGameSessionState();
+    }
+
+    private IEnumerator CompleteAfterDelayRoutine(Action onBeforeCompleteClose)
+    {
+        if (completionAutoCloseDelay > 0f)
+            yield return new WaitForSecondsRealtime(completionAutoCloseDelay);
+
+        _completionRoutine = null;
+        NotifyMiniGameCompleted();
+        onBeforeCompleteClose?.Invoke();
+    }
+
+    private void CancelPendingCompletionRoutine()
+    {
+        if (_completionRoutine == null)
+            return;
+
+        StopCoroutine(_completionRoutine);
+        _completionRoutine = null;
     }
 }

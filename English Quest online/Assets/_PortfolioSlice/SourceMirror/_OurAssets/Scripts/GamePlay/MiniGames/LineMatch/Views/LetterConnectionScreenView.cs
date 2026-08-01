@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using EnglishQuest.PortfolioDemo;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,10 +52,8 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             }
 
             parentCanvas = GetComponentInParent<Canvas>();
-            EnsurePresentationLabels();
             EnsureCanvasReady(gameObject.activeInHierarchy);
             ApplyCanvasGroupState(gameObject.activeInHierarchy);
-            ApplyTheme();
 
             if (closeButton != null)
             {
@@ -355,67 +352,16 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
             rootCanvasGroup.blocksRaycasts = isOpen;
         }
 
-        private void ApplyTheme()
-        {
-            if (rootPanel != null)
-                PortfolioThemeResources.ApplyPanelSprite(rootPanel.GetComponent<Image>(), PortfolioThemeResources.DialogueCardSprite);
-
-            if (completePanel != null)
-                PortfolioThemeResources.ApplyPanelSprite(completePanel.GetComponent<Image>(), PortfolioThemeResources.CompletionCardSprite);
-
-            PortfolioThemeResources.ApplySecondaryButtonStyle(closeButton);
-            PortfolioThemeResources.ApplyPrimaryButtonStyle(restartButton);
-            PortfolioThemeResources.ApplySectionHeading(titleLabel);
-            PortfolioThemeResources.ApplyBodyLabel(subtitleLabel);
-            PortfolioThemeResources.ApplySectionHeading(lettersSectionLabel);
-            PortfolioThemeResources.ApplySectionHeading(wordsSectionLabel);
-        }
-
-        private void EnsurePresentationLabels()
-        {
-            if (titleLabel == null)
-                titleLabel = CreateRuntimeLabel("Lesson Title", new Vector2(34f, -26f), new Vector2(640f, 34f), 16f, FontStyles.Bold, PortfolioThemeResources.WarmHeadingColor);
-
-            if (subtitleLabel == null)
-                subtitleLabel = CreateRuntimeLabel("Lesson Subtitle", new Vector2(34f, -58f), new Vector2(700f, 28f), 14f, FontStyles.Normal, PortfolioThemeResources.MutedTextColor);
-
-            if (lettersSectionLabel == null)
-                lettersSectionLabel = CreateRuntimeLabel("Letters Label", new Vector2(34f, -108f), new Vector2(220f, 26f), 14f, FontStyles.Bold, PortfolioThemeResources.AccentMintColor);
-
-            if (wordsSectionLabel == null)
-                wordsSectionLabel = CreateRuntimeLabel("Words Label", new Vector2(704f, -108f), new Vector2(220f, 26f), 14f, FontStyles.Bold, PortfolioThemeResources.AccentMintColor);
-
-            titleLabel.text = "Lesson Exercise - Match letters to words";
-            subtitleLabel.text = "Drag the correct letter to each word and complete the first learning beat.";
-            lettersSectionLabel.text = "LETTER BANK";
-            wordsSectionLabel.text = "WORD TARGETS";
-        }
-
-        private TextMeshProUGUI CreateRuntimeLabel(string name, Vector2 anchoredPosition, Vector2 size, float fontSize, FontStyles style, Color color)
-        {
-            Transform host = rootPanel != null ? rootPanel : transform;
-            GameObject textObject = new GameObject(name, typeof(RectTransform));
-            textObject.transform.SetParent(host, false);
-
-            RectTransform rect = textObject.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(0f, 1f);
-            rect.pivot = new Vector2(0f, 1f);
-            rect.anchoredPosition = anchoredPosition;
-            rect.sizeDelta = size;
-
-            TextMeshProUGUI label = textObject.AddComponent<TextMeshProUGUI>();
-            label.fontSize = fontSize;
-            label.fontStyle = style;
-            label.color = color;
-            label.alignment = TextAlignmentOptions.TopLeft;
-            label.raycastTarget = false;
-            label.textWrappingMode = TextWrappingModes.Normal;
-            return label;
-        }
-
         private void StartFade(bool isOpen)
         {
+            if (!isActiveAndEnabled || !gameObject.activeInHierarchy)
+            {
+                ApplyCanvasGroupState(isOpen);
+                if (!isOpen)
+                    gameObject.SetActive(false);
+                return;
+            }
+
             if (rootCanvasGroup == null || fadeDuration <= 0f)
             {
                 ApplyCanvasGroupState(isOpen);

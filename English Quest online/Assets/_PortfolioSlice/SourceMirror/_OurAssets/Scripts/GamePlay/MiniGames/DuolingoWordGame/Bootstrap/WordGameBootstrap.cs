@@ -132,8 +132,7 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             if (!isCorrect)
                 return;
 
-            NotifyMiniGameCompleted();
-            presenter?.Hide();
+            NotifyMiniGameCompletedDelayed(() => presenter?.Hide());
         }
 
         private void HandlePresenterHidden()

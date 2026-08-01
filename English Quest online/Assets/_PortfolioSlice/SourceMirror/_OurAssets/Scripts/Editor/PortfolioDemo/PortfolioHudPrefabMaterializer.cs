@@ -106,13 +106,13 @@ namespace EnglishQuest.Editor.PortfolioDemo
             Set(serializedHud, "playerPanelSupportText", FindChildText(players, "Support"));
 
             Set(serializedHud, "completionPanelRoot", GetRect(completion));
-            Set(serializedHud, "completionEyebrowText", FindChildText(completion, "Eyebrow"));
+            Set(serializedHud, "completionEyebrowText", FindChildText(completion, "Eyebrow") ?? FindChildText(completion, "Section Label"));
             Set(serializedHud, "completionTitleText", FindChildText(completion, "Title"));
-            Set(serializedHud, "completionSupportText", FindChildText(completion, "Support"));
+            Set(serializedHud, "completionSupportText", FindChildText(completion, "Support") ?? FindChildText(completion, "Current Step"));
             Set(serializedHud, "completionBodyText", FindChildText(completion, "Body"));
             Set(serializedHud, "completionFooterText", FindChildText(completion, "Footer"));
-            Set(serializedHud, "replayButton", FindChildButton(completion, "Replay From Start Button"));
-            Set(serializedHud, "closeCompletionButton", FindChildButton(completion, "Close Button"));
+            Set(serializedHud, "replayButton", FindChildButton(completion, "Replay From Start Button") ?? FindChildButton(completion, "Start Again Button"));
+            Set(serializedHud, "closeCompletionButton", FindChildButton(completion, "Close Button") ?? FindChildButton(completion, "Continue Button"));
 
             Set(serializedHud, "transitionOverlayRoot", GetRect(transition));
             Set(serializedHud, "transitionOverlayCanvasGroup", ReferenceEquals(transition, null) ? null : transition.GetComponent<CanvasGroup>());
