@@ -26,6 +26,34 @@ The slice is built around a few practical goals:
 5. support multiplayer without making a second player mandatory;
 6. keep UI authorable in the scene instead of constructing important hierarchy through hidden runtime logic.
 
+## Applied principles in this slice
+
+This project does use recognizable architectural principles, but only where they solve a real problem in the slice.
+
+- **Limited Service Locator boundary**  
+  `UnityServiceLocator` is used as a composition boundary for decoupled runtime contracts. It is intentionally not the default dependency mechanism for authored scene content.
+
+- **Data-driven authoring**  
+  Quest lines, lesson order, mini-game bindings, and parts of dialogue flow are authored through `ScriptableObject` data so progression rules stay explicit and editable.
+
+- **Single responsibility**  
+  Quest progression, dialogue, HUD presentation, player locking, and multiplayer spawning are handled by separate runtime systems with narrow responsibilities.
+
+- **Event-driven progression**  
+  Mini-games report results through the objective event pipeline instead of mutating quest state directly.
+
+- **Explicit composition root**  
+  The main runtime anchors remain visible in the scene hierarchy so setup and debugging stay practical.
+
+- **Scene-authored presentation**  
+  Important UI structure lives in the scene and referenced prefabs, while runtime code binds state and behavior instead of rebuilding the interface.
+
+- **Additive multiplayer**  
+  Multiplayer is integrated as a system layer that supports the slice without redefining the solo-first learning flow.
+
+- **Validation-first maintenance**  
+  Editor tools and validators are treated as part of the architecture because they reduce authoring risk and keep the slice safer to extend.
+
 ## Runtime layers
 
 The portfolio scene is composed from six cooperating layers:

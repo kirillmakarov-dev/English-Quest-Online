@@ -108,6 +108,34 @@ These are the decisions that shape the slice more than any individual feature:
 - **Service resolution only at the right boundary**  
   The Service Locator exists to support decoupled runtime contracts, not to become the default dependency path for the whole project.
 
+## Applied architectural principles
+
+I did not want to name-drop patterns in this repository without showing where they actually matter, so these are the principles the slice really uses:
+
+- **Limited Service Locator boundary**  
+  `UnityServiceLocator` is used at scene/runtime boundaries for shared contracts such as quest, dialogue, and player-lock services. It is not the default dependency path for authored gameplay content.
+
+- **Data-driven authoring**  
+  Quest lines, prerequisites, mini-game configs, and dialogue content are authored through `ScriptableObject` data so lesson flow stays reviewable and does not collapse into scene-specific conditionals.
+
+- **Single responsibility across runtime systems**  
+  Quest progression, dialogue, HUD, player locking, and multiplayer spawning are split into focused systems instead of being merged into one large manager.
+
+- **Event-driven progression**  
+  Mini-games do not complete quests directly. They report completion through the objective pipeline, which keeps quest state centralized and easier to validate.
+
+- **Explicit composition root**  
+  The key runtime anchors are visible in the scene hierarchy, which makes setup easier to inspect and debug.
+
+- **Scene-authored UI**  
+  Important HUD, dialogue, and completion UI live in the scene and referenced prefabs, so visual work stays hand-tunable instead of being recreated invisibly at runtime.
+
+- **Additive multiplayer**  
+  Multiplayer is integrated as a real system layer, but the solo lesson flow remains valid and readable on its own.
+
+- **Validation-first tooling**  
+  Scene rebuild tools, validators, and HUD materialization support are part of the workflow so the slice stays maintainable as it grows.
+
 ## Production context
 
 This repository is not meant to represent the full product.
