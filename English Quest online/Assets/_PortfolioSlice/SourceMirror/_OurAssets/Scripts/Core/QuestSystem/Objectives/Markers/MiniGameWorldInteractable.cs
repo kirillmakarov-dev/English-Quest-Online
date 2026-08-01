@@ -116,6 +116,33 @@ namespace EnglishQuest.QuestSystem
     {
       AppLog.Info($"[MiniGameWorldInteractable] Completed '{gameId}' with score {score}. Publishing quest objective event.", this);
       QuestObjectiveEventBus.TryPublish(this, new QuestObjectiveEvents.MiniGameCompleted(gameId, score));
+      CompleteActiveObjectiveFallback(score);
+    }
+
+    private void CompleteActiveObjectiveFallback(int score)
+    {
+      if (!ServiceLocator.For(this).TryGet(out IQuestService questService) || questService == null)
+        return;
+
+      foreach (QuestInfo quest in questService.AllQuests)
+      {
+        if (quest == null || quest.state != QuestState.IN_PROGRESS || !quest.UsesObjectives())
+          continue;
+
+        int stepIndex = quest.currentStepIndex;
+        if (!quest.TryGetObjectiveDefinition(stepIndex, out QuestObjectiveDefinition definition))
+          continue;
+
+        if (definition.type != QuestObjectiveType.CompleteMiniGame || definition.targetId != gameId)
+          continue;
+
+        int minScore = definition.GetParameterInt("minScore", 0);
+        if (minScore > 0 && score < minScore)
+          continue;
+
+        questService.CompleteObjectiveStep(quest, stepIndex, gameId);
+        return;
+      }
     }
   }
 }

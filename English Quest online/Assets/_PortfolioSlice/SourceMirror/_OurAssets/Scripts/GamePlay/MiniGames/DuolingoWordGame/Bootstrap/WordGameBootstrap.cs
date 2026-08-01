@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 {
@@ -9,7 +10,10 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
     /// </summary>
     public class WordGameBootstrap : QuestMiniGameRuntimeBase
     {
+        [FormerlySerializedAs("_panelView")]
         [SerializeField] private WordGamePanelView panelView;
+
+        [FormerlySerializedAs("_viewFactory")]
         [SerializeField] private WordGameViewFactory viewFactory;
 
         private WordGamePresenter presenter;
@@ -20,6 +24,7 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 
         private void Awake()
         {
+            ResolveReferences();
             panelView?.Close();
         }
 
@@ -34,12 +39,15 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
         /// </summary>
         public void Open(IWordGameMode mode, PlayerInteraction interactor, Action onCompleted, Action onClosed)
         {
-            if (!gameObject.activeSelf)
-                gameObject.SetActive(true);
+            EnsureHierarchyActive();
+            ResolveReferences();
 
             InitializeGame(mode);
             if (presenter == null)
+            {
+                panelView?.Close();
                 return;
+            }
 
             BeginMiniGameSession(interactor, onCompleted, onClosed);
             presenter.Show();
@@ -54,6 +62,7 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
         private void InitializeGame(IWordGameMode mode)
         {
             DisposePresenter();
+            ResolveReferences();
 
             if (panelView == null || viewFactory == null || mode == null)
             {
@@ -63,6 +72,9 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 
             SlotDefinition[] slots = mode.BuildSlots();
             TileDefinition[] tiles = mode.BuildTiles();
+            AppLog.Info(
+                $"[WordGameBootstrap] Opening word game prompt='{mode.Prompt}' slots={slots.Length} tiles={tiles.Length}.",
+                this);
 
             session = new WordGameSession(slots, tiles);
 
@@ -80,9 +92,25 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             presenter.GameCompleted += HandleGameCompleted;
             presenter.Hidden += HandlePresenterHidden;
 
-            presenter.Initialize();
+            if (!presenter.Initialize())
+            {
+                AppLog.Error("[WordGameBootstrap] Word game view failed to build. Closing the panel instead of showing prefab defaults.", this);
+                DisposePresenter();
+                panelView.Close();
+                return;
+            }
+
             panelView.SetWordRevealDatabase(mode.WordRevealDatabase);
             panelView.Close();
+        }
+
+        private void ResolveReferences()
+        {
+            if (panelView == null)
+                panelView = GetComponent<WordGamePanelView>();
+
+            if (viewFactory == null)
+                viewFactory = GetComponent<WordGameViewFactory>();
         }
 
         private void DisposePresenter()
@@ -104,13 +132,25 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             if (!isCorrect)
                 return;
 
-            presenter?.Hide();
             NotifyMiniGameCompleted();
+            presenter?.Hide();
         }
 
         private void HandlePresenterHidden()
         {
             NotifyMiniGameClosed();
+        }
+
+        private void EnsureHierarchyActive()
+        {
+            Transform current = transform;
+            while (current != null)
+            {
+                if (!current.gameObject.activeSelf)
+                    current.gameObject.SetActive(true);
+
+                current = current.parent;
+            }
         }
     }
 }

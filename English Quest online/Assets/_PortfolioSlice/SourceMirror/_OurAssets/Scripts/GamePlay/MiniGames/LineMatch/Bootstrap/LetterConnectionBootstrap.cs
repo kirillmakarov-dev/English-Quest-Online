@@ -137,8 +137,8 @@ namespace Puzzle.Gameplay.MiniGames.LetterConnection
 
         private void HandleLevelCompleted()
         {
-            Presenter?.Hide();
             NotifyMiniGameCompleted();
+            Presenter?.Hide();
         }
     }
 

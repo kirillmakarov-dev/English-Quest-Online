@@ -54,6 +54,9 @@ namespace EnglishQuest.QuestSystem
     {
       context.Host.TryGetWordGameMode(out WordOrderingMode mode);
       WordGameBootstrap bootstrap = context.Host.ResolveWordGameBootstrap();
+      if (mode == null || bootstrap == null)
+        return false;
+
       mode.SetData(data);
       bootstrap.Open(mode, context.Interactor, () => context.OnCompleted?.Invoke(0), context.OnClosed);
       return true;

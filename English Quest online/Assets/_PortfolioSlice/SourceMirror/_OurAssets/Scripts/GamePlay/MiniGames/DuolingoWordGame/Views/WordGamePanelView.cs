@@ -9,11 +9,6 @@ using UnityEngine.UI;
 
 namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 {
-    /// <summary>
-    /// Root view for the word game panel.
-    /// Owns the prompt label, slot container, and tile container.
-    /// WordGameBootstrap (GameplayUIBase) owns player locking; this class only manages visuals.
-    /// </summary>
     public class WordGamePanelView : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _promptLabel;
@@ -27,7 +22,6 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
         [SerializeField] private TextMeshProUGUI _titleLabel;
         [SerializeField] private TextMeshProUGUI _subtitleLabel;
 
-        /// <summary>Raised when the player presses the close button.</summary>
         public event Action CloseRequested;
 
         private readonly List<SlotView> _slotViews = new List<SlotView>();
@@ -39,8 +33,9 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             if (_screenCanvas == null)
                 _screenCanvas = GetComponentInParent<Canvas>(true);
 
+            ResolveCoreReferences();
             EnsurePresentationLabels();
-            ApplyOpenState(gameObject.activeInHierarchy);
+            ApplyOpenState(false);
             ApplyTheme();
 
             if (_closeButton != null)
@@ -54,13 +49,20 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
         public IReadOnlyList<SlotView> SlotViews => _slotViews;
         public IReadOnlyList<TileView> TileViews => _tileViews;
 
-        /// <summary>
-        /// Clears all children and spawns new SlotViews and TileViews via the factory.
-        /// Call once when a new game round begins.
-        /// </summary>
-        public void Build(string prompt, SlotDefinition[] slots, TileDefinition[] tiles, IWordGameViewFactory factory)
+        public bool Build(string prompt, SlotDefinition[] slots, TileDefinition[] tiles, IWordGameViewFactory factory)
         {
+            ResolveCoreReferences(forceRefresh: true);
             ClearChildren();
+
+            if (_slotContainer == null || _tileContainer == null || factory == null ||
+                string.IsNullOrWhiteSpace(prompt) || slots == null || slots.Length == 0 || tiles == null || tiles.Length == 0)
+            {
+                AppLog.Error(
+                    $"[WordGamePanelView] Cannot build word game. prompt='{prompt}', slots={(slots != null ? slots.Length : -1)}, tiles={(tiles != null ? tiles.Length : -1)}, promptLabel={(_promptLabel != null)}, slotContainer={(_slotContainer != null)}, tileContainer={(_tileContainer != null)}, factory={(factory != null)}.",
+                    this);
+                ApplyOpenState(false);
+                return false;
+            }
 
             if (_titleLabel != null)
                 _titleLabel.text = ResolveTitle(prompt);
@@ -82,23 +84,24 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
                 TileView tileView = factory.CreateTile(tileDef, _tileContainer);
                 _tileViews.Add(tileView);
             }
+
+            return _slotViews.Count > 0 && _tileViews.Count > 0;
         }
 
-        /// <summary>
-        /// Forwards a word-reveal database to the <see cref="WordRevealSetup"/> sitting on
-        /// the prompt label's GameObject. Call this whenever the step changes so the
-        /// tap-to-translate feature uses the correct database for the current prompt.
-        /// Passing null disables word reveal for the current step.
-        /// </summary>
         public void SetWordRevealDatabase(WordTranslationDatabaseSO database)
         {
-            if (_promptLabel == null) return;
+            ResolveCoreReferences();
+
+            if (_promptLabel == null)
+                return;
+
             _promptLabel.GetComponent<WordRevealSetup>()?.SetDatabase(database);
         }
 
         public void Open()
         {
             EnsureHierarchyActive();
+            ResolveCoreReferences();
             EnsureCanvasReady(true);
             gameObject.SetActive(true);
             StartFade(isOpen: true);
@@ -107,6 +110,13 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
         public void Close()
         {
             EnsureCanvasReady(false);
+
+            if (!isActiveAndEnabled)
+            {
+                ApplyOpenState(false);
+                return;
+            }
+
             StartFade(isOpen: false);
         }
 
@@ -133,6 +143,44 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
                 _promptLabel.color = PortfolioThemeResources.WarmHeadingColor;
                 _promptLabel.fontStyle = FontStyles.Bold;
                 _promptLabel.fontSize = Mathf.Max(_promptLabel.fontSize, 32f);
+            }
+        }
+
+        private void ResolveCoreReferences()
+        {
+            ResolveCoreReferences(forceRefresh: false);
+        }
+
+        private void ResolveCoreReferences(bool forceRefresh)
+        {
+            if (_promptLabel == null || forceRefresh)
+            {
+                Transform prompt = FindDescendantByName(transform, "PromptLable") ??
+                                   FindDescendantByName(transform, "PromptLabel");
+                if (prompt != null)
+                    _promptLabel = prompt.GetComponent<TextMeshProUGUI>();
+            }
+
+            if (_slotContainer == null || forceRefresh)
+            {
+                Transform slotContainer = FindDescendantByName(transform, "slot container");
+                if (slotContainer != null)
+                    _slotContainer = slotContainer;
+            }
+
+            if (_tileContainer == null || forceRefresh)
+            {
+                Transform tileContainer = FindDescendantByName(transform, "tile container");
+                if (tileContainer != null)
+                    _tileContainer = tileContainer;
+            }
+
+            if (_closeButton == null || forceRefresh)
+            {
+                Transform close = FindDescendantByName(transform, "CloseButton") ??
+                                  FindDescendantByName(transform, "Pause Button");
+                if (close != null)
+                    _closeButton = close.GetComponent<Button>();
             }
         }
 
@@ -276,11 +324,44 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             _slotViews.Clear();
             _tileViews.Clear();
 
-            foreach (Transform child in _slotContainer)
-                Destroy(child.gameObject);
+            ClearContainer(_slotContainer);
+            ClearContainer(_tileContainer);
+        }
 
-            foreach (Transform child in _tileContainer)
-                Destroy(child.gameObject);
+        private static void ClearContainer(Transform container)
+        {
+            if (container == null)
+                return;
+
+            var children = new List<GameObject>();
+            foreach (Transform child in container)
+            {
+                if (child != null)
+                    children.Add(child.gameObject);
+            }
+
+            foreach (GameObject child in children)
+            {
+                if (child == null)
+                    continue;
+
+                child.SetActive(false);
+                Destroy(child);
+            }
+        }
+
+        private static Transform FindDescendantByName(Transform root, string targetName)
+        {
+            if (root == null || string.IsNullOrEmpty(targetName))
+                return null;
+
+            foreach (Transform child in root.GetComponentsInChildren<Transform>(true))
+            {
+                if (string.Equals(child.name, targetName, StringComparison.OrdinalIgnoreCase))
+                    return child;
+            }
+
+            return null;
         }
     }
 }

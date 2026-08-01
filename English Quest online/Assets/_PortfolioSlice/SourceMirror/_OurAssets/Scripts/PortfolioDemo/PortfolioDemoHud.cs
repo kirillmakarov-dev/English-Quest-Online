@@ -53,6 +53,7 @@ namespace EnglishQuest.PortfolioDemo
         private Button closeCompletionButton;
         private TextMeshProUGUI completionBodyText;
         private bool completionDismissed;
+        private Canvas completionCanvas;
         private CanvasGroup completionCanvasGroup;
         private IPlayerLockSystem completionLockSystem;
         private bool completionInteractionOwned;
@@ -517,7 +518,7 @@ namespace EnglishQuest.PortfolioDemo
             if (canvas != null)
                 host = canvas.transform;
 
-            GameObject panel = new GameObject("Completion Panel", typeof(RectTransform));
+            GameObject panel = new GameObject("Completion Panel", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster));
             panel.transform.SetParent(host, false);
 
             completionPanelRoot = panel.GetComponent<RectTransform>();
@@ -526,6 +527,13 @@ namespace EnglishQuest.PortfolioDemo
             completionPanelRoot.pivot = new Vector2(0.5f, 0.5f);
             completionPanelRoot.anchoredPosition = Vector2.zero;
             completionPanelRoot.sizeDelta = new Vector2(960f, 500f);
+
+            completionCanvas = panel.GetComponent<Canvas>();
+            completionCanvas.overrideSorting = true;
+            completionCanvas.sortingOrder = 5000;
+
+            GraphicRaycaster completionRaycaster = panel.GetComponent<GraphicRaycaster>();
+            completionRaycaster.enabled = true;
 
             Image background = panel.AddComponent<Image>();
             background.color = new Color(0.02f, 0.05f, 0.07f, 0.96f);
@@ -1213,8 +1221,22 @@ namespace EnglishQuest.PortfolioDemo
 
             if (isVisible)
             {
+                HideTransitionOverlayImmediate();
                 completionPanelRoot.SetAsLastSibling();
                 completionPanelRoot.gameObject.SetActive(true);
+                if (completionCanvas != null)
+                {
+                    completionCanvas.enabled = true;
+                    completionCanvas.overrideSorting = true;
+                    completionCanvas.sortingOrder = 5000;
+                }
+
+                if (completionCanvasGroup != null)
+                {
+                    completionCanvasGroup.interactable = true;
+                    completionCanvasGroup.blocksRaycasts = true;
+                }
+
                 AcquireCompletionInteraction();
                 completionPanelRoutine = StartCoroutine(FadeCanvasGroup(completionCanvasGroup, 1f, 0.24f, deactivateOnComplete: false));
                 return;
@@ -1235,9 +1257,10 @@ namespace EnglishQuest.PortfolioDemo
 
             float startAlpha = canvasGroup.alpha;
             float elapsed = 0f;
+            bool isCompletionOpening = canvasGroup == completionCanvasGroup && targetAlpha > 0.99f;
 
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
+            canvasGroup.interactable = isCompletionOpening;
+            canvasGroup.blocksRaycasts = isCompletionOpening;
 
             while (elapsed < duration)
             {
@@ -1303,6 +1326,25 @@ namespace EnglishQuest.PortfolioDemo
 
             transitionOverlayRoot.gameObject.SetActive(false);
             transitionOverlayRoutine = null;
+        }
+
+        private void HideTransitionOverlayImmediate()
+        {
+            if (transitionOverlayRoutine != null)
+            {
+                StopCoroutine(transitionOverlayRoutine);
+                transitionOverlayRoutine = null;
+            }
+
+            if (transitionOverlayCanvasGroup != null)
+            {
+                transitionOverlayCanvasGroup.alpha = 0f;
+                transitionOverlayCanvasGroup.interactable = false;
+                transitionOverlayCanvasGroup.blocksRaycasts = false;
+            }
+
+            if (transitionOverlayRoot != null)
+                transitionOverlayRoot.gameObject.SetActive(false);
         }
 
         private static IEnumerator LerpCanvasAlpha(CanvasGroup canvasGroup, float start, float target, float duration)

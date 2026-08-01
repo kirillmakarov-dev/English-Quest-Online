@@ -30,11 +30,10 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 
         public void Initialize(SlotDefinition definition, int index)
         {
+            ResolveReferences();
+
             SlotIndex = index;
             IsPreFilled = definition.IsPreFilled;
-
-            if (_backgroundImage == null)
-                _backgroundImage = GetComponent<Image>();
 
             if (IsPreFilled)
                 SetDisplay(definition.PreFilledDisplayValue);
@@ -45,6 +44,8 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
         /// <summary>Updates the displayed text. Pass an empty string to show the slot as empty.</summary>
         public void SetDisplay(string value)
         {
+            ResolveReferences();
+
             bool isEmpty = string.IsNullOrEmpty(value);
 
             if (_label != null)
@@ -77,6 +78,15 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             if (tile == null || tile.IsUsed) return;
 
             TileDropped?.Invoke(tile.TileId, SlotIndex);
+        }
+
+        private void ResolveReferences()
+        {
+            if (_label == null)
+                _label = GetComponentInChildren<TextMeshProUGUI>(true);
+
+            if (_backgroundImage == null)
+                _backgroundImage = GetComponent<Image>() ?? GetComponentInChildren<Image>(true);
         }
     }
 }

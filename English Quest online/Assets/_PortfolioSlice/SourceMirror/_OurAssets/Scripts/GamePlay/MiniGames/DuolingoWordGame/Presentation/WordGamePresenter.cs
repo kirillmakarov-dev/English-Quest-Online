@@ -63,11 +63,12 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             _tileDefinitions = tileDefinitions;
         }
 
-        public void Initialize()
+        public bool Initialize()
         {
             _isSuccessful = false;
 
-            _panelView.Build(_prompt, _slotDefinitions, _tileDefinitions, _factory);
+            if (!_panelView.Build(_prompt, _slotDefinitions, _tileDefinitions, _factory))
+                return false;
 
             CacheViews();
             BindViewEvents();
@@ -75,6 +76,7 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             _session.SessionChanged += RefreshAllViews;
 
             RefreshAllViews();
+            return true;
         }
 
         public void Show()

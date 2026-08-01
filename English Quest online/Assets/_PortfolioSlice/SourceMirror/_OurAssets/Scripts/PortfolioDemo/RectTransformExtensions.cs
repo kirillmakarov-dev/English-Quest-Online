@@ -33,6 +33,10 @@ namespace EnglishQuest.PortfolioDemo
         public static readonly Color TurnInColor = new(0.46f, 1f, 0.62f, 1f);
         public static readonly Color AvailableColor = new(1f, 0.83f, 0.22f, 1f);
         public static readonly Color InProgressColor = new(0.5f, 0.82f, 1f, 1f);
+        private static readonly Color PanelSurfaceColor = new(0.02f, 0.09f, 0.11f, 0.9f);
+        private static readonly Color PanelAccentColor = new(0.08f, 0.42f, 0.44f, 0.72f);
+        private static readonly Color PrimaryButtonSurfaceColor = new(0.08f, 0.62f, 0.55f, 0.96f);
+        private static readonly Color SecondaryButtonSurfaceColor = new(0.08f, 0.22f, 0.32f, 0.94f);
 
         public static Sprite HeaderCardSprite => LoadSprite("dialogue_panel");
         public static Sprite BriefingCardSprite => LoadSprite("mission_card");
@@ -44,13 +48,15 @@ namespace EnglishQuest.PortfolioDemo
 
         public static void ApplyPanelSprite(Image image, Sprite sprite, Color? tint = null)
         {
-            if (image == null || sprite == null)
+            if (image == null)
                 return;
 
-            image.sprite = sprite;
+            // The generated PNG frames contain transparent padding. In Unity UI this can expose
+            // checker-like artifacts, so portfolio surfaces are rendered as solid runtime glass.
+            image.sprite = null;
             image.type = Image.Type.Simple;
             image.preserveAspect = false;
-            image.color = tint ?? Color.white;
+            image.color = tint ?? PanelSurfaceColor;
         }
 
         public static void ApplyPrimaryButtonStyle(Button button)
@@ -82,13 +88,13 @@ namespace EnglishQuest.PortfolioDemo
 
         public static void ApplyMiniGameSurface(Image image)
         {
-            ApplyPanelSprite(image, DialogueCardSprite);
+            ApplyPanelSprite(image, DialogueCardSprite, new Color(0.015f, 0.07f, 0.1f, 0.94f));
         }
 
         public static void ApplyTileSurface(Image image, TMP_Text label, bool isUsed)
         {
             if (image != null)
-                ApplyPanelSprite(image, PrimaryButtonSprite, isUsed ? new Color(1f, 1f, 1f, 0.46f) : Color.white);
+                ApplyPanelSprite(image, PrimaryButtonSprite, isUsed ? new Color(0.14f, 0.2f, 0.24f, 0.72f) : PrimaryButtonSurfaceColor);
 
             if (label != null)
             {
@@ -106,7 +112,7 @@ namespace EnglishQuest.PortfolioDemo
                     ? new Color(0.2f, 0.26f, 0.4f, 0.94f)
                     : isFilled
                         ? SlotFilledColor
-                        : SlotGlowColor;
+                        : SecondaryButtonSurfaceColor;
                 ApplyPanelSprite(image, SecondaryButtonSprite, tint);
             }
 
@@ -165,12 +171,13 @@ namespace EnglishQuest.PortfolioDemo
                 return;
 
             Image image = button.GetComponent<Image>();
-            ApplyPanelSprite(image, sprite);
+            Color surfaceColor = sprite == PrimaryButtonSprite ? PrimaryButtonSurfaceColor : PanelAccentColor;
+            ApplyPanelSprite(image, sprite, surfaceColor);
 
             ColorBlock colors = button.colors;
             colors.normalColor = Color.white;
-            colors.highlightedColor = new Color(1f, 1f, 1f, 0.96f);
-            colors.pressedColor = new Color(0.88f, 0.9f, 0.95f, 0.92f);
+            colors.highlightedColor = new Color(1.12f, 1.12f, 1.12f, 1f);
+            colors.pressedColor = new Color(0.78f, 0.88f, 0.9f, 1f);
             colors.selectedColor = colors.highlightedColor;
             colors.disabledColor = new Color(1f, 1f, 1f, 0.45f);
             colors.fadeDuration = 0.15f;

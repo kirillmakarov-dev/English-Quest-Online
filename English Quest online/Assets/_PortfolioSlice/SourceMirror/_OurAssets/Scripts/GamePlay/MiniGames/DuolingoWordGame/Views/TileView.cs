@@ -40,14 +40,13 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 
         public void Initialize(TileDefinition definition)
         {
+            ResolveReferences();
+
             TileId = definition.Id;
             DisplayValue = definition.DisplayValue;
 
             _canvasGroup = GetComponent<CanvasGroup>();
             _rootCanvas = GetComponentInParent<Canvas>()?.rootCanvas;
-
-            if (_backgroundImage == null)
-                _backgroundImage = GetComponent<Image>();
 
             if (_label != null)
                 _label.text = DisplayValue;
@@ -57,6 +56,8 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 
         public void SetUsed(bool isUsed)
         {
+            ResolveReferences();
+
             IsUsed = isUsed;
             _canvasGroup.alpha = isUsed ? _usedAlpha : 1f;
             _canvasGroup.interactable = !isUsed;
@@ -121,6 +122,18 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
             // If the tile is still free it means no SlotView captured the drop
             if (!IsUsed)
                 DragCancelled?.Invoke(TileId);
+        }
+
+        private void ResolveReferences()
+        {
+            if (_label == null)
+                _label = GetComponentInChildren<TextMeshProUGUI>(true);
+
+            if (_backgroundImage == null)
+                _backgroundImage = GetComponent<Image>() ?? GetComponentInChildren<Image>(true);
+
+            if (_canvasGroup == null)
+                _canvasGroup = GetComponent<CanvasGroup>();
         }
     }
 }
