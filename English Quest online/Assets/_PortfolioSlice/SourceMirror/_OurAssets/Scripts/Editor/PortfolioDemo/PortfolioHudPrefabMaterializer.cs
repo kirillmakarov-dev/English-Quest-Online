@@ -1,4 +1,5 @@
 using EnglishQuest.PortfolioDemo;
+using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -19,7 +20,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
         public static void MaterializePortfolioHud()
         {
             GameObject hud = GameObject.Find("Portfolio Demo HUD");
-            if (hud == null)
+            if (ReferenceEquals(hud, null))
                 throw new System.InvalidOperationException("Portfolio Demo HUD was not found in the active scene.");
 
             EnsureFolder(PrefabFolder);
@@ -50,22 +51,22 @@ namespace EnglishQuest.Editor.PortfolioDemo
         private static GameObject FindExisting(Transform parent, string name)
         {
             Transform result = FindChildByName(parent, name);
-            if (result == null)
+            if (ReferenceEquals(result, null))
                 Debug.LogWarning($"[PortfolioHudPrefabMaterializer] '{name}' was not found. Nothing will be generated for it.");
 
-            return result != null ? result.gameObject : null;
+            return ReferenceEquals(result, null) ? null : result.gameObject;
         }
 
         private static GameObject FindDialoguePanel()
         {
             DialogueManager manager = Object.FindFirstObjectByType<DialogueManager>(FindObjectsInactive.Include);
-            if (manager == null)
+            if (ReferenceEquals(manager, null))
             {
                 Debug.LogWarning("[PortfolioHudPrefabMaterializer] DialogueManager was not found.");
                 return null;
             }
 
-            if (manager.dialoguePanel == null)
+            if (ReferenceEquals(manager.dialoguePanel, null))
             {
                 Debug.LogWarning("[PortfolioHudPrefabMaterializer] DialogueManager.dialoguePanel is not assigned.");
                 return null;
@@ -83,7 +84,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
             GameObject transition)
         {
             PortfolioDemoHud component = hud.GetComponent<PortfolioDemoHud>();
-            if (component == null)
+            if (ReferenceEquals(component, null))
                 return;
 
             SerializedObject serializedHud = new(component);
@@ -99,8 +100,8 @@ namespace EnglishQuest.Editor.PortfolioDemo
             Set(serializedHud, "demoBriefingBodyText", FindChildText(briefing, "Body"));
 
             Set(serializedHud, "playerPanelRoot", GetRect(players));
-            Transform rows = FindChildByName(players != null ? players.transform : null, "Rows");
-            Set(serializedHud, "playerListRoot", rows != null ? rows.GetComponent<RectTransform>() : null);
+            Transform rows = FindChildByName(ReferenceEquals(players, null) ? null : players.transform, "Rows");
+            Set(serializedHud, "playerListRoot", ReferenceEquals(rows, null) ? null : rows.GetComponent<RectTransform>());
             Set(serializedHud, "playerPanelTitleText", FindChildText(players, "Title"));
             Set(serializedHud, "playerPanelSupportText", FindChildText(players, "Support"));
 
@@ -114,7 +115,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
             Set(serializedHud, "closeCompletionButton", FindChildButton(completion, "Close Button"));
 
             Set(serializedHud, "transitionOverlayRoot", GetRect(transition));
-            Set(serializedHud, "transitionOverlayCanvasGroup", transition != null ? transition.GetComponent<CanvasGroup>() : null);
+            Set(serializedHud, "transitionOverlayCanvasGroup", ReferenceEquals(transition, null) ? null : transition.GetComponent<CanvasGroup>());
             Set(serializedHud, "transitionOverlayEyebrowText", FindChildText(transition, "Eyebrow"));
             Set(serializedHud, "transitionOverlayTitleText", FindChildText(transition, "Title"));
             Set(serializedHud, "transitionOverlayBodyText", FindChildText(transition, "Body"));
@@ -125,7 +126,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
         private static void WireDialogueReferences(GameObject dialoguePanel)
         {
             DialogueManager manager = Object.FindFirstObjectByType<DialogueManager>(FindObjectsInactive.Include);
-            if (manager == null || dialoguePanel == null)
+            if (ReferenceEquals(manager, null) || ReferenceEquals(dialoguePanel, null))
                 return;
 
             CanvasGroup dialogueGroup = dialoguePanel.GetComponent<CanvasGroup>();
@@ -135,7 +136,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
             serializedManager.ApplyModifiedPropertiesWithoutUndo();
 
             PortfolioDialogueVisualBridge bridge = manager.GetComponent<PortfolioDialogueVisualBridge>();
-            if (bridge == null)
+            if (ReferenceEquals(bridge, null))
                 return;
 
             SerializedObject serializedBridge = new(bridge);
@@ -146,35 +147,51 @@ namespace EnglishQuest.Editor.PortfolioDemo
 
         private static RectTransform GetRect(GameObject root)
         {
-            return root != null ? root.GetComponent<RectTransform>() : null;
+            return ReferenceEquals(root, null) ? null : root.GetComponent<RectTransform>();
         }
 
         private static TextMeshProUGUI FindChildText(GameObject root, string name)
         {
-            Transform child = FindChildByName(root != null ? root.transform : null, name);
-            return child != null ? child.GetComponent<TextMeshProUGUI>() : null;
+            Transform child = FindChildByName(ReferenceEquals(root, null) ? null : root.transform, name);
+            return ReferenceEquals(child, null) ? null : child.GetComponent<TextMeshProUGUI>();
         }
 
         private static Button FindChildButton(GameObject root, string name)
         {
-            Transform child = FindChildByName(root != null ? root.transform : null, name);
-            return child != null ? child.GetComponent<Button>() : null;
+            Transform child = FindChildByName(ReferenceEquals(root, null) ? null : root.transform, name);
+            return ReferenceEquals(child, null) ? null : child.GetComponent<Button>();
         }
 
         private static Transform FindChildByName(Transform root, string childName)
         {
-            if (root == null)
+            if (ReferenceEquals(root, null) || string.IsNullOrEmpty(childName))
                 return null;
 
-            for (int i = 0; i < root.childCount; i++)
-            {
-                Transform child = root.GetChild(i);
-                if (child.name == childName)
-                    return child;
+            HashSet<int> visited = new();
+            Stack<Transform> pending = new();
+            pending.Push(root);
 
-                Transform nested = FindChildByName(child, childName);
-                if (nested != null)
-                    return nested;
+            while (pending.Count > 0)
+            {
+                Transform current = pending.Pop();
+                if (ReferenceEquals(current, null))
+                    continue;
+
+                int id = current.GetInstanceID();
+                if (!visited.Add(id))
+                    continue;
+
+                for (int i = current.childCount - 1; i >= 0; i--)
+                {
+                    Transform child = current.GetChild(i);
+                    if (ReferenceEquals(child, null))
+                        continue;
+
+                    if (child.name == childName)
+                        return child;
+
+                    pending.Push(child);
+                }
             }
 
             return null;
@@ -182,11 +199,11 @@ namespace EnglishQuest.Editor.PortfolioDemo
 
         private static void ConnectPrefab(GameObject instance, string fileName)
         {
-            if (instance == null)
+            if (ReferenceEquals(instance, null))
                 return;
 
             string path = $"{PrefabFolder}/{fileName}";
-            PrefabUtility.SaveAsPrefabAssetAndConnect(instance, path, InteractionMode.AutomatedAction);
+            PrefabUtility.SaveAsPrefabAsset(instance, path);
         }
 
         private static void EnsureFolder(string path)
@@ -205,7 +222,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
         private static void Set(SerializedObject serializedObject, string propertyName, Object value)
         {
             SerializedProperty property = serializedObject.FindProperty(propertyName);
-            if (property != null)
+            if (!ReferenceEquals(property, null))
                 property.objectReferenceValue = value;
         }
     }

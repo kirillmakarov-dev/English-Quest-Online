@@ -2314,7 +2314,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: _Project::EnglishQuest.PortfolioDemo.PortfolioDemoHud
   interactionPrompt: {fileID: 1037276704}
-  statusText: {fileID: 0}
+  statusText: {fileID: 1224219288}
   objectiveEventBus: {fileID: 1449735629}
   dialogueManager: {fileID: 1736575874}
   themeSprites:
@@ -2325,18 +2325,18 @@ MonoBehaviour:
     dialogueCard: {fileID: 21300000, guid: 8e13e18ded409f14785c5d2902352366, type: 3}
     primaryButton: {fileID: 21300000, guid: 7b38fac88a6c6294b957ac9733535fe7, type: 3}
     secondaryButton: {fileID: 21300000, guid: 9d8d3ada243dd7e489019e18cedcfe48, type: 3}
-  headerCardRoot: {fileID: 0}
-  titleText: {fileID: 0}
-  controlsText: {fileID: 0}
-  headerEyebrowText: {fileID: 0}
-  demoBriefingRoot: {fileID: 0}
-  demoBriefingTitleText: {fileID: 0}
-  demoBriefingBodyText: {fileID: 0}
-  playerPanelRoot: {fileID: 0}
-  playerListRoot: {fileID: 0}
-  playerPanelTitleText: {fileID: 0}
-  playerPanelSupportText: {fileID: 0}
-  completionPanelRoot: {fileID: 0}
+  headerCardRoot: {fileID: 895622047}
+  titleText: {fileID: 79308852}
+  controlsText: {fileID: 1810981571}
+  headerEyebrowText: {fileID: 577702242}
+  demoBriefingRoot: {fileID: 254336237}
+  demoBriefingTitleText: {fileID: 1322330321}
+  demoBriefingBodyText: {fileID: 622349571}
+  playerPanelRoot: {fileID: 1580076871}
+  playerListRoot: {fileID: 317531159}
+  playerPanelTitleText: {fileID: 1166652067}
+  playerPanelSupportText: {fileID: 851129136}
+  completionPanelRoot: {fileID: 1756852344}
   completionEyebrowText: {fileID: 0}
   completionTitleText: {fileID: 0}
   completionSupportText: {fileID: 0}

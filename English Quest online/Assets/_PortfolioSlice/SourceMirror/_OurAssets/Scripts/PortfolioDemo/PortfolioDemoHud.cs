@@ -409,8 +409,6 @@ namespace EnglishQuest.PortfolioDemo
 
         private void RefreshPlayerPanel(bool force = false)
         {
-            EnsurePlayerPanel();
-
             if (playerPanelRoot == null || playerListRoot == null)
                 return;
 
@@ -494,8 +492,6 @@ namespace EnglishQuest.PortfolioDemo
 
         private void RefreshDemoBriefing(bool force = false)
         {
-            EnsureDemoBriefingPanel();
-
             if (!isOpenWorldHudVisible || demoBriefingTitleText == null || demoBriefingBodyText == null)
                 return;
 
@@ -756,18 +752,34 @@ namespace EnglishQuest.PortfolioDemo
 
         internal static Transform FindChildByName(Transform root, string childName)
         {
-            if (root == null)
+            if (ReferenceEquals(root, null) || string.IsNullOrEmpty(childName))
                 return null;
 
-            for (int i = 0; i < root.childCount; i++)
-            {
-                Transform child = root.GetChild(i);
-                if (child.name == childName)
-                    return child;
+            HashSet<int> visited = new();
+            Stack<Transform> pending = new();
+            pending.Push(root);
 
-                Transform nested = FindChildByName(child, childName);
-                if (nested != null)
-                    return nested;
+            while (pending.Count > 0)
+            {
+                Transform current = pending.Pop();
+                if (ReferenceEquals(current, null))
+                    continue;
+
+                int id = current.GetInstanceID();
+                if (!visited.Add(id))
+                    continue;
+
+                for (int i = current.childCount - 1; i >= 0; i--)
+                {
+                    Transform child = current.GetChild(i);
+                    if (ReferenceEquals(child, null))
+                        continue;
+
+                    if (child.name == childName)
+                        return child;
+
+                    pending.Push(child);
+                }
             }
 
             return null;
@@ -776,13 +788,13 @@ namespace EnglishQuest.PortfolioDemo
         private static TextMeshProUGUI FindChildText(Transform root, string childName)
         {
             Transform child = FindChildByName(root, childName);
-            return child != null ? child.GetComponent<TextMeshProUGUI>() : null;
+            return ReferenceEquals(child, null) ? null : child.GetComponent<TextMeshProUGUI>();
         }
 
         private static Button FindChildButton(Transform root, string childName)
         {
             Transform child = FindChildByName(root, childName);
-            return child != null ? child.GetComponent<Button>() : null;
+            return ReferenceEquals(child, null) ? null : child.GetComponent<Button>();
         }
 
         private PortfolioGameFlowState CurrentStateOrFallback()
