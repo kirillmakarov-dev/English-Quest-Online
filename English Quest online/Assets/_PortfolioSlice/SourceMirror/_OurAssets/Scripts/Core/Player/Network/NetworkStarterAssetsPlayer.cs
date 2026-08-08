@@ -145,6 +145,7 @@ public sealed class NetworkStarterAssetsPlayer : NetworkBehaviour
     private void EnsureLocalCameraFollow()
     {
         Transform target = _cameraTarget != null ? _cameraTarget : transform;
+
         var followCamera = PlayerSceneCamera.ResolveFollowCamera(gameObject.scene, transform);
         if (followCamera == null)
             return;
@@ -222,6 +223,9 @@ public sealed class NetworkStarterAssetsPlayer : NetworkBehaviour
             virtualCamera.Priority = isLocal
                 ? PlayerSceneCamera.ActivePriority
                 : PlayerSceneCamera.InactivePriority;
+
+            if (isLocal && virtualCamera.GetComponent<CinemachineThirdPersonFollow>() != null)
+                FusionPhysicsSceneCameraCollision.EnsureOn(virtualCamera);
         }
     }
 

@@ -150,8 +150,15 @@ public class PlayerSceneContext : MonoBehaviour
             CinemachineCamera[] cameras = roots[i].GetComponentsInChildren<CinemachineCamera>(true);
             for (int c = 0; c < cameras.Length; c++)
             {
-                if (cameras[c].GetComponent<CinemachineOrbitalFollow>() != null)
-                    return cameras[c];
+                CinemachineCamera camera = cameras[c];
+                if (camera == null)
+                    continue;
+
+                if (camera.GetComponent<CinemachineThirdPersonFollow>() != null)
+                    return camera;
+
+                if (camera.GetComponent<CinemachineOrbitalFollow>() != null)
+                    return camera;
             }
         }
 

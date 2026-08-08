@@ -25,8 +25,15 @@ public static class PlayerSceneCamera
             CinemachineCamera[] ownedCameras = preferredOwner.GetComponentsInChildren<CinemachineCamera>(true);
             for (int i = 0; i < ownedCameras.Length; i++)
             {
-                if (ownedCameras[i] != null && ownedCameras[i].GetComponent<CinemachineOrbitalFollow>() != null)
-                    return ownedCameras[i];
+                CinemachineCamera camera = ownedCameras[i];
+                if (camera == null)
+                    continue;
+
+                if (camera.GetComponent<CinemachineThirdPersonFollow>() != null)
+                    return camera;
+
+                if (camera.GetComponent<CinemachineOrbitalFollow>() != null)
+                    return camera;
             }
 
             for (int i = 0; i < ownedCameras.Length; i++)
@@ -51,8 +58,11 @@ public static class PlayerSceneCamera
         OutputChannels channel = ResolveRunnerOutputChannel(runner);
 
         Camera outputCamera = ResolveOutputCamera(scene);
-        if (outputCamera != null && outputCamera.TryGetComponent(out CinemachineBrain brain))
-            brain.ChannelMask = channel;
+        if (outputCamera != null)
+        {
+            if (outputCamera.TryGetComponent(out CinemachineBrain brain))
+                brain.ChannelMask = channel;
+        }
 
         ApplyOutputChannelToSceneCameras(scene, channel);
     }
@@ -63,17 +73,26 @@ public static class PlayerSceneCamera
             return null;
 
         GameObject[] roots = scene.GetRootGameObjects();
+        Camera fallbackCamera = null;
+
         for (int i = 0; i < roots.Length; i++)
         {
             Camera[] cameras = roots[i].GetComponentsInChildren<Camera>(true);
             for (int c = 0; c < cameras.Length; c++)
             {
-                if (cameras[c].TryGetComponent(out CinemachineBrain _))
-                    return cameras[c];
+                Camera camera = cameras[c];
+                if (camera == null || !camera.TryGetComponent(out CinemachineBrain _))
+                    continue;
+
+                if (fallbackCamera == null)
+                    fallbackCamera = camera;
+
+                if (camera.isActiveAndEnabled)
+                    return camera;
             }
         }
 
-        return null;
+        return fallbackCamera;
     }
 
     [Obsolete("Use PlayerSceneContext.ResolveFollowCamera or ILocalPlayerReadiness.TryGetFollowCamera instead.")]
@@ -90,6 +109,7 @@ public static class PlayerSceneCamera
         cam.Follow = target;
         cam.LookAt = target;
         cam.Priority = ActivePriority;
+        FusionPhysicsSceneCameraCollision.EnsureOn(cam);
 
         if (facing.HasValue)
             AlignOrbit(cam, facing.Value);
