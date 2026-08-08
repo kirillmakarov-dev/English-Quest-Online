@@ -384,6 +384,21 @@ For verification and reviewer-facing proof:
 - `SoloRuntimeSignoff.md`
 - `ManualVerificationChecklist.md`
 
+## Third-party environment assets and playable build
+
+The portfolio scene uses licensed third-party environment assets to present the gameplay systems in a complete visual setting. Their source files are intentionally excluded from this public repository because the asset license does not permit source redistribution.
+
+This separation keeps the repository useful for technical review without republishing another creator's work:
+
+- gameplay, quest, multiplayer, camera, UI, editor-tooling, and validation code remains available for inspection;
+- authored project structure, configuration, and technical documentation remains public;
+- screenshots and gameplay media can show the integrated visual result;
+- the downloadable build can contain the licensed assets embedded as part of the game.
+
+A fresh clone may therefore show missing environment references until the licensed package is imported by a developer who owns it. This does not affect code review, but a fully reconstructed Unity scene requires the original package and its matching metadata.
+
+There is no public playable build yet. The first downloadable portfolio build is planned after one complete quest line reaches its runtime and presentation sign-off. It will be published separately from the source repository so reviewers can either inspect the implementation or download and play the finished visual slice.
+
 ## Running the project
 
 ### Requirements

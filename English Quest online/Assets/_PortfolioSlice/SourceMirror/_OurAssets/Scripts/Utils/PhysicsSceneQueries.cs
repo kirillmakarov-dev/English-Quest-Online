@@ -75,4 +75,27 @@ public static class PhysicsSceneQueries
             layerMask,
             queryTriggerInteraction);
     }
+
+    public static int SphereCastNonAlloc(
+        Component reference,
+        Vector3 origin,
+        float radius,
+        Vector3 direction,
+        RaycastHit[] results,
+        float maxDistance,
+        int layerMask,
+        QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.Ignore)
+    {
+        if (results == null || results.Length == 0)
+            return 0;
+
+        return Resolve(reference).SphereCast(
+            origin,
+            radius,
+            direction,
+            results,
+            maxDistance,
+            layerMask,
+            queryTriggerInteraction);
+    }
 }
