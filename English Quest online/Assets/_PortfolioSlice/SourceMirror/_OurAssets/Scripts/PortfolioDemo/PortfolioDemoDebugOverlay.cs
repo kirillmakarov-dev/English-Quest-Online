@@ -27,7 +27,7 @@ namespace EnglishQuest.PortfolioDemo
             if (flowCoordinator == null)
                 flowCoordinator = GetComponent<PortfolioGameFlowCoordinator>();
 
-            optionalCoopStudyCircle = PortfolioOptionalCoopStudyCircle.FindOrCreateRuntimeInstance();
+            optionalCoopStudyCircle = PortfolioOptionalCoopStudyCircle.FindSceneInstance();
             EnsureOverlay();
             SetVisible(false);
         }
@@ -182,7 +182,7 @@ namespace EnglishQuest.PortfolioDemo
         private void AppendOptionalCoopDiagnostics(StringBuilder builder, NetworkRunner runner)
         {
             if (optionalCoopStudyCircle == null)
-                optionalCoopStudyCircle = PortfolioOptionalCoopStudyCircle.FindOrCreateRuntimeInstance();
+                optionalCoopStudyCircle = PortfolioOptionalCoopStudyCircle.FindSceneInstance();
 
             if (optionalCoopStudyCircle == null ||
                 !optionalCoopStudyCircle.TryGetSnapshot(runner, runner.LocalPlayer, out PortfolioOptionalCoopActivitySnapshot snapshot))

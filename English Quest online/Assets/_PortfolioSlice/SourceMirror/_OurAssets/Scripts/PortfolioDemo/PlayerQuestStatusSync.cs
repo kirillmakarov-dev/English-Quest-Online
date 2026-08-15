@@ -284,7 +284,7 @@ namespace EnglishQuest.PortfolioDemo
             if (Runner == null || !Runner.IsRunning || Object == null || !Object.IsValid || !Object.HasStateAuthority)
                 return baseStatus;
 
-            PortfolioOptionalCoopStudyCircle studyCircle = PortfolioOptionalCoopStudyCircle.FindOrCreateRuntimeInstance();
+            PortfolioOptionalCoopStudyCircle studyCircle = PortfolioOptionalCoopStudyCircle.FindSceneInstance();
             if (studyCircle == null ||
                 !studyCircle.TryGetSnapshot(Runner, Object.StateAuthority, out PortfolioOptionalCoopActivitySnapshot snapshot))
             {

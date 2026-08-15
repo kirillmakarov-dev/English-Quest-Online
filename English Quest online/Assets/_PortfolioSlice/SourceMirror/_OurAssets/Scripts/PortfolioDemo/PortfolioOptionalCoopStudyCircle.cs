@@ -8,7 +8,6 @@ namespace EnglishQuest.PortfolioDemo
     [AddComponentMenu("English Quest/Portfolio Demo/Optional Co-op Study Circle")]
     public sealed class PortfolioOptionalCoopStudyCircle : MonoBehaviour
     {
-        private const string DefaultObjectName = "Optional Co-op Study Circle";
         private const string RingObjectName = "Ring";
         private const string LabelObjectName = "Label";
         private const float RefreshInterval = 0.25f;
@@ -24,12 +23,13 @@ namespace EnglishQuest.PortfolioDemo
         [SerializeField] private Color activeColor = new(0.23f, 0.84f, 0.58f, 0.96f);
 
         private float nextRefreshTime;
+        private MaterialPropertyBlock ringProperties;
 
         public string ActivityName => string.IsNullOrWhiteSpace(activityName) ? "Study Circle" : activityName.Trim();
 
         private void Awake()
         {
-            EnsureRuntimeSetup();
+            ResolveSceneReferences();
             RefreshVisualState(force: true);
         }
 
@@ -48,18 +48,10 @@ namespace EnglishQuest.PortfolioDemo
             RefreshVisualState(force: false);
         }
 
-        public static PortfolioOptionalCoopStudyCircle FindOrCreateRuntimeInstance()
+        public static PortfolioOptionalCoopStudyCircle FindSceneInstance()
         {
-            PortfolioOptionalCoopStudyCircle existing = FindFirstObjectByType<PortfolioOptionalCoopStudyCircle>(
+            return FindFirstObjectByType<PortfolioOptionalCoopStudyCircle>(
                 FindObjectsInactive.Include);
-            if (existing != null)
-                return existing;
-
-            GameObject root = new(DefaultObjectName);
-            root.transform.position = new Vector3(0f, 0.03f, 2.2f);
-            PortfolioOptionalCoopStudyCircle created = root.AddComponent<PortfolioOptionalCoopStudyCircle>();
-            created.EnsureRuntimeSetup();
-            return created;
         }
 
         public bool TryGetSnapshot(NetworkRunner runner, PlayerRef localPlayer, out PortfolioOptionalCoopActivitySnapshot snapshot)
@@ -113,7 +105,7 @@ namespace EnglishQuest.PortfolioDemo
             if (!force && runner == null)
                 return;
 
-            EnsureRuntimeSetup();
+            ResolveSceneReferences();
 
             PortfolioOptionalCoopActivitySnapshot snapshot;
             bool hasSnapshot = TryGetSnapshot(runner, runner != null ? runner.LocalPlayer : default, out snapshot);
@@ -138,8 +130,14 @@ namespace EnglishQuest.PortfolioDemo
 
         private void ApplyVisualState(Color color, string text)
         {
-            if (ringRenderer != null && ringRenderer.sharedMaterial != null)
-                ringRenderer.sharedMaterial.color = color;
+            if (ringRenderer != null)
+            {
+                ringProperties ??= new MaterialPropertyBlock();
+                ringRenderer.GetPropertyBlock(ringProperties);
+                ringProperties.SetColor("_BaseColor", color);
+                ringProperties.SetColor("_Color", color);
+                ringRenderer.SetPropertyBlock(ringProperties);
+            }
 
             if (label != null)
             {
@@ -156,7 +154,7 @@ namespace EnglishQuest.PortfolioDemo
             return anchor.position;
         }
 
-        private void EnsureRuntimeSetup()
+        private void ResolveSceneReferences()
         {
             if (anchor == null)
                 anchor = transform;
@@ -167,11 +165,6 @@ namespace EnglishQuest.PortfolioDemo
             if (label == null)
                 label = FindLabel();
 
-            if (ringRenderer == null)
-                ringRenderer = CreateRingRenderer();
-
-            if (label == null)
-                label = CreateLabel();
         }
 
         private MeshRenderer FindRingRenderer()
@@ -184,45 +177,6 @@ namespace EnglishQuest.PortfolioDemo
         {
             Transform labelTransform = transform.Find(LabelObjectName);
             return labelTransform != null ? labelTransform.GetComponent<TextMeshPro>() : null;
-        }
-
-        private MeshRenderer CreateRingRenderer()
-        {
-            GameObject ring = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            ring.name = RingObjectName;
-            ring.transform.SetParent(transform, false);
-            ring.transform.localPosition = Vector3.zero;
-            ring.transform.localScale = new Vector3(radius * 2f, 0.02f, radius * 2f);
-
-            Collider ringCollider = ring.GetComponent<Collider>();
-            if (ringCollider != null)
-                Destroy(ringCollider);
-
-            MeshRenderer renderer = ring.GetComponent<MeshRenderer>();
-            Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-            renderer.sharedMaterial = new Material(shader)
-            {
-                color = idleColor,
-                name = "Optional Co-op Study Circle Material"
-            };
-
-            return renderer;
-        }
-
-        private TextMeshPro CreateLabel()
-        {
-            GameObject labelObject = new(LabelObjectName, typeof(TextMeshPro));
-            labelObject.transform.SetParent(transform, false);
-            labelObject.transform.localPosition = new Vector3(0f, 1.35f, 0f);
-            labelObject.transform.localRotation = Quaternion.Euler(25f, 180f, 0f);
-            labelObject.transform.localScale = Vector3.one * 0.18f;
-
-            TextMeshPro createdLabel = labelObject.GetComponent<TextMeshPro>();
-            createdLabel.fontSize = 4.5f;
-            createdLabel.alignment = TextAlignmentOptions.Center;
-            createdLabel.rectTransform.sizeDelta = new Vector2(15f, 5f);
-            createdLabel.textWrappingMode = TextWrappingModes.Normal;
-            return createdLabel;
         }
 
         private static NetworkRunner ResolveRunner()

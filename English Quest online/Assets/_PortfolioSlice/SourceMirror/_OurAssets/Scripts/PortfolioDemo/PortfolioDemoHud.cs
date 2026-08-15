@@ -62,6 +62,7 @@ namespace EnglishQuest.PortfolioDemo
         private CanvasGroup completionCanvasGroup;
         private IPlayerLockSystem completionLockSystem;
         private bool completionInteractionOwned;
+        private bool worldExitCompletionFlow;
         private PortfolioOptionalCoopStudyCircle optionalCoopStudyCircle;
         private Coroutine completionPanelRoutine;
         private Coroutine transitionOverlayRoutine;
@@ -176,10 +177,58 @@ namespace EnglishQuest.PortfolioDemo
         private void HandleDialogueEnded() => SetStatus("Dialogue completed");
         private void HandleLevelCompleted()
         {
+            if (worldExitCompletionFlow)
+            {
+                completionDismissed = true;
+                SetStatus("All lessons completed. The way forward is opening.");
+                ApplyState(PortfolioGameFlowState.LevelCompleted);
+                return;
+            }
+
             completionDismissed = !HasConfiguredCompletionPanel();
             SetStatus("All lessons completed. MVP level finished.");
             UpdateCompletionPanelContent();
             ApplyState(PortfolioGameFlowState.LevelCompleted);
+        }
+
+        public void UseWorldExitCompletionFlow()
+        {
+            worldExitCompletionFlow = true;
+            completionDismissed = true;
+            SetCompletionPanelVisible(false);
+        }
+
+        public void ShowPersistentTransitionOverlay(string eyebrow, string title, string body, float fadeDuration)
+        {
+            UseWorldExitCompletionFlow();
+            EnsureTransitionOverlay();
+            if (transitionOverlayRoot == null || transitionOverlayCanvasGroup == null)
+                return;
+
+            if (transitionOverlayEyebrowText != null)
+                transitionOverlayEyebrowText.text = eyebrow;
+            if (transitionOverlayTitleText != null)
+                transitionOverlayTitleText.text = title;
+            if (transitionOverlayBodyText != null)
+                transitionOverlayBodyText.text = body;
+
+            HideTransitionOverlayImmediate();
+            transitionOverlayRoot.gameObject.SetActive(true);
+            transitionOverlayRoot.SetAsLastSibling();
+            transitionOverlayCanvasGroup.alpha = 0f;
+            transitionOverlayCanvasGroup.interactable = true;
+            transitionOverlayCanvasGroup.blocksRaycasts = true;
+            transitionOverlayRoutine = StartCoroutine(FadeInPersistentTransitionOverlay(fadeDuration));
+        }
+
+        private IEnumerator FadeInPersistentTransitionOverlay(float duration)
+        {
+            yield return LerpCanvasAlpha(
+                transitionOverlayCanvasGroup,
+                0f,
+                1f,
+                Mathf.Max(0.05f, duration));
+            transitionOverlayRoutine = null;
         }
 
         private void SetStatus(string message)
