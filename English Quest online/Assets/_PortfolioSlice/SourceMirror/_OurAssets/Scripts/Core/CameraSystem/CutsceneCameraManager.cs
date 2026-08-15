@@ -39,8 +39,8 @@ namespace App.CameraSystem
             if (!_registeredCameras.ContainsKey(id))
             {
                 _registeredCameras.Add(id, cam);
-                // Ensure it starts with low priority
                 cam.Priority = _defaultPriority;
+                cam.enabled = false;
             }
             else
             {
@@ -50,8 +50,14 @@ namespace App.CameraSystem
 
         public void UnregisterCamera(string id)
         {
-            if (_registeredCameras.ContainsKey(id))
+            if (_registeredCameras.TryGetValue(id, out CinemachineCamera cam))
             {
+                if (cam != null)
+                {
+                    cam.Priority = _defaultPriority;
+                    cam.enabled = false;
+                }
+
                 _registeredCameras.Remove(id);
             }
         }
@@ -136,13 +142,15 @@ namespace App.CameraSystem
             if (!string.IsNullOrEmpty(_activeCameraId) && _registeredCameras.TryGetValue(_activeCameraId, out var prevCam))
             {
                 // Only reset if it's different. If it's the same, we just extend/refresh.
-                 if (_activeCameraId != cameraId)
+                if (_activeCameraId != cameraId)
                 {
                     prevCam.Priority = _defaultPriority;
+                    prevCam.enabled = false;
                 }
             }
 
             // Activate new camera
+            targetCam.enabled = true;
             targetCam.Priority = _activePriority;
             _activeCameraId = cameraId;
 
@@ -160,6 +168,7 @@ namespace App.CameraSystem
             yield return new WaitForSeconds(delay);
 
             cam.Priority = _defaultPriority;
+            cam.enabled = false;
             _activeCameraId = null;
             _currentSwitchRoutine = null;
 
@@ -195,6 +204,7 @@ namespace App.CameraSystem
             if (!string.IsNullOrEmpty(_activeCameraId) && _registeredCameras.TryGetValue(_activeCameraId, out var cam))
             {
                 cam.Priority = _defaultPriority;
+                cam.enabled = false;
             }
             _activeCameraId = null;
         }
@@ -207,6 +217,7 @@ namespace App.CameraSystem
                 AppLog.Warning($"[CutsceneCameraManager] Camera '{cameraId}' not found!");
                 return;
             }
+            targetCam.enabled = true;
             RPC_SwitchCameraIndefinite(cameraId);
             targetCam.Priority = _activePriority;
         }

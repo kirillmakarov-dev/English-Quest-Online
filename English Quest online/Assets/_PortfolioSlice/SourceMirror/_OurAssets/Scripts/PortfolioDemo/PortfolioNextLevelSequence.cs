@@ -27,7 +27,6 @@ namespace EnglishQuest.PortfolioDemo
         private IQuestService questService;
         private IPlayerLockSystem playerLocks;
         private Coroutine revealRoutine;
-        private int originalCameraPriority;
         private bool subscribed;
 
         public bool IsRoadOpen { get; private set; }
@@ -39,11 +38,7 @@ namespace EnglishQuest.PortfolioDemo
             hud?.UseWorldExitCompletionFlow();
             exitTrigger?.SetRoadOpen(false);
 
-            if (revealCamera != null)
-            {
-                originalCameraPriority = revealCamera.Priority.Value;
-                revealCamera.Priority = originalCameraPriority;
-            }
+            DeactivateRevealCamera();
         }
 
         private void OnEnable()
@@ -63,6 +58,7 @@ namespace EnglishQuest.PortfolioDemo
                 questService.OnLevelCompleted -= BeginReveal;
 
             subscribed = false;
+            DeactivateRevealCamera();
             ReleasePlayerLocks();
         }
 
@@ -102,7 +98,10 @@ namespace EnglishQuest.PortfolioDemo
             hud?.UseWorldExitCompletionFlow();
 
             if (revealCamera != null)
+            {
+                revealCamera.enabled = true;
                 revealCamera.Priority = revealCameraPriority;
+            }
 
             yield return new WaitForSecondsRealtime(cameraLeadIn);
 
@@ -118,11 +117,19 @@ namespace EnglishQuest.PortfolioDemo
             exitTrigger?.SetRoadOpen(true);
             yield return new WaitForSecondsRealtime(cameraHoldAfterReveal);
 
-            if (revealCamera != null)
-                revealCamera.Priority = originalCameraPriority;
+            DeactivateRevealCamera();
 
             ReleasePlayerLocks();
             revealRoutine = null;
+        }
+
+        private void DeactivateRevealCamera()
+        {
+            if (revealCamera == null)
+                return;
+
+            revealCamera.Priority = PlayerSceneCamera.InactivePriority;
+            revealCamera.enabled = false;
         }
 
         private Transform[] GetBarrierChildren()
