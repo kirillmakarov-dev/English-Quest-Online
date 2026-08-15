@@ -6,19 +6,11 @@ using UnityServiceLocator;
 [AddComponentMenu(QuestSystemComponentMenuPaths.Npc + "/Quest NPC Indicator")]
 public class QuestNpcIndicator : MonoBehaviour
 {
-    [SerializeField] private string npcId;
-    [SerializeField] private Vector3 markerOffset = new Vector3(0f, 2.25f, 0f);
-    [SerializeField] private GameObject availableMarker;
-    [SerializeField] private GameObject inProgressMarker;
-    [SerializeField] private GameObject turnInMarker;
-    [SerializeField] private GameObject lockedMarker;
-    [SerializeField] private TMP_Text availableLabel;
-    [SerializeField] private TMP_Text inProgressLabel;
-    [SerializeField] private TMP_Text turnInLabel;
-    [SerializeField] private TMP_Text lockedLabel;
+    private static readonly Vector3 DefaultMarkerOffset = new Vector3(0f, 2.25f, 0f);
 
     private IQuestService _questService;
     private IQuestAvailabilityService _availabilityService;
+    private string _npcId;
     private GameObject _defaultMarker;
     private TMP_Text _defaultLabel;
     private QuestNpcIndicatorState _currentState = QuestNpcIndicatorState.None;
@@ -27,11 +19,14 @@ public class QuestNpcIndicator : MonoBehaviour
     public void Configure(string newNpcId)
     {
         if (!string.IsNullOrEmpty(newNpcId))
-            npcId = newNpcId;
+            _npcId = newNpcId;
     }
 
     private void Start()
     {
+        if (string.IsNullOrEmpty(_npcId) && TryGetComponent(out NpcQuestGiver questGiver))
+            Configure(questGiver.NpcId);
+
         EnsureDefaultMarker();
         TrySubscribeToQuestEvents();
         RefreshIndicator();
@@ -78,53 +73,20 @@ public class QuestNpcIndicator : MonoBehaviour
 
         IQuestAvailabilityService availabilityService = ResolveAvailabilityService();
         QuestNpcIndicatorState state = availabilityService != null
-            ? availabilityService.GetBestIndicator(npcId)
+            ? availabilityService.GetBestIndicator(_npcId)
             : QuestNpcIndicatorState.None;
         _currentState = state;
-
-        bool usesDefaultMarker = HasNoAssignedMarkers();
-        if (usesDefaultMarker)
-            SetDefaultMarker(state);
-
-        SetMarker(availableMarker, availableLabel, QuestNpcIndicatorState.Available, state == QuestNpcIndicatorState.Available && !usesDefaultMarker);
-        SetMarker(inProgressMarker, inProgressLabel, QuestNpcIndicatorState.InProgress, state == QuestNpcIndicatorState.InProgress && !usesDefaultMarker);
-        SetMarker(turnInMarker, turnInLabel, QuestNpcIndicatorState.TurnIn, state == QuestNpcIndicatorState.TurnIn && !usesDefaultMarker);
-        SetMarker(lockedMarker, lockedLabel, QuestNpcIndicatorState.Locked, state == QuestNpcIndicatorState.Locked && !usesDefaultMarker);
-    }
-
-    private static void SetMarker(GameObject marker, TMP_Text label, QuestNpcIndicatorState state, bool active)
-    {
-        if (marker != null)
-            marker.SetActive(active);
-
-        if (label != null && active)
-        {
-            label.text = PortfolioThemeResources.GetNpcIndicatorText(state);
-            label.color = PortfolioThemeResources.GetNpcIndicatorColor(state);
-            label.fontStyle = FontStyles.Bold;
-        }
-    }
-
-    private bool HasNoAssignedMarkers()
-    {
-        return availableMarker == null &&
-               inProgressMarker == null &&
-               turnInMarker == null &&
-               lockedMarker == null &&
-               availableLabel == null &&
-               inProgressLabel == null &&
-               turnInLabel == null &&
-               lockedLabel == null;
+        SetDefaultMarker(state);
     }
 
     private void EnsureDefaultMarker()
     {
-        if (!HasNoAssignedMarkers() || _defaultMarker != null)
+        if (_defaultMarker != null)
             return;
 
         _defaultMarker = new GameObject("Quest Status Indicator");
         _defaultMarker.transform.SetParent(transform, false);
-        _defaultMarker.transform.localPosition = markerOffset;
+        _defaultMarker.transform.localPosition = DefaultMarkerOffset;
 
         _defaultLabel = _defaultMarker.AddComponent<TextMeshPro>();
         _defaultLabel.alignment = TextAlignmentOptions.Center;
@@ -146,34 +108,13 @@ public class QuestNpcIndicator : MonoBehaviour
         if (_defaultMarker == null || _defaultLabel == null)
             return;
 
-        switch (state)
-        {
-            case QuestNpcIndicatorState.Available:
-                SetDefaultMarker(PortfolioThemeResources.GetNpcIndicatorText(state), PortfolioThemeResources.GetNpcIndicatorColor(state), true);
-                break;
-            case QuestNpcIndicatorState.InProgress:
-                SetDefaultMarker(PortfolioThemeResources.GetNpcIndicatorText(state), PortfolioThemeResources.GetNpcIndicatorColor(state), true);
-                break;
-            case QuestNpcIndicatorState.TurnIn:
-                SetDefaultMarker(PortfolioThemeResources.GetNpcIndicatorText(state), PortfolioThemeResources.GetNpcIndicatorColor(state), true);
-                break;
-            case QuestNpcIndicatorState.Locked:
-                SetDefaultMarker(PortfolioThemeResources.GetNpcIndicatorText(state), PortfolioThemeResources.GetNpcIndicatorColor(state), true);
-                break;
-            default:
-                SetDefaultMarker(string.Empty, Color.white, false);
-                break;
-        }
-    }
-
-    private void SetDefaultMarker(string text, Color color, bool active)
-    {
+        bool active = state != QuestNpcIndicatorState.None;
         _defaultMarker.SetActive(active);
         if (!active)
             return;
 
-        _defaultLabel.text = text;
-        _defaultLabel.color = color;
+        _defaultLabel.text = PortfolioThemeResources.GetNpcIndicatorText(state);
+        _defaultLabel.color = PortfolioThemeResources.GetNpcIndicatorColor(state);
     }
 
     private void Update()
