@@ -11,11 +11,12 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb32559ad2320ff479ee839a983e59e6, type: 3}
   m_Name: QuestLine_GuideNora
+  m_EditorClassIdentifier: 
   lineId: line_guide_nora
   npcId: guide_nora
   prerequisiteLineId: line_coach_ben
   displayName: Guide Nora
-  theme: Build a full English sentence from ordered words.
-  profile: {fileID: 0}
+  theme: Practicing the material
   quests:
   - {fileID: 11400000, guid: 6630c7932ba74af0bb47c57eaa37e430, type: 2}
+  worldCatalogSet: {fileID: 0}

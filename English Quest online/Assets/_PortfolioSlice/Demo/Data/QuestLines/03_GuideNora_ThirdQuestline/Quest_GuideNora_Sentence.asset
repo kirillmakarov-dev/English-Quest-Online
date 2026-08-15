@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: Quest_GuideNora_Sentence
   m_EditorClassIdentifier: _Project::QuestDefinitionSO
   id: quest_guide_nora_choose_word
-  displayName: Lesson 3 - Build the Sentence
-  description: Arrange the words into a complete English sentence. This completes
-    the MVP questline flow from letters to words to sentences.
+  displayName: Lesson 3 - Find the letters A and B in the words...
+  description: Find the letters A and B in the words...
   levelRequired: 0
   giverNpcId: guide_nora
   prerequisiteQuest: {fileID: 0}
@@ -34,7 +33,7 @@ MonoBehaviour:
   - type: 3
     targetId: word_ordering
     count: 1
-    displayText: Arrange the words into a full sentence.
+    displayText: Find the letters A and B in the words...
     parameters: []
     miniGameConfig: {fileID: 11400000, guid: 6f00f72f2ed2cdf49bb1f08aae9346fc, type: 2}
     requiredItemId: 0

@@ -96,8 +96,6 @@ namespace EnglishQuest.Editor.PortfolioDemo
             CreateEventSystem();
             GameObject serviceLocator = new("Service Locator Global");
             serviceLocator.AddComponent<ServiceLocatorGlobal>();
-            new GameObject("Scene Camera Obstacle Colliders")
-                .AddComponent<SceneCameraObstacleColliders>();
 
             QuestObjectiveEventBus eventBus = new GameObject("Quest Objective Event Bus")
                 .AddComponent<QuestObjectiveEventBus>();

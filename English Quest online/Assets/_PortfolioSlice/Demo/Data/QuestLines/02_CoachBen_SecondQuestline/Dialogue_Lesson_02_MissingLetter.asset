@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81989726be4eb8f4da7531bae57b6ebb, type: 3}
   m_Name: Dialogue_Lesson_02_MissingLetter
   m_EditorClassIdentifier: _Project::DialogueNode
-  dialogueText: "Great work with Ada. I am Coach Ben, and now we turn letters into
-    words. Fill the missing letter, complete the word GOOD, and notice how one small
-    letter changes the whole meaning. Finish this lesson to unlock Guide Nora."
+  dialogueText: Great work with Ada. I am Coach Ben, and now we turn letters into
+    words. Fill the missing letter, complete the word BAG, and notice how one small
+    letter changes the whole meaning. Finish this lesson to unlock Guide Nora.
   speakerName: Coach Ben
   voiceClip: {fileID: 0}
   choices:
   - choiceText: Start Word Lesson
     nextNode: {fileID: 0}
   actionType: 0
-  actionParameter:
+  actionParameter: 

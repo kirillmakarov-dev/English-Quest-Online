@@ -11,7 +11,7 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
     public class LetterOrderingDataSO : ScriptableObject
     {
         [Tooltip("Text shown above the slots, e.g. a Hebrew word or 'Arrange the letters'.")]
-        [SerializeField] private string prompt = "Arrange the letters";
+        [TextArea] public string prompt = "Arrange the letters";
 
         [Tooltip("The word the player must spell, e.g. 'apple'.")]
         [SerializeField] private string targetWord;

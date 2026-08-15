@@ -12,7 +12,7 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
     public class WordOrderingDataSO : ScriptableObject
     {
         [Tooltip("The sentence shown as the prompt (any language).")]
-        [SerializeField] private string prompt;
+        [TextArea] public string prompt;
 
         [Tooltip("The English words in their correct order.")]
         [SerializeField] private string[] englishWordsInOrder;

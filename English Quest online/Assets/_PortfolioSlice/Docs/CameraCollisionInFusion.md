@@ -101,18 +101,17 @@ Extension:
 - выполняет отдельную проверку участка rig root -> hand и участка hand -> camera;
 - применяет `DampingIntoCollision` и `DampingFromCollision` из prefab камеры.
 
-### Camera blockers для архитектуры сцены
+### Коллайдеры архитектуры сцены
 
-Часть визуальной архитектуры не имела подходящих коллайдеров для камеры или использовала сложную LOD-структуру. `SceneCameraObstacleColliders` создаёт простые `BoxCollider` по bounds основных LOD-мешей зданий, стен, крыш, границ, колонн и других архитектурных объектов.
+Камера использует существующие authored-коллайдеры стен, зданий и других препятствий. Автоматическое создание дополнительных `BoxCollider` по bounds визуальных мешей удалено: такие приблизительные объёмы не совпадали с геометрией окружения и ухудшали движение камеры.
 
-Blocker-объекты помещаются на слой `CameraObstacle`. Физические столкновения этого слоя отключаются, поэтому blockers влияют на camera query, но не изменяют движение персонажей и сетевую физику.
+`FusionPhysicsSceneCameraCollision` продолжает поддерживать вручную созданные camera-only препятствия на слое `CameraObstacle`, но сцена больше не генерирует их автоматически.
 
 ## Подключение
 
 Основные файлы решения:
 
 - `Assets/_PortfolioSlice/SourceMirror/_OurAssets/Scripts/Core/Player/Network/FusionPhysicsSceneCameraCollision.cs`
-- `Assets/_PortfolioSlice/SourceMirror/_OurAssets/Scripts/Core/Player/Network/SceneCameraObstacleColliders.cs`
 - `Assets/_PortfolioSlice/SourceMirror/_OurAssets/Scripts/Core/Player/Network/PlayerSceneCamera.cs`
 - `Assets/_PortfolioSlice/SourceMirror/_OurAssets/Scripts/Core/Player/Network/NetworkStarterAssetsPlayer.cs`
 - `Assets/_PortfolioSlice/SourceMirror/_OurAssets/Scripts/Core/Player/Network/PlayerSceneContext.cs`

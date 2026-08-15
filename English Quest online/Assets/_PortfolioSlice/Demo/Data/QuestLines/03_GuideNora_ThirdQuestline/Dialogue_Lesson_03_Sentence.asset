@@ -12,13 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81989726be4eb8f4da7531bae57b6ebb, type: 3}
   m_Name: Dialogue_Lesson_03_Sentence
   m_EditorClassIdentifier: _Project::DialogueNode
-  dialogueText: "You reached the final MVP lesson. I am Guide Nora. Now we move to
-    sentence building: look at the words, put them in the right order, and show that
-    the full learning loop works from letters to a complete sentence."
+  dialogueText: "Great job! You learned the letters A and B! \nNow let\u2019s see
+    if you can find them in words."
   speakerName: Guide Nora
   voiceClip: {fileID: 0}
   choices:
-  - choiceText: Start Sentence Lesson
+  - choiceText: Start  Lesson
     nextNode: {fileID: 0}
   actionType: 0
-  actionParameter:
+  actionParameter: 
