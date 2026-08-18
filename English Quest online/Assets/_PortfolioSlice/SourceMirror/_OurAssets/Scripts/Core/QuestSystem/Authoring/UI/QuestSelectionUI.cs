@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityServiceLocator;
 
@@ -79,7 +80,7 @@ public class QuestSelectionUI : GameplayUIBase
         if (!_isOpen)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Keyboard.current?.escapeKey.wasPressedThisFrame == true)
             CancelSelection();
     }
 

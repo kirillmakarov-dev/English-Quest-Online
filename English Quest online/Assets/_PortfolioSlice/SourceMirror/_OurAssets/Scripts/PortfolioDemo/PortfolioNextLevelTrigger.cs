@@ -1,6 +1,5 @@
 using Fusion;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace EnglishQuest.PortfolioDemo
 {
@@ -10,7 +9,7 @@ namespace EnglishQuest.PortfolioDemo
     public sealed class PortfolioNextLevelTrigger : MonoBehaviour
     {
         [SerializeField] private PortfolioNextLevelSequence sequence;
-        [SerializeField] private PortfolioNextLevelCompletionView completionViewPrefab;
+        [SerializeField] private PortfolioNextLevelCompletionView completionView;
         [SerializeField] private string eyebrow = "DEMO LEVEL COMPLETE";
         [SerializeField] private string finalMessage = "Well done, you complete the demo level";
         [SerializeField] [TextArea(2, 4)] private string supportMessage = "Thank you for playing English Quest Online.";
@@ -52,20 +51,15 @@ namespace EnglishQuest.PortfolioDemo
 
         private void ShowCompletionView()
         {
-            if (completionViewPrefab == null)
+            if (completionView == null)
             {
                 Debug.LogError(
-                    $"[{nameof(PortfolioNextLevelTrigger)}] Completion view prefab is not assigned on '{name}'.",
+                    $"[{nameof(PortfolioNextLevelTrigger)}] Scene-authored completion view is not assigned on '{name}'.",
                     this);
                 return;
             }
 
-            PortfolioNextLevelCompletionView view = Instantiate(completionViewPrefab);
-            Scene targetScene = gameObject.scene;
-            if (targetScene.IsValid() && targetScene.isLoaded && view.gameObject.scene != targetScene)
-                SceneManager.MoveGameObjectToScene(view.gameObject, targetScene);
-
-            view.Show(eyebrow, finalMessage, supportMessage, fadeDuration);
+            completionView.Show(eyebrow, finalMessage, supportMessage, fadeDuration);
         }
 
         private static bool TryGetLocalPlayer(Collider other, out IPlayerLockSystem playerLocks)

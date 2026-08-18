@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Host-only input panel for the Teacher Broadcast System.
@@ -79,14 +80,16 @@ public class TeacherInputPanel : GameplayUIBase
         if (!_isOpen) return;
 
         // Submit on Enter (Return or Keypad Enter)
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard != null &&
+            (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame))
         {
             SendAndClose();
             return;
         }
 
         // Cancel on Escape
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Keyboard.current?.escapeKey.wasPressedThisFrame == true)
         {
             Close();
         }

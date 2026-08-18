@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityServiceLocator;
 
@@ -83,7 +84,10 @@ public class SocialPanelController : GameplayUIBase
         if (!CanProcessLocalInput())
             return;
 
-        if (!Input.GetKeyDown(_toggleKey))
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard == null ||
+            !System.Enum.TryParse(_toggleKey.ToString(), out Key inputSystemKey) ||
+            !keyboard[inputSystemKey].wasPressedThisFrame)
             return;
 
         if (_isOpen)

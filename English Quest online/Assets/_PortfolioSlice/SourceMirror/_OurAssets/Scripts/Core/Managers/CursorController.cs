@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityServiceLocator;
 
 public class CursorController : MonoBehaviour
@@ -47,7 +48,7 @@ public class CursorController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F1))
+        if (Keyboard.current?.f1Key.wasPressedThisFrame == true)
         {
             _isEscMenuActive = !_isEscMenuActive;
             UpdateCursorState();

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class TeleportDebug : MonoBehaviour
 {
@@ -30,13 +31,13 @@ public class TeleportDebug : MonoBehaviour
             if (targetToTeleport == null || IsInvalidTarget(targetToTeleport)) return; 
         }
 
-        if (Input.GetKeyDown(KeyCode.F2) && currentIndex > 0)
+        if (Keyboard.current?.f2Key.wasPressedThisFrame == true && currentIndex > 0)
         {
             currentIndex--;
             TeleportToCurrentIndex();
         }
 
-        if (Input.GetKeyDown(KeyCode.F3) && currentIndex < teleportLocations.Count - 1)
+        if (Keyboard.current?.f3Key.wasPressedThisFrame == true && currentIndex < teleportLocations.Count - 1)
         {
             currentIndex++;
             TeleportToCurrentIndex();

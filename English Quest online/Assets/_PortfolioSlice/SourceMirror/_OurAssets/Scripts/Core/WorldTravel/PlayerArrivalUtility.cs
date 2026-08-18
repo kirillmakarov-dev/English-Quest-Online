@@ -218,12 +218,12 @@ public static class PlayerArrivalUtility
             return;
 
         NetworkObject existingObject = runner.GetPlayerObject(player);
-        if (existingObject == null)
-            return;
-
         if (IsUsablePlayerObject(existingObject, scene))
             return;
 
+        // A scene reload can leave Fusion's player-object slot pointing at a
+        // destroyed Unity object.  Such an object compares equal to null, but
+        // the runner slot still has to be cleared before Spawn/TrySpawn.
         runner.SetPlayerObject(player, null);
     }
 }

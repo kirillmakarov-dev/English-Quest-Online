@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityServiceLocator;
 
@@ -88,13 +89,18 @@ public class CinematicDialogueManager : StaticInstance<CinematicDialogueManager>
         if (!_waitingForAdvance)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard != null &&
+            (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame))
             HandleAdvanceInput();
     }
 
     bool TryGuideSkipInput()
     {
-        bool bothShiftsHeld = Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.RightShift);
+        Keyboard keyboard = Keyboard.current;
+        bool bothShiftsHeld = keyboard != null &&
+                              keyboard.leftShiftKey.isPressed &&
+                              keyboard.rightShiftKey.isPressed;
         if (!bothShiftsHeld)
         {
             _guideSkipHoldTimer = 0f;

@@ -40,6 +40,10 @@ Archive/
 /English Quest online/Assets/Hivemind/
 /English Quest online/Assets/Hivemind.meta
 
+# Local book package
+/English Quest online/Assets/QA_Books/
+/English Quest online/Assets/QA_Books.meta
+
 # Re-importable package samples and local diagnostic scene
 /English Quest online/Assets/Samples/
 /English Quest online/Assets/Samples.meta

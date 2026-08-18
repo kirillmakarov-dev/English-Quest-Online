@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [AddComponentMenu(QuestSystemComponentMenuPaths.UI + "/Active Quest Journal UI")]
 public class ActiveQuestJournalUI : MonoBehaviour
@@ -62,7 +63,7 @@ public class ActiveQuestJournalUI : MonoBehaviour
         if (!_isOpen)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Keyboard.current?.escapeKey.wasPressedThisFrame == true)
             Close();
     }
 

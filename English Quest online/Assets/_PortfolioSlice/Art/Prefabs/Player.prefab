@@ -117,7 +117,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 2.4
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3674595424869328130
 MonoBehaviour:
@@ -760,7 +760,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2016340262569510194}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
+  m_Avatar: {fileID: 9000000, guid: dcb8ee7477dfd224cae075e5fb74b1da, type: 3}
   m_Controller: {fileID: 9100000, guid: 40db3173a05ae3242b1c182a09b0a183, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
@@ -3074,6 +3074,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3112397656958811243}
     m_Modifications:
+    - target: {fileID: -8887491248750792259, guid: dcb8ee7477dfd224cae075e5fb74b1da, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 893d17d19e0e9da4e9e5689b31fe2b8f, type: 2}
     - target: {fileID: -8679921383154817045, guid: dcb8ee7477dfd224cae075e5fb74b1da, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -3119,7 +3123,8 @@ PrefabInstance:
       value: Player model
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 825894089210680117, guid: dcb8ee7477dfd224cae075e5fb74b1da, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dcb8ee7477dfd224cae075e5fb74b1da, type: 3}

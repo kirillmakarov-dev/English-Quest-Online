@@ -1,5 +1,6 @@
 using Fusion;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GuiderPlayerQuestPanel : GameplayUIBase
 {
@@ -49,7 +50,7 @@ public class GuiderPlayerQuestPanel : GameplayUIBase
         if (!_isOpen)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Keyboard.current?.escapeKey.wasPressedThisFrame == true)
             Close();
     }
 

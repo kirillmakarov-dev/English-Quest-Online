@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityServiceLocator;
 
 [AddComponentMenu(QuestSystemComponentMenuPaths.UI + "/Active Quest Journal Toggle")]
@@ -15,7 +16,10 @@ public class ActiveQuestJournalToggle : MonoBehaviour
 
     void Update()
     {
-        if (!Input.GetKeyDown(toggleKey))
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard == null ||
+            !System.Enum.TryParse(toggleKey.ToString(), out Key inputSystemKey) ||
+            !keyboard[inputSystemKey].wasPressedThisFrame)
             return;
 
         if (IsBlockedByAnotherSystem())

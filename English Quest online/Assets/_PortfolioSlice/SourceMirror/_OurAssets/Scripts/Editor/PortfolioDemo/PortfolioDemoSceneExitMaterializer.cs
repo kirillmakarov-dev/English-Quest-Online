@@ -55,12 +55,13 @@ namespace EnglishQuest.Editor
             GameObject barrierRoot = FindRoot(scene, BarrierRootName);
             GameObject triggerObject = FindRoot(scene, TriggerName);
             CinemachineCamera revealCamera = FindNamedSceneComponent<CinemachineCamera>(scene, RevealCameraName);
-            PortfolioNextLevelCompletionView completionViewPrefab = EnsureCompletionViewPrefab();
+            PortfolioNextLevelCompletionView completionView =
+                FindSceneComponent<PortfolioNextLevelCompletionView>(scene);
 
-            if (barrierRoot == null || triggerObject == null || revealCamera == null)
+            if (barrierRoot == null || triggerObject == null || revealCamera == null || completionView == null)
             {
                 Debug.LogWarning(
-                    "Portfolio demo exit materializer could not find Way to next level, Next level triger, or Way to Next Level Camera.");
+                    "Portfolio demo exit materializer could not find the authored level-exit objects or Pause And Completion Menu prefab instance.");
                 return;
             }
 
@@ -83,7 +84,7 @@ namespace EnglishQuest.Editor
             changed |= SetReference(sequence, "exitTrigger", trigger);
             changed |= SetReference(sequence, "hud", hud);
             changed |= SetReference(trigger, "sequence", sequence);
-            changed |= SetReference(trigger, "completionViewPrefab", completionViewPrefab);
+            changed |= SetReference(trigger, "completionView", completionView);
 
             if (!changed)
                 return;

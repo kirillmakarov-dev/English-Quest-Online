@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Puzzle.Gameplay.Features.WordReveal
 {
@@ -86,15 +87,17 @@ namespace Puzzle.Gameplay.Features.WordReveal
 
         private static bool TryGetTapPosition(out Vector2 position)
         {
-            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+            Touchscreen touchscreen = Touchscreen.current;
+            if (touchscreen?.primaryTouch.press.wasPressedThisFrame == true)
             {
-                position = Input.GetTouch(0).position;
+                position = touchscreen.primaryTouch.position.ReadValue();
                 return true;
             }
 
-            if (Input.GetMouseButtonDown(0))
+            Mouse mouse = Mouse.current;
+            if (mouse?.leftButton.wasPressedThisFrame == true)
             {
-                position = Input.mousePosition;
+                position = mouse.position.ReadValue();
                 return true;
             }
 

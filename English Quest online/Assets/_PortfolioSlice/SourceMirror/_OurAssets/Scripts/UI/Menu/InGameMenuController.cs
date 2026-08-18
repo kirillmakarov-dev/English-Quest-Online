@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Fusion;
@@ -41,7 +42,7 @@ public class InGameMenuController : GameplayUIBase
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Keyboard.current?.escapeKey.wasPressedThisFrame == true)
         {
             if (_isSettingsOpen)
             {

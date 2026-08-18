@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 {
@@ -36,7 +37,10 @@ namespace Puzzle.Gameplay.MiniGames.DuolingoWordGame
 
         private void Update()
         {
-            if (Input.GetKeyDown(_launchKey))
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard != null &&
+                System.Enum.TryParse(_launchKey.ToString(), out Key inputSystemKey) &&
+                keyboard[inputSystemKey].wasPressedThisFrame)
                 Launch();
         }
 

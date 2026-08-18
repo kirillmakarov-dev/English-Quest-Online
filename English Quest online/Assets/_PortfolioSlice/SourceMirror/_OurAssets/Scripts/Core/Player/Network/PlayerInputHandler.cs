@@ -1,6 +1,7 @@
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using System;
 using System.Collections.Generic;
@@ -97,8 +98,9 @@ public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
         if (!_hasFocus) return;
 
         // Gather movement input
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
+        Vector2 moveInput = ReadMoveInput();
+        float horizontal = moveInput.x;
+        float vertical = moveInput.y;
 
         // Each Fusion Multi-Peer client simulates in its own scene — never use Camera.main.
         if (_cam == null || _cam.gameObject.scene != gameObject.scene)
@@ -129,16 +131,29 @@ public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
         // Gather jump input
         // We use GetButton so it stays true while held, or GetButtonDown with a reset logic.
         // For NetworkInput, it's often safer to just check status or accumulate "was pressed".
-        if (Input.GetButton("Jump") || Input.GetKey(KeyCode.Space)) 
-        {
-            _jumpPressed = true;
-        }
-        else
-        {
-            _jumpPressed = false;
-        }
+        Keyboard keyboard = Keyboard.current;
+        Gamepad gamepad = Gamepad.current;
+        _jumpPressed = keyboard?.spaceKey.isPressed == true || gamepad?.buttonSouth.isPressed == true;
+        _sprintHeld = keyboard?.leftShiftKey.isPressed == true ||
+                      keyboard?.rightShiftKey.isPressed == true ||
+                      gamepad?.leftStickButton.isPressed == true;
+    }
 
-        _sprintHeld = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+    private static Vector2 ReadMoveInput()
+    {
+        Vector2 value = Gamepad.current?.leftStick.ReadValue() ?? Vector2.zero;
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard == null)
+            return Vector2.ClampMagnitude(value, 1f);
+
+        Vector2 keyboardValue = new(
+            (keyboard.dKey.isPressed ? 1f : 0f) - (keyboard.aKey.isPressed ? 1f : 0f),
+            (keyboard.wKey.isPressed ? 1f : 0f) - (keyboard.sKey.isPressed ? 1f : 0f));
+
+        if (keyboardValue.sqrMagnitude > 0f)
+            value = keyboardValue.normalized;
+
+        return Vector2.ClampMagnitude(value, 1f);
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
