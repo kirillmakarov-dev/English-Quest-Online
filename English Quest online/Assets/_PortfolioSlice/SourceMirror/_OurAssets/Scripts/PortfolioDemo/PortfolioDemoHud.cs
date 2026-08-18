@@ -6,6 +6,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityServiceLocator;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace EnglishQuest.PortfolioDemo
 {
@@ -53,6 +56,7 @@ namespace EnglishQuest.PortfolioDemo
         private float nextPlayerPanelRefreshTime;
         private string lastPlayerPanelHash = "";
         private string lastBriefingHash = "";
+        private bool isMissionGuideOpen;
         private bool isOpenWorldHudVisible = true;
         private PortfolioGameFlowCoordinator flowCoordinator;
         private PortfolioDemoDebugOverlay debugOverlay;
@@ -89,6 +93,7 @@ namespace EnglishQuest.PortfolioDemo
             EnsureFlowCoordinator();
             EnsureHeaderPresentation();
             EnsureDemoBriefingPanel();
+            EnsureMissionGuideControlHint();
             EnsurePlayerPanel();
             EnsureCompletionPanel();
             EnsureTransitionOverlay();
@@ -106,6 +111,9 @@ namespace EnglishQuest.PortfolioDemo
         private void Update()
         {
             ApplyState(CurrentStateOrFallback());
+
+            if (isOpenWorldHudVisible && WasMissionGuideTogglePressed())
+                SetMissionGuideOpen(!isMissionGuideOpen);
 
             if (!isOpenWorldHudVisible)
                 return;
@@ -397,6 +405,37 @@ namespace EnglishQuest.PortfolioDemo
                 demoBriefingBodyText = FindChildText(demoBriefingRoot, "Body");
 
             RefreshDemoBriefing(force: true);
+        }
+
+        private void SetMissionGuideOpen(bool isOpen)
+        {
+            if (demoBriefingRoot == null)
+                return;
+
+            isMissionGuideOpen = isOpen;
+            demoBriefingRoot.gameObject.SetActive(isOpen && isOpenWorldHudVisible);
+
+            if (isOpen)
+                RefreshDemoBriefing(force: true);
+        }
+
+        private void EnsureMissionGuideControlHint()
+        {
+            if (controlsText == null || controlsText.text.Contains("J Mission Guide"))
+                return;
+
+            controlsText.text = $"{controlsText.text.TrimEnd()} · J Mission Guide";
+        }
+
+        private static bool WasMissionGuideTogglePressed()
+        {
+#if ENABLE_INPUT_SYSTEM
+            return Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame;
+#elif ENABLE_LEGACY_INPUT_MANAGER
+            return Input.GetKeyDown(KeyCode.J);
+#else
+            return false;
+#endif
         }
 
         private void EnsureCompletionPanel()
@@ -759,6 +798,8 @@ namespace EnglishQuest.PortfolioDemo
                 bool targetVisible = isVisible;
                 if (interactionPrompt != null && root == interactionPrompt.gameObject)
                     targetVisible = isVisible && !string.IsNullOrEmpty(interactionPrompt.text);
+                else if (demoBriefingRoot != null && root == demoBriefingRoot.gameObject)
+                    targetVisible = isVisible && isMissionGuideOpen;
 
                 if (root.activeSelf != targetVisible)
                     root.SetActive(targetVisible);

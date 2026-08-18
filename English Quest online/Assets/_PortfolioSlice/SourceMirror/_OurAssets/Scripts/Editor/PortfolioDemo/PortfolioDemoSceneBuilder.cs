@@ -324,7 +324,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
             TextMeshProUGUI help = CreateUiText(
                 canvas.transform,
                 "Controls",
-                "3 learning stages · Optional 2 Players via Photon Fusion\nWASD Move · Mouse Look · Space Jump · E Interact",
+                "3 learning stages · Optional 2 Players via Photon Fusion\nWASD Move · Mouse Look · Space Jump · E Interact · J Mission Guide",
                 16f,
                 TextAlignmentOptions.TopLeft,
                 new Vector2(26f, -68f),
