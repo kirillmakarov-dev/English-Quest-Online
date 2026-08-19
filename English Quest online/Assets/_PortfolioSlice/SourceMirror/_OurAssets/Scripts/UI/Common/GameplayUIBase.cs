@@ -71,6 +71,7 @@ public abstract class QuestMiniGameRuntimeBase : GameplayUIBase
     private Action _onClosed;
     private bool _completionTriggered;
     private bool _completionPending;
+    private bool _panelCloseFeedbackPlayed;
     private Coroutine _completionRoutine;
 
     public abstract string RuntimeTypeId { get; }
@@ -88,6 +89,7 @@ public abstract class QuestMiniGameRuntimeBase : GameplayUIBase
         _onCompleted = onCompleted;
         _onClosed = onClosed;
         _completionTriggered = false;
+        _panelCloseFeedbackPlayed = false;
         IsMiniGameOpen = true;
 
         BeginInteraction(interactor);
@@ -126,6 +128,13 @@ public abstract class QuestMiniGameRuntimeBase : GameplayUIBase
 
     protected void NotifyMiniGameClosed()
     {
+        bool belongsToActiveSession = IsMiniGameOpen || _completionTriggered || _completionPending;
+        if (belongsToActiveSession && !_panelCloseFeedbackPlayed)
+        {
+            _panelCloseFeedbackPlayed = true;
+            GameplayAudioAtmosphere.PlayMiniGamePanelClosed();
+        }
+
         if (_completionPending)
         {
             CancelPendingCompletionRoutine();
@@ -163,6 +172,7 @@ public abstract class QuestMiniGameRuntimeBase : GameplayUIBase
         _onClosed = null;
         _completionTriggered = false;
         _completionPending = false;
+        _panelCloseFeedbackPlayed = false;
 
         if (IsMiniGameOpen)
         {

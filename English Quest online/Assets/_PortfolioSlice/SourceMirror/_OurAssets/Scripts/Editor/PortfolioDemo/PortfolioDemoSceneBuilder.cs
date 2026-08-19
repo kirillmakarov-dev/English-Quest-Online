@@ -43,6 +43,10 @@ namespace EnglishQuest.Editor.PortfolioDemo
             "Assets/_PortfolioSlice/Demo/Data/QuestLines/02_CoachBen_SecondQuestline/LetterOrderingData.asset";
         private const string WordOrderDataPath =
             "Assets/_PortfolioSlice/Demo/Data/QuestLines/03_GuideNora_ThirdQuestline/WordOrderingData.asset";
+        private const string AmbientClipPath =
+            "Assets/Sounds/Barbarians/Sounds/FeelBarbariansAmbient.wav";
+        private const string MiniGameCloseClipPath =
+            "Assets/Sounds/Barbarians/Bounce/Sounds/FeelBounceLanding.wav";
 
         static PortfolioDemoSceneBuilder()
         {
@@ -96,6 +100,7 @@ namespace EnglishQuest.Editor.PortfolioDemo
             CreateEventSystem();
             GameObject serviceLocator = new("Service Locator Global");
             serviceLocator.AddComponent<ServiceLocatorGlobal>();
+            CreateGameplayAudio(serviceLocator);
 
             QuestObjectiveEventBus eventBus = new GameObject("Quest Objective Event Bus")
                 .AddComponent<QuestObjectiveEventBus>();
@@ -217,6 +222,15 @@ namespace EnglishQuest.Editor.PortfolioDemo
             camera.backgroundColor = new Color(0.05f, 0.09f, 0.12f);
             camera.fieldOfView = 55f;
             return camera;
+        }
+
+        private static void CreateGameplayAudio(GameObject host)
+        {
+            AudioClip ambientClip = AssetDatabase.LoadAssetAtPath<AudioClip>(AmbientClipPath);
+            AudioClip miniGameCloseClip = AssetDatabase.LoadAssetAtPath<AudioClip>(MiniGameCloseClipPath);
+
+            GameplayAudioAtmosphere atmosphere = host.AddComponent<GameplayAudioAtmosphere>();
+            atmosphere.Configure(ambientClip, miniGameCloseClip);
         }
 
         private static void CreateEventSystem()
